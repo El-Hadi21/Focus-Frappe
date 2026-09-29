@@ -1,0 +1,19 @@
+
+my-menu.menu {
+      margin-left: 470px;
+      margin-bottom: 40px ;
+}
+.menu-element {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 22px;
+      letter-spacing: 2px;
+      line-height: 3rem;
+      cursor: pointer;
+      transition: .2s all ease;
+}
+.menu-element:hover {
+      transform: scale(1.1);
+}
+.menu-element:active {
+      transform: scale(.9);
+}

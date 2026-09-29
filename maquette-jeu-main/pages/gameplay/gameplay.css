@@ -1,0 +1,86 @@
+@font-face {
+    font-family: "pixelized";
+    src: url(../../assets/fonts/ARCADECLASSIC.TTF);
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    background: url(../../assets/background/background-gameplay.png);
+    background-size: cover;
+    background-size: 120%;
+    background-repeat: no-repeat;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 100px;
+}
+
+.player {
+    margin-bottom: -80px;
+    width: 500px;
+}
+
+.controls .pause {
+    position: absolute;
+    top: 25px;
+    right: 15px;
+    width: 200px;
+    transition: .2s all ease;
+}
+
+.controls .pause:hover {
+    transform: scale(1.1);
+    transition: .2s all ease;
+}
+
+.controls .go-back {
+    position: absolute;
+    top: 33px;
+    right: 180px;
+    width: 100px;
+    transition: .2s all ease;
+}
+
+.controls .go-back:hover {
+    transform: scale(1.1);
+}
+
+div .input {
+    position: absolute;
+    bottom: 20px;
+    left: 35%;
+    bottom: 5%;
+    font-size: 40px;
+}
+
+
+.go-home {
+    border: 1px solid green;
+    border-radius: 12px;
+    padding: 7px;
+    background-color: rgb(5, 79, 5);
+    position: absolute;
+    font-size: 14px;
+    top: 7%;
+    right: 11%;
+
+    &:hover {
+        background-color: green;
+    }
+}

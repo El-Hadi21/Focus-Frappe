@@ -1,0 +1,13 @@
+/* ----------- GRAPH ----------- */
+.stats-container {
+    flex: 1; /* Il va prendre toute la place dans graph-box */
+    width: 100%;
+    min-height: 200px; /* IMPORTANT */
+    min-width: 500px;
+    position: relative;
+}
+
+#evolutionChart {
+    width: 100% !important;
+    height: 100% !important;
+}

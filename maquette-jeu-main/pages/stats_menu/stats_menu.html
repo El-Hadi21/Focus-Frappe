@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stats</title>
+  <link rel="stylesheet" href="stats_menu.css" />
+  <link rel="stylesheet" href="../../componants/button/my-button.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="../../componants/graph/graph.css">
+</head>
+
+<body>
+
+  <div class="menu">
+
+    <div class="top">
+      <div class="graph-box">
+        <h2>PROGRESS</h2>
+        <my-graph></my-graph>
+        <div class="graph-footer">Total: 35h 21m</div>
+      </div>
+
+      <div class="title-box">
+        <h1>PLAYER STATS</h1>
+        <p class="small">Overview of your last runs</p>
+        <div class="config-info">
+          <h3>LAST RUN CONFIG</h3>
+
+          <div class="config-line">
+            <span class="config-key">Game Time</span>
+            <span class="config-value" id="cfg-mode">60s</span>
+          </div>
+
+          <div class="config-line">
+            <span class="config-key">Words Length</span>
+            <span class="config-value" id="cfg-speed">6-8 Letters</span>
+          </div>
+
+          <div class="config-line">
+            <span class="config-key">Obstacle Type</span>
+            <span class="config-value" id="cfg-audio">Destroy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom">
+
+      <div class="panel">
+        <h3>SUMMARY</h3>
+
+        <div class="row">
+          <img class="icon" src="../../assets/icons/flag.png" alt="">
+          <span>Best distance</span>
+          <span class="right">1240 m</span>
+        </div>
+
+        <div class="row">
+          <img class="icon" src="../../assets/icons/icone4-Photoroom.png" alt="">
+          <span>% correct words</span>
+          <span class="right">82%</span>
+        </div>
+
+        <div class="row">
+          <img class="icon" src="../../assets/icons/icone3-Photoroom.png" alt="">
+          <span>Total play time</span>
+          <span class="right">35h 21m</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>ATTENTION</h3>
+
+        <div class="row">
+          <img class="icon" src="../../assets/icons/timer.png" alt="">
+          <span>Avg session</span>
+          <span class="right">4m 15s</span>
+        </div>
+
+        <div class="row">
+          <img class="icon" src="../../assets/icons/exclam.png" alt="">
+          <span>Inactive time</span>
+          <span class="right">8m 40s</span>
+        </div>
+
+        <div class="row">
+          <img class="icon" src="../../assets/icons/pause.png" alt="">
+          <span>Pauses</span>
+          <span class="right">12</span>
+        </div>
+
+        <div class="row">
+          <img class="icon" src="../../assets/icons/x.png" alt="">
+          <span>Abandons</span>
+          <span class="right">5</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>PERFORMANCE</h3>
+
+        <div class="row">
+          <img class="icon" src="../../assets/icons/timer.png" alt="">
+          <span>Avg response time</span>
+          <span class="right">1.8s</span>
+        </div>
+
+        <div class="row">
+          <img class="icon" src="../../assets/icons/prog.png" alt="">
+          <span>Variability</span>
+          <span class="right">0.7s - 3.5s</span>
+        </div>
+
+        <div class="row">
+          <img class="icon" src="../../assets/icons/exclam.png" alt="">
+          <span>Collisions</span>
+          <span class="right">23</span>
+        </div>
+
+        <div class="row">
+          <img class="icon" src="../../assets/icons/icone4-Photoroom.png" alt="">
+          <span>Max streak</span>
+          <span class="right">14</span>
+        </div>
+      </div>
+    </div>
+    <my-button name="Back"></my-button>
+  </div>
+  
+
+<script src="stats_menu.js"></script>
+<script defer src="../../componants/button/button.js"></script>
+<script defer src="../../componants/graph/graphe.js"></script>
+</body>
+</html>

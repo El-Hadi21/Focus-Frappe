@@ -1,0 +1,47 @@
+.mode-info-trigger {
+    position: absolute;
+    bottom: 28px;
+    left: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+}
+
+.mode-info-panel {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 12px);
+    left: 0;
+    background: rgba(10, 40, 30, 0.92);
+    border: 2px solid rgba(100, 220, 180, 0.6);
+    color: #a8ffdc;
+    font-size: 13px;
+    line-height: 1.8;
+    padding: 14px 18px;
+    width: 280px;
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.mode-info-panel p {
+    margin-bottom: 6px;
+}
+
+.mode-info-panel p:last-child {
+    margin-bottom: 0;
+}
+
+.mode-info-panel::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 12px;
+    border: 5px solid transparent;
+    border-top-color: rgba(100, 220, 180, 0.6);
+}
+
+.mode-info-trigger:hover .mode-info-panel {
+    display: block;
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="configuration.css" />
+  <link rel="stylesheet" href="../../componants/info-configuration/info-configuration.css">
+  <link rel="stylesheet" href="../../componants/info-icon/info-icon.css">
+  <link rel="stylesheet" href="../../componants/button/my-button.css">
+  <link rel="stylesheet" href="../../componants/configuration-settings/configuration-settings.css">
+</head>
+<body>
+
+<div class="slider-wrapper">
+
+  <div class="slide-center" id="slide-config">
+    <div class="container">
+      <h1>Configuration</h1>
+      <div class="btn-group">
+  
+        <my-button name="Mode" id="btn-mode">
+          <i class="fa-solid fa-gamepad"></i>
+        </my-button>
+
+        <my-button name="Audio">
+          <i class="fa-solid fa-music"></i>
+        </my-button>
+
+        <my-button name="Back" id="btn-back">
+          <i class="fa-solid fa-house"></i>
+        </my-button>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div class="slide-top" id="slide-mode">
+    <div class="container">
+      <h1>Mode de jeu</h1>
+      <div class="btn-group">
+        <my-button id="btn-easy" name="Easy"></my-button>
+        <my-button id="btn-medium" name="Medium"></my-button>
+        <my-button id="btn-hard" name="Hard"></my-button>
+      </div>
+      <configuration-settings></configuration-settings>
+      <my-button name="Save" id="btn-save">
+          <i class="fa-solid fa-save"></i>
+        </my-button>
+    </div>
+    <info-configuration></info-configuration>
+  </div>
+
+</div>
+
+
+
+</body>
+<script src="configuration.js"></script>
+<script defer src="../../componants/button/button.js"></script>
+<script defer src="../../componants/info-configuration/info-configuration.js"></script>
+<script defer src="../../componants/info-icon/info-icon.js"></script>
+<script defer src="../../componants/configuration-settings/configuration-settings.js"></script>
+</html>

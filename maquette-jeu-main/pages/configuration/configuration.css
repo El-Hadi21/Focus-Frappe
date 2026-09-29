@@ -1,0 +1,91 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-image: url('../../assets/background/background-gameplay.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 0;
+}
+
+.slider-wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 200vw;
+    height: 100vh;
+    transition: transform 0.6s cubic-bezier(0.77, 0, 0.18, 1);
+}
+
+.slider-wrapper.show-mode {
+    transform: translateX(-100vw);
+}
+
+.slide-center {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+.slide-top {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    flex-shrink: 0;
+    margin-top: 30px;
+}
+
+.container {
+    background: transparent;
+    padding: 50px 40px;
+    width: 100%;
+    max-width: 800px;
+    border: none;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 36px;
+}
+
+.container h1 {
+    text-align: center;
+    color: #a8ffdc;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 32px;
+    letter-spacing: 4px;
+    text-shadow:
+            3px 3px 0px #000,
+            0 0 15px rgba(100, 220, 180, 0.7);
+    margin-bottom: 20px;
+    margin-top: -60px;
+}
+
+.btn-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+}
