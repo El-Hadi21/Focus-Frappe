@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tableau de bord | Focus &amp; Frappe</title>
+    <link rel="stylesheet" href="../../styles/global.css" />
+    <link rel="stylesheet" href="../../components/button/button.css" />
+    <link rel="stylesheet" href="dashboard.css" />
+  </head>
+  <body>
+    <main class="dashboard-page">
+      <header class="dashboard-header">
+        <div>
+          <p class="eyebrow">Focus &amp; Frappe</p>
+          <h1>Mes patients</h1>
+          <p class="dashboard-intro">Sélectionnez un patient pour accéder à son suivi.</p>
+        </div>
+        <span class="patient-count">3 patients</span>
+      </header>
+
+      <section class="patient-grid" aria-label="Liste des patients">
+        <article
+          class="patient-card card"
+          onclick="window.location.href='../patient-menu/patient-menu.html'"
+          onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.click(); }"
+          role="link"
+          tabindex="0"
+        >
+          <div class="patient-avatar" aria-hidden="true">LM</div>
+          <div>
+            <h2>Louise Martin</h2>
+            <p>Âge : 8 ans</p>
+          </div>
+          <span class="patient-arrow" aria-hidden="true">→</span>
+        </article>
+
+        <article
+          class="patient-card card"
+          onclick="window.location.href='../patient-menu/patient-menu.html'"
+          onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.click(); }"
+          role="link"
+          tabindex="0"
+        >
+          <div class="patient-avatar" aria-hidden="true">NH</div>
+          <div>
+            <h2>Noah Hernandez</h2>
+            <p>Âge : 11 ans</p>
+          </div>
+          <span class="patient-arrow" aria-hidden="true">→</span>
+        </article>
+
+        <article
+          class="patient-card card"
+          onclick="window.location.href='../patient-menu/patient-menu.html'"
+          onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.click(); }"
+          role="link"
+          tabindex="0"
+        >
+          <div class="patient-avatar" aria-hidden="true">EC</div>
+          <div>
+            <h2>Emma Chevalier</h2>
+            <p>Âge : 6 ans</p>
+          </div>
+          <span class="patient-arrow" aria-hidden="true">→</span>
+        </article>
+      </section>
+    </main>
+
+    <button class="floating-action" type="button" aria-label="Ajouter un patient">+</button>
+  </body>
+</html>
