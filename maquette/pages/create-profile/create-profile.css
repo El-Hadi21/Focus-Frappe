@@ -163,24 +163,6 @@ input[type="number"]:focus {
   border-top: 2px solid var(--color-border);
 }
 
-.btn-secondary {
-  min-height: 44px;
-  padding: 0.75rem 1.5rem;
-  border: 2px solid var(--color-secondary);
-  border-radius: 10px;
-  color: var(--color-secondary);
-  background: #ffffff;
-  cursor: pointer;
-  font: inherit;
-  font-weight: 700;
-  transition: background-color 100ms ease, color 100ms ease;
-}
-
-.btn-secondary:hover {
-  color: #ffffff;
-  background: var(--color-secondary);
-}
-
 @media (max-width: 600px) {
   .profile-card {
     padding: 1.5rem 1.25rem;

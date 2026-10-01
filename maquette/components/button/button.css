@@ -58,3 +58,77 @@
   filter: grayscale(0.4) brightness(0.9);
   transform: translateY(0);
 }
+
+.btn-secondary {
+  min-height: 48px;
+  padding: 0.85rem 1.75rem;
+  border: 2px solid var(--color-secondary);
+  border-radius: 10px;
+  color: var(--color-secondary);
+  background: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  transition: background-color 100ms ease, color 100ms ease;
+}
+
+.btn-secondary:hover {
+  color: #ffffff;
+  background: var(--color-secondary);
+}
+
+.btn-secondary:focus-visible {
+  outline: 3px solid rgba(61, 159, 242, 0.35);
+  outline-offset: 3px;
+}
+
+.btn-danger {
+  --btn-face-image: url("../../assets/UI/kenny-game-UIs/PNG/Red/Default/button_rectangle_depth_flat.png");
+  --btn-base-image: url("../../assets/UI/kenny-game-UIs/PNG/Red/Double/button_rectangle_depth_flat.png");
+  --btn-press-depth: 5px;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.85rem 1.75rem;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-game, "Kenney Future", sans-serif);
+  font-weight: 700;
+  font-size: 1rem;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+
+  background: var(--btn-face-image) center / 100% 100% no-repeat;
+  background-color: #e74c3c;
+  border-radius: 10px;
+
+  transform: translateY(calc(-1 * var(--btn-press-depth)));
+  transition: transform 100ms ease;
+}
+
+.btn-danger::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 10px;
+  background: var(--btn-base-image) center / 100% 100% no-repeat;
+  background-color: #c0392b;
+  transform: translateY(var(--btn-press-depth));
+}
+
+.btn-danger:hover {
+  filter: brightness(1.05);
+}
+
+.btn-danger:active {
+  transform: translateY(0);
+}
+
+.btn-danger:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.65);
+  outline-offset: 3px;
+}

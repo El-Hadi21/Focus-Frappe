@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menu du profil | Focus &amp; Frappe</title>
+    <link rel="stylesheet" href="../../styles/global.css" />
+    <link rel="stylesheet" href="../../components/button/button.css" />
+    <link rel="stylesheet" href="patient-menu.css" />
+  </head>
+  <body>
+    <main class="patient-menu-page">
+      <div class="card patient-menu-card">
+        <header class="patient-menu-header">
+          <button type="button" class="btn-secondary" onclick="window.location.href='../dashboard/dashboard.html'">Retour</button>
+          <div class="patient-avatar" aria-hidden="true">LM</div>
+          <h1>Léo, 10 ans</h1>
+        </header>
+
+        <nav class="patient-menu-actions" aria-label="Actions du profil">
+          <button type="button" class="btn-primary" onclick="window.location.href='../theme-selection/theme-selection.html'">Jouer</button>
+          <button type="button" class="btn-secondary" onclick="window.location.href='../configuration/configuration.html'">Configurer la séance</button>
+          <button type="button" class="btn-secondary" onclick="window.location.href='../stats/stats.html'">Statistiques</button>
+          <button type="button" class="btn-danger" onclick="if(confirm('Supprimer définitivement ce profil ?')) window.location.href='../dashboard/dashboard.html'">Supprimer le profil</button>
+        </nav>
+      </div>
+    </main>
+  </body>
+</html>
