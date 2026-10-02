@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configuration de Séance | Focus &amp; Frappe</title>
+    <link rel="stylesheet" href="../../styles/global.css" />
+    <link rel="stylesheet" href="../../components/button/button.css" />
+    <link rel="stylesheet" href="configuration.css" />
+</head>
+<body>
+<main class="configuration-page">
+    <div class="card configuration-card">
+        <header class="configuration-header">
+            <button type="button" class="btn-secondary" onclick="window.location.href='../patient-menu/patient-menu.html'">Retour</button>
+            <h1>Configuration</h1>
+        </header>
+
+        <form class="configuration-form">
+
+            <!-- 1. DIFFICULTÉ -->
+            <div class="configuration-field">
+                <label class="field-label">Difficulté (Fixe pour toute la session)</label>
+                <div class="selection-boxes" role="radiogroup" aria-label="Difficulté">
+                    <label class="select-box">
+                        <input type="radio" name="difficulty" value="easy" checked />
+                        <div class="box-label">Facile</div>
+                    </label>
+                    <label class="select-box">
+                        <input type="radio" name="difficulty" value="normal" />
+                        <div class="box-label">Normal</div>
+                    </label>
+                    <label class="select-box">
+                        <input type="radio" name="difficulty" value="difficult" />
+                        <div class="box-label">Difficile</div>
+                    </label>
+                </div>
+                <!-- Boîte d'information dynamique (Mise à jour par JS) -->
+                <div id="difficulty-info" class="info-box">
+                    <!-- Rempli par JavaScript -->
+                </div>
+            </div>
+
+            <!-- 2. MOT À TROUS -->
+            <div class="configuration-field toggle-field">
+                <label class="toggle-label" for="missing-word-mode">
+                    <span class="field-label">Mode 'Mot à trous'</span>
+                    <input id="missing-word-mode" name="missing-word-mode" type="checkbox" />
+                    <span class="toggle-switch" aria-hidden="true"></span>
+                </label>
+                <!-- Boîte d'information avec contraste -->
+                <div class="info-box warning-box">
+                    <strong>Attention :</strong> Ce mode rend la session plus exigeante. Le nombre de lettres masquées s'adapte au palier de difficulté sélectionné.
+                </div>
+            </div>
+
+            <!-- 3. DURÉE DE SESSION -->
+            <div class="configuration-field duration-field">
+                <label class="field-label" id="session-duration-label" style="text-align: center;">Durée de session</label>
+
+                <div class="duration-control-container">
+                    <div id="duration-display" class="duration-display-box">30s</div>
+
+                    <div class="duration-buttons-vertical" role="group" aria-labelledby="session-duration-label">
+                        <button id="increase-duration" class="btn-secondary duration-btn" type="button" aria-label="Augmenter la durée">▲</button>
+                        <button id="decrease-duration" class="btn-secondary duration-btn" type="button" aria-label="Réduire la durée" disabled>▼</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. ACTIONS -->
+            <div class="configuration-actions">
+                <button type="button" class="btn-primary" onclick="window.location.href='../theme-selection/theme-selection.html'">Valider</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+    /* --- Logique Interactive : Difficulté + Mot à trous --- */
+    const difficultyInfo = document.getElementById("difficulty-info");
+    const difficultyRadios = document.querySelectorAll('input[name="difficulty"]');
+    const missingWordToggle = document.getElementById("missing-word-mode");
+
+    // Textes de base selon la difficulté
+    const baseInfos = {
+      'easy': '<strong>Mots &le; 5 lettres</strong> | Ralenti maximal à l\'approche de l\'obstacle.',
+      'normal': '<strong>Mots de 5 à 8 lettres</strong> | Ralenti standard pour l\'adaptation.',
+      'difficult': '<strong>Mots de 9+ lettres</strong> | Ralenti très court pour stimuler la vitesse.'
+    };
+
+    // Ajouts textuels dynamiques si le mode "Mot à trous" est activé
+    const missingLettersInfo = {
+      'easy': '<br><span style="color: #d35400; margin-top: 0.25rem; display: inline-block;"><strong>Mode à trous :</strong> 1 lettre masquée.</span>',
+      'normal': '<br><span style="color: #d35400; margin-top: 0.25rem; display: inline-block;"><strong>Mode à trous :</strong> 2 lettres masquées.</span>',
+      'difficult': '<br><span style="color: #d35400; margin-top: 0.25rem; display: inline-block;"><strong>Mode à trous :</strong> 2 lettres masquées.</span>'
+    };
+
+    function updateDifficultyInfo() {
+      const selectedDifficulty = document.querySelector('input[name="difficulty"]:checked').value;
+      const isMissingWordActive = missingWordToggle.checked;
+
+      let htmlContent = baseInfos[selectedDifficulty];
+
+      // Si le toggle est activé, on ajoute la phrase correspondante
+      if (isMissingWordActive) {
+        htmlContent += missingLettersInfo[selectedDifficulty];
+      }
+
+      difficultyInfo.innerHTML = htmlContent;
+    }
+
+    // Écoute des changements sur les radios ET le toggle
+    difficultyRadios.forEach(radio => radio.addEventListener('change', updateDifficultyInfo));
+    missingWordToggle.addEventListener('change', updateDifficultyInfo);
+
+
+    /* --- Logique Durée de session --- */
+    const durationDisplay = document.getElementById("duration-display");
+    const decreaseDurationButton = document.getElementById("decrease-duration");
+    const increaseDurationButton = document.getElementById("increase-duration");
+
+    const minimumDuration = 30;
+    const maximumDuration = 180;
+    const durationStep = 30;
+    let duration = minimumDuration;
+
+    const formatDuration = (seconds) => {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+
+      if (minutes === 0) return `${seconds}s`;
+      if (remainingSeconds === 0) return `${minutes}min`;
+      return `${minutes}min${remainingSeconds}s`;
+    };
+
+    const updateDuration = (nextDuration) => {
+      duration = Math.min(maximumDuration, Math.max(minimumDuration, nextDuration));
+      durationDisplay.innerText = formatDuration(duration);
+      decreaseDurationButton.disabled = duration === minimumDuration;
+      increaseDurationButton.disabled = duration === maximumDuration;
+    };
+
+    decreaseDurationButton.addEventListener("click", () => updateDuration(duration - durationStep));
+    increaseDurationButton.addEventListener("click", () => updateDuration(duration + durationStep));
+
+    // Initialisation au chargement de la page
+    updateDifficultyInfo();
+    updateDuration(duration);
+</script>
+</body>
+</html>
