@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Choix du thème | Focus &amp; Frappe</title>
+  <link rel="stylesheet" href="../../styles/global.css" />
+  <link rel="stylesheet" href="../../components/button/button.css" />
+  <link rel="stylesheet" href="theme-selection.css" />
+</head>
+<body>
+<main class="theme-selection-page">
+  <section class="card theme-selection-card" aria-labelledby="theme-selection-title">
+    <header class="theme-selection-header">
+      <button
+              type="button"
+              class="btn-secondary"
+              onclick="window.location.href='../patient-menu/patient-menu.html'"
+      >
+        Retour
+      </button>
+      <div>
+        <h1 id="theme-selection-title">Choisissez votre thème</h1>
+        <p>Sélectionnez l'univers de votre session de frappe.</p>
+      </div>
+    </header>
+
+    <fieldset class="theme-options">
+      <legend class="sr-only">Thème de la session</legend>
+
+      <!-- Thème Football sans attribut checked -->
+      <label class="theme-option">
+        <input type="radio" name="theme" value="football" />
+        <span class="theme-card card">
+              <img src="../../assets/UI/UI-foot.png" alt="Illustration du thème Football" />
+              <span class="theme-card-footer">
+                <span class="theme-name">Football</span>
+                <span class="theme-hint">Jouer sur le terrain</span>
+              </span>
+            </span>
+      </label>
+
+      <!-- Thème Espace sans attribut checked -->
+      <label class="theme-option">
+        <input type="radio" name="theme" value="space" />
+        <span class="theme-card card">
+              <img src="../../assets/UI/UI-space.png" alt="Illustration du thème Espace" />
+              <span class="theme-card-footer">
+                <span class="theme-name">Espace</span>
+                <span class="theme-hint">Décoller vers les étoiles</span>
+              </span>
+            </span>
+      </label>
+    </fieldset>
+
+    <!-- Zone d'action masquée par défaut -->
+    <div class="theme-actions">
+      <button type="button" class="btn-primary" onclick="window.location.href='../game/game.html'">
+        Lancer la partie
+      </button>
+    </div>
+  </section>
+</main>
+</body>
+</html>
