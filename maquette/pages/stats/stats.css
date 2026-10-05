@@ -1,0 +1,350 @@
+.stats-page {
+  width: min(100% - 2rem, 850px); /* Largeur réduite pour un mode colonne très lisible */
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 1.5rem 0 3rem;
+}
+
+.stats-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stats-header .btn-secondary {
+  flex: 0 0 auto;
+}
+
+.stats-header h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  color: var(--color-text);
+}
+
+/* Remplacement de la grille par une colonne (stack) */
+.stats-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.stats-card {
+  padding: 2rem;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.stats-card h2 {
+  margin: 0;
+  color: var(--color-text); /* Changé en foncé pour la lisibilité */
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+}
+
+.date-badge, .session-count-badge {
+  background: #eef6fd;
+  color: var(--color-text);
+  font-weight: 700;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.metrics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.metric:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.metric-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.metric dt {
+  color: var(--color-text);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.metric-desc {
+  color: #475569; /* Gris foncé, très lisible */
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.metric dd {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.metric dd span {
+  font-size: 0.6em;
+  color: #ffffff;
+  margin-left: 0.2rem;
+}
+
+/* Clics intempestifs */
+.metric-wide {
+  align-items: flex-start;
+}
+
+.sub-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: right;
+}
+
+.sub-metrics span {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  color: var(--color-text); /* Fini le bleu illisible, place au foncé */
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.sub-metrics strong {
+  color: #ffffff;
+  font-size: 1.25rem;
+}
+
+/* --- GRAPHIQUE --- */
+.progression-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--color-border);
+}
+
+.progression-section h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.05rem;
+  color: var(--color-text);
+}
+
+.chart-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding: 1.25rem 1.25rem 0.5rem 0.5rem;
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  background: #f8fbfd;
+}
+
+.chart-y-axis {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+}
+
+.y-title {
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-align: center;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.y-labels {
+  display: flex;
+  flex: 1;
+  min-width: 32px;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.y-labels span {
+  position: relative;
+  top: -6px;
+}
+
+.chart-content {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 140px;
+  gap: 0.4rem;
+  border-bottom: 2px solid var(--color-text);
+  border-left: 2px solid var(--color-text);
+  background: repeating-linear-gradient(
+    to top,
+    transparent 0,
+    transparent 0 34px,
+    rgba(216, 226, 234, 0.6) 35px
+  );
+}
+
+.chart-bars span {
+  width: min(12%, 2.2rem);
+  height: var(--bar-height);
+  min-height: 4px;
+  border-radius: 4px 4px 0 0;
+  background: var(--color-secondary);
+  transition: filter 200ms ease;
+}
+
+.chart-bars span:hover {
+  filter: brightness(1.1);
+}
+
+.chart-bars span:last-child {
+  background: var(--color-primary);
+}
+
+.chart-x-axis {
+  display: flex;
+  flex-direction: column;
+  margin-left: 2px;
+}
+
+.chart-labels {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 0.5rem;
+  color: var(--color-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.x-title {
+  margin-top: 0.75rem;
+  color: var(--color-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.legend-color {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.legend-past {
+  background: var(--color-secondary);
+}
+
+.legend-current {
+  background: var(--color-primary);
+}
+
+/* --- ZONE DE NOTES --- */
+.notes-input {
+  width: 100%;
+  min-height: 120px;
+  padding: 1rem;
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  background: #f8fbfd;
+  font: inherit;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.notes-input:focus {
+  border-color: var(--color-secondary);
+  outline: 3px solid rgba(61, 159, 242, 0.2);
+}
+
+.notes-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+@media (max-width: 600px) {
+  .stats-page {
+    width: min(100% - 1.5rem, 600px);
+    padding-top: 1rem;
+  }
+
+  .stats-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .metric {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .metric dd,
+  .sub-metrics span {
+    width: 100%;
+    justify-content: flex-start;
+    text-align: left;
+  }
+}

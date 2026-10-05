@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Statistiques - Léo | Focus &amp; Frappe</title>
+  <link rel="stylesheet" href="../../styles/global.css" />
+  <link rel="stylesheet" href="../../components/button/button.css" />
+  <link rel="stylesheet" href="stats.css" />
+</head>
+<body>
+<main class="stats-page">
+  <header class="stats-header">
+    <button
+            type="button"
+            class="btn-secondary"
+            onclick="window.location.href='../patient-menu/patient-menu.html'"
+    >
+      Retour
+    </button>
+    <h1>Statistiques de séance - Léo</h1>
+  </header>
+
+  <div class="stats-layout">
+
+    <!-- BLOC 1 : DERNIÈRE SÉANCE -->
+    <section class="card stats-card" aria-labelledby="last-session-title">
+      <header class="card-header">
+        <h2 id="last-session-title">Dernière séance</h2>
+        <span class="date-badge">Aujourd'hui, 14:30</span>
+      </header>
+
+      <dl class="metrics-list">
+        <div class="metric">
+          <div class="metric-label">
+            <dt>Temps de réponse moyen</dt>
+            <span class="metric-desc">Rapidité face à la consigne</span>
+          </div>
+          <dd>1.8<span>s</span></dd>
+        </div>
+
+        <div class="metric">
+          <div class="metric-label">
+            <dt>Variabilité</dt>
+            <span class="metric-desc">Régularité ou irrégularité des réponses</span>
+          </div>
+          <dd>1.2<span>s</span> - 2.5<span>s</span></dd>
+        </div>
+
+        <div class="metric metric-wide">
+          <div class="metric-label">
+            <dt>Clics intempestifs</dt>
+            <span class="metric-desc">Indicateurs d'impulsivité et motricité</span>
+          </div>
+          <dd class="sub-metrics">
+            <span><strong>3</strong> Frappes hors-fenêtre</span>
+            <span><strong>2</strong> Erreurs de frappe</span>
+          </dd>
+        </div>
+
+        <div class="metric">
+          <div class="metric-label">
+            <dt>Série maximale</dt>
+            <span class="metric-desc">Capacité à enchaîner sans erreur</span>
+          </div>
+          <dd>8 <span>mots</span></dd>
+        </div>
+
+        <div class="metric">
+          <div class="metric-label">
+            <dt>Meilleure distance</dt>
+            <span class="metric-desc">Performance maximale atteinte</span>
+          </div>
+          <dd>145 <span>m</span></dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- BLOC 2 : HISTORIQUE GLOBAL -->
+    <section class="card stats-card" aria-labelledby="global-history-title">
+      <header class="card-header">
+        <h2 id="global-history-title">Historique global</h2>
+        <span class="session-count-badge">12 séances au total</span>
+      </header>
+
+      <dl class="metrics-list">
+        <div class="metric">
+          <div class="metric-label">
+            <dt>Session moyenne</dt>
+            <span class="metric-desc">Temps d'engagement dans l'activité</span>
+          </div>
+          <dd>12 <span>min</span></dd>
+        </div>
+
+        <div class="metric">
+          <div class="metric-label">
+            <dt>Abandons</dt>
+            <span class="metric-desc">Parties quittées avant la fin</span>
+          </div>
+          <dd>1 <span>fois</span></dd>
+        </div>
+      </dl>
+
+      <div class="progression-section">
+        <h3>Courbe de progression</h3>
+        <p class="metric-desc" style="margin-bottom: 1rem;">Évolution des performances (Score) et de l'engagement dans le temps.</p>
+
+        <div class="chart-container" aria-label="Graphique cartésien de progression" role="figure">
+          <div class="chart-y-axis" aria-hidden="true">
+            <span class="y-title">Score</span>
+            <div class="y-labels">
+              <span>1000</span>
+              <span>750</span>
+              <span>500</span>
+              <span>250</span>
+              <span>0</span>
+            </div>
+          </div>
+
+          <div class="chart-content">
+            <div class="chart-bars" aria-hidden="true">
+              <span style="--bar-height: 42%" title="Séance 1"></span>
+              <span style="--bar-height: 55%" title="Séance 4"></span>
+              <span style="--bar-height: 48%" title="Séance 8"></span>
+              <span style="--bar-height: 68%" title="Séance 12"></span>
+              <span style="--bar-height: 62%" title="Séance 15"></span>
+              <span style="--bar-height: 82%" title="Séance 18"></span>
+              <span style="--bar-height: 92%" title="Séance 20 (Dernière)"></span>
+            </div>
+            <div class="chart-x-axis" aria-hidden="true">
+              <div class="chart-labels">
+                <span>S1</span>
+                <span>S4</span>
+                <span>S8</span>
+                <span>S12</span>
+                <span>S15</span>
+                <span>S18</span>
+                <span>S20</span>
+              </div>
+              <span class="x-title">Séances (Temps)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-color legend-past"></span> Séances passées</span>
+          <span class="legend-item"><span class="legend-color legend-current"></span> Dernière séance</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOC 3 : NOTES D'OBSERVATION -->
+    <section class="card stats-card notes-card" aria-labelledby="notes-title">
+      <h2 id="notes-title">Notes d'observation</h2>
+      <p class="metric-desc" style="margin-bottom: 1rem;">Ajoutez vos remarques cliniques sur le comportement de l'enfant durant la séance.</p>
+      <form class="notes-form">
+            <textarea
+                    class="notes-input"
+                    rows="4"
+                    placeholder="Ex : Léo était particulièrement agité aujourd'hui, mais la zone de ralenti l'a aidé à se recentrer sur les mots longs..."
+            ></textarea>
+        <div class="notes-actions">
+          <button type="button" class="btn-primary" onclick="alert('Notes enregistrées avec succès !')">Enregistrer les notes</button>
+        </div>
+      </form>
+    </section>
+
+  </div>
+</main>
+</body>
+</html>
