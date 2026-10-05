@@ -8,6 +8,16 @@
   <link rel="stylesheet" href="../../components/button/button.css" />
   <link rel="stylesheet" href="theme-selection.css" />
 </head>
+<script>
+  function launchGame() {
+    // Récupère le thème coché (football ou space)
+    const selectedTheme = document.querySelector('input[name="theme"]:checked').value;
+    // Sauvegarde dans le navigateur
+    localStorage.setItem('focusFrappeTheme', selectedTheme);
+    // Redirige vers le jeu
+    window.location.href = '../game/game.html';
+  }
+</script>
 <body>
 <main class="theme-selection-page">
   <section class="card theme-selection-card" aria-labelledby="theme-selection-title">
@@ -55,7 +65,7 @@
 
     <!-- Zone d'action masquée par défaut -->
     <div class="theme-actions">
-      <button type="button" class="btn-primary" onclick="window.location.href='../game/game.html'">
+      <button type="button" class="btn-primary" onclick="launchGame()">
         Lancer la partie
       </button>
     </div>

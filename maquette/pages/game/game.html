@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeu | Focus &amp; Frappe</title>
+  <link rel="stylesheet" href="../../styles/global.css" />
+  <link rel="stylesheet" href="../../components/button/button.css" />
+  <link rel="stylesheet" href="game.css" />
+</head>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const themeConfig = {
+      football: {
+        avatar: '../../assets/theme/foot/PNG/Blue/characterBlue (1).png',
+        avatarAlt: 'Notre joueur',
+        obstacle: '../../assets/theme/foot/PNG/Red/characterRed (1).png',
+        obstacleAlt: 'Attaquant adverse'
+      },
+      space: {
+        avatar: '../../assets/theme/space/PNG/Sprites/Ships/spaceShips_001.png',
+        avatarAlt: 'Vaisseau joueur',
+        obstacle: '../../assets/theme/space/PNG/Sprites/Meteors/spaceMeteors_001.png',
+        obstacleAlt: 'Astéroïde'
+      }
+    };
+
+    const savedTheme = localStorage.getItem('focusFrappeTheme');
+    const theme = Object.hasOwn(themeConfig, savedTheme) ? savedTheme : 'football';
+    const config = themeConfig[theme];
+
+    document.body.className = 'game-page theme-' + theme;
+
+    const avatarImg = document.querySelector('#player-avatar img');
+    const obstacleImg = document.querySelector('#current-obstacle img');
+
+    avatarImg.src = config.avatar;
+    avatarImg.alt = config.avatarAlt;
+    obstacleImg.src = config.obstacle;
+    obstacleImg.alt = config.obstacleAlt;
+  });
+</script>
+<body class="game-page">
+
+<header class="game-header">
+  <button class="btn-danger" type="button" onclick="window.location.href='../dashboard/dashboard.html'">
+    Quitter
+  </button>
+  <div class="streak-card">
+    <p class="word-streak">Série de mots : <strong>3</strong></p>
+  </div>
+</header>
+
+<main class="game-stage">
+  <!-- 1. AVATAR (Le joueur de l'enfant) -->
+  <div class="game-character game-avatar" id="player-avatar">
+    <img src="../../assets/theme/foot/PNG/Blue/characterBlue (1).png" alt="Notre Joueur" />
+  </div>
+
+  <!-- 2. ZONE DE FOCUS (Centrale) -->
+  <section class="focus-card card" aria-labelledby="target-word">
+    <p class="focus-label">Mot à écrire</p>
+    <h1 id="target-word" class="target-word">
+      <span class="typed">C H A</span><span class="untyped">T E A U</span>
+    </h1>
+  </section>
+
+  <!-- 3. OBSTACLE (Géré dynamiquement plus tard par JS : Ballon ou Attaquant) -->
+  <div class="game-character game-obstacle" id="current-obstacle">
+    <!-- Pour la maquette, on affiche l'Attaquant Rouge -->
+    <img src="../../assets/theme/foot/PNG/Red/characterRed (1).png" alt="Attaquant adverse" />
+
+    <!-- Note pour le dev JS : Pour afficher le ballon seul (Obstacle Type 1), on remplacera le src par : -->
+    <!-- <img src="../../assets/theme/foot/PNG/Equipment/ballSoccer.png" alt="Ballon de foot" /> -->
+  </div>
+</main>
+</body>
+</html>
