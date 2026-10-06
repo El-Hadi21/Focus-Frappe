@@ -41,6 +41,12 @@
   white-space: nowrap;
 }
 
+.dashboard-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .patient-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -133,6 +139,10 @@
   .dashboard-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .dashboard-actions {
+    flex-wrap: wrap;
   }
 
   .patient-grid {

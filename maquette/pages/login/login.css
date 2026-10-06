@@ -6,37 +6,22 @@
 }
 
 .login-card {
-  width: min(100%, 420px);
+  display: grid;
+  width: min(100%, 640px);
+  gap: 2rem;
   padding: clamp(1.75rem, 5vw, 2.5rem);
-}
-
-.login-header {
-  margin-bottom: 2rem;
   text-align: center;
 }
 
-.eyebrow {
+.login-card h1 {
   margin: 0 0 0.5rem;
-  color: var(--color-primary-dark);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.login-header h1 {
-  margin: 0 0 0.5rem;
-  font-size: clamp(1.75rem, 5vw, 2.25rem);
-}
-
-.login-header p:last-child {
-  margin: 0;
-  color: var(--color-text-muted);
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
 }
 
 .login-form {
   display: grid;
   gap: 1.25rem;
+  text-align: left;
 }
 
 .form-field {
@@ -45,7 +30,6 @@
 }
 
 .form-field label {
-  font-size: 0.9rem;
   font-weight: 600;
 }
 
@@ -57,7 +41,7 @@
   border-radius: 8px;
   color: var(--color-text);
   background: var(--color-surface);
-  transition: border-color 180ms ease, box-shadow 180ms ease;
+  font: inherit;
 }
 
 .form-field input:focus {
@@ -67,6 +51,6 @@
 }
 
 .login-submit {
-  width: 100%;
+  justify-self: center;
   margin-top: 0.5rem;
 }

@@ -52,4 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   patientCount.textContent = `${patients.length} patient${patients.length > 1 ? 's' : ''}`;
   patients.forEach((patient) => patientGrid.appendChild(renderPatient(patient)));
+
+  document.getElementById('btn-logout').addEventListener('click', () => {
+    if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+      localStorage.removeItem('focusFrappe_currentPatientId');
+      window.location.href = '../login/login.html';
+    }
+  });
 });
