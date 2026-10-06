@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Création de profil patient - Focus &amp; Frappe</title>
+  <link rel="stylesheet" href="../../styles/global.css">
+  <link rel="stylesheet" href="../../components/button/button.css">
+  <link rel="stylesheet" href="create-profile.css">
+  <script src="../../mock-back/mock-api.js"></script>
+</head>
+<body>
+  <main class="page-shell">
+    <div class="card profile-card">
+      <header class="profile-header">
+        <h1>Nouveau Patient</h1>
+      </header>
+
+      <form class="profile-form">
+        <section class="form-section" aria-labelledby="basic-information-title">
+          <h2 id="basic-information-title">Infos de base</h2>
+
+          <div class="form-fields">
+            <div class="form-field">
+              <label for="first-name">Prénom</label>
+              <input id="first-name" name="first-name" type="text" autocomplete="given-name" required>
+            </div>
+
+            <div class="form-field">
+              <label for="age">Âge</label>
+              <input id="age" name="age" type="number" min="1" max="120" required>
+            </div>
+
+            <div class="form-field">
+              <label for="interests">Centres d'intérêt</label>
+              <input id="interests" name="interests" type="text">
+            </div>
+          </div>
+        </section>
+
+          <section class="form-section clinical-section" aria-labelledby="clinical-information-title">
+              <h2 id="clinical-information-title">Clinique <span>(Le plus important)</span></h2>
+
+              <div class="clinical-field">
+                  <label>Sévérité de la dysgraphie</label>
+                  <div class="selection-boxes">
+                      <label class="select-box">
+                          <input type="radio" name="dysgraphia-severity" value="legere" checked>
+                          <span class="box-label">Légère</span>
+                      </label>
+                      <label class="select-box">
+                          <input type="radio" name="dysgraphia-severity" value="moderee">
+                          <span class="box-label">Modérée</span>
+                      </label>
+                      <label class="select-box">
+                          <input type="radio" name="dysgraphia-severity" value="severe">
+                          <span class="box-label">Sévère</span>
+                      </label>
+                  </div>
+              </div>
+
+              <div class="clinical-field">
+                  <label>Profil attentionnel</label>
+                  <div class="selection-boxes">
+                      <label class="select-box">
+                          <input type="radio" name="attention-profile" value="inattentif" checked>
+                          <span class="box-label">Inattentif</span>
+                      </label>
+                      <label class="select-box">
+                          <input type="radio" name="attention-profile" value="mixte">
+                          <span class="box-label">Mixte</span>
+                      </label>
+                      <label class="select-box">
+                          <input type="radio" name="attention-profile" value="hyperactif">
+                          <span class="box-label">Hyperactif</span>
+                      </label>
+                  </div>
+              </div>
+          </section>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="window.location.href='../dashboard/dashboard.html'">Annuler</button>
+          <button type="submit" class="btn-primary">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script src="create-profile.js"></script>
+</body>
+</html>

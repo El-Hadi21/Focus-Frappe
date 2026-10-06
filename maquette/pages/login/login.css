@@ -1,0 +1,56 @@
+.login-page {
+  display: grid;
+  min-height: 100vh;
+  padding: 1.5rem;
+  place-items: center;
+}
+
+.login-card {
+  display: grid;
+  width: min(100%, 640px);
+  gap: 2rem;
+  padding: clamp(1.75rem, 5vw, 2.5rem);
+  text-align: center;
+}
+
+.login-card h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+}
+
+.login-form {
+  display: grid;
+  gap: 1.25rem;
+  text-align: left;
+}
+
+.form-field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.form-field label {
+  font-weight: 600;
+}
+
+.form-field input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font: inherit;
+}
+
+.form-field input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.18);
+  outline: none;
+}
+
+.login-submit {
+  justify-self: center;
+  margin-top: 0.5rem;
+}

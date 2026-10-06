@@ -1,0 +1,186 @@
+.page-shell {
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Centrage vertical pour éviter le scroll */
+  min-height: 100vh;
+  padding: 1.5rem;
+}
+
+.profile-card {
+  width: min(100%, 780px);
+  padding: 2rem 2.5rem 1.5rem; /* Padding réduit pour compacter */
+}
+
+.profile-header {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.profile-header h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Réduit de 2rem à 1.5rem */
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-section h2 {
+  margin: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--color-border);
+  font-size: 1.1rem;
+}
+
+.form-section h2 span {
+  color: var(--color-primary-dark);
+  font-size: 0.85em;
+}
+
+.form-fields {
+  display: grid;
+  grid-template-columns: 1fr 160px;
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-field:last-child {
+  grid-column: 1 / -1;
+}
+
+label {
+  color: var(--color-text);
+  font-size: 0.95rem;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  min-height: 42px;
+  padding: 0.6rem 0.85rem;
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  background: #f8fbfd;
+  font: inherit;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  border-color: var(--color-secondary);
+  outline: 3px solid rgba(61, 159, 242, 0.2);
+}
+
+/* === NOUVEAU DESIGN : BOÎTES DE SÉLECTION CLINIQUES === */
+.clinical-section {
+  gap: 1.25rem;
+}
+
+.clinical-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.selection-boxes {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.select-box {
+  flex: 1;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Masquer le bouton radio natif */
+.select-box input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Style de base des boîtes non sélectionnées */
+.box-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 0.5rem;
+  background: #f8fbfd;
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-muted, #5c6b7a);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-align: center;
+  transition: all 150ms ease;
+  height: 100%;
+}
+
+.select-box:hover .box-label {
+  border-color: var(--color-secondary);
+  background: #eef6fd;
+  color: var(--color-secondary);
+}
+
+/* Style appliqué dynamiquement quand le radio est coché */
+.select-box input[type="radio"]:checked ~ .box-label {
+  background: var(--color-primary);
+  border-color: var(--color-primary-dark);
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(46, 204, 113, 0.25);
+  transform: translateY(-2px);
+}
+
+.select-box input[type="radio"]:focus-visible ~ .box-label {
+  outline: 3px solid rgba(61, 159, 242, 0.35);
+  outline-offset: 2px;
+}
+
+/* === ACTIONS === */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--color-border);
+}
+
+@media (max-width: 600px) {
+  .profile-card {
+    padding: 1.5rem 1.25rem;
+  }
+  .form-fields {
+    grid-template-columns: 1fr;
+  }
+  .form-field:last-child {
+    grid-column: auto;
+  }
+  .selection-boxes {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+  .form-actions button {
+    width: 100%;
+  }
+}

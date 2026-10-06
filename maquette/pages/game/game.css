@@ -1,0 +1,156 @@
+.game-page {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  position: relative;
+}
+
+/* --- THÈMES DE FOND (Nets, sans flou) --- */
+.theme-football {
+  background: url("../../assets/UI/UI-foot.png") center/cover no-repeat fixed;
+}
+
+.theme-space {
+  background: url("../../assets/UI/UI-space.png") center/cover no-repeat fixed;
+}
+
+.game-header, .game-stage {
+  position: relative;
+  z-index: 1;
+}
+
+.game-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: min(100% - 3rem, 1280px);
+  margin: 0 auto;
+  padding-top: 2rem;
+}
+
+.streak-card {
+  background: var(--color-surface, #ffffff);
+  padding: 0.5rem 1.25rem;
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(20, 30, 60, 0.15);
+}
+
+.word-streak {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.word-streak strong {
+  color: var(--color-primary-dark);
+  font-size: 1.2rem;
+}
+
+.game-stage {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2rem, 7vw, 7rem);
+  width: min(100% - 3rem, 1120px);
+  margin: 0 auto;
+  padding: 2rem 0 5rem;
+}
+
+.game-character {
+  display: flex;
+  flex: 0 0 120px;
+  align-items: center;
+  justify-content: center;
+  /* On ajoute une transition pour préparer tes futures animations de glissade (tacle) ou de but */
+  transition: transform 300ms ease;
+}
+
+.game-character img {
+  display: block;
+  width: auto;
+  height: 120px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 12px rgba(0,0,0,0.25)); /* Fait ressortir les personnages sur le fond clair */
+}
+
+.focus-card {
+  display: flex;
+  min-width: min(620px, 55vw);
+  min-height: 280px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3.5rem clamp(2rem, 5vw, 5rem);
+  border: 4px solid var(--color-primary);
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 16px 40px rgba(20, 30, 60, 0.2);
+}
+
+.focus-label {
+  margin: 0 0 1.5rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.target-word {
+  margin: 0;
+  color: var(--color-text);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: clamp(0.2em, 2vw, 0.4em);
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.typed {
+  color: var(--color-primary);
+}
+
+.untyped {
+  color: #c5d0d8;
+}
+
+@media (max-width: 760px) {
+  .game-header {
+    width: min(100% - 2rem, 560px);
+    padding-top: 1.5rem;
+  }
+
+  .game-stage {
+    width: min(100% - 2rem, 560px);
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 3rem 0;
+  }
+
+  .game-character {
+    flex-basis: auto;
+  }
+
+  .game-character img {
+    height: 96px;
+  }
+
+  .game-avatar { order: 1; }
+  .focus-card {
+    min-width: 0;
+    min-height: 220px;
+    width: 100%;
+    padding: 2.5rem 1rem;
+    order: 2;
+  }
+  .game-obstacle { order: 3; }
+
+  .target-word {
+    font-size: clamp(1.8rem, 8vw, 2.5rem);
+    letter-spacing: 0.15em;
+  }
+}
