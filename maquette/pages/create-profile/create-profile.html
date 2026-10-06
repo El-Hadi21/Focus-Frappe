@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="../../styles/global.css">
   <link rel="stylesheet" href="../../components/button/button.css">
   <link rel="stylesheet" href="create-profile.css">
+  <script src="../../mock-back/mock-api.js"></script>
 </head>
 <body>
   <main class="page-shell">
@@ -89,27 +90,20 @@
     document.querySelector('.profile-form').addEventListener('submit', (event) => {
       event.preventDefault();
 
+      const firstName = document.getElementById('first-name').value;
+      const age = document.getElementById('age').value;
+      const interests = document.getElementById('interests').value;
       const severity = document.querySelector('input[name="dysgraphia-severity"]:checked').value;
-      const attentionProfile = document.querySelector('input[name="attention-profile"]:checked').value;
+      const attention = document.querySelector('input[name="attention-profile"]:checked').value;
 
-      const difficultyBySeverity = {
-        severe: 'easy',
-        moderee: 'normal',
-        legere: 'difficult'
-      };
+      MockAPI.createPatient({
+        firstName,
+        age,
+        interests,
+        severity,
+        attention
+      });
 
-      const durationByAttentionProfile = {
-        inattentif: 60,
-        hyperactif: 90,
-        mixte: 120
-      };
-
-      const defaultConfig = {
-        difficulty: difficultyBySeverity[severity],
-        duration: durationByAttentionProfile[attentionProfile]
-      };
-
-      localStorage.setItem('focusFrappe_defaultConfig', JSON.stringify(defaultConfig));
       window.location.href = '../dashboard/dashboard.html';
     });
   </script>

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../../styles/global.css" />
     <link rel="stylesheet" href="../../components/button/button.css" />
     <link rel="stylesheet" href="dashboard.css" />
+    <script src="../../mock-back/mock-api.js"></script>
   </head>
   <body>
     <main class="dashboard-page">
@@ -15,57 +16,67 @@
           <h1>Mes patients</h1>
           <p class="dashboard-intro">Sélectionnez un patient pour accéder à son suivi.</p>
         </div>
-        <span class="patient-count">3 patients</span>
+        <span class="patient-count">0 patients</span>
       </header>
 
-      <section class="patient-grid" aria-label="Liste des patients">
-        <article
-          class="patient-card card"
-          onclick="window.location.href='../patient-menu/patient-menu.html'"
-          onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.click(); }"
-          role="link"
-          tabindex="0"
-        >
-          <div class="patient-avatar" aria-hidden="true">LM</div>
-          <div>
-            <h2>Louise Martin</h2>
-            <p>Âge : 8 ans</p>
-          </div>
-          <span class="patient-arrow" aria-hidden="true">→</span>
-        </article>
-
-        <article
-          class="patient-card card"
-          onclick="window.location.href='../patient-menu/patient-menu.html'"
-          onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.click(); }"
-          role="link"
-          tabindex="0"
-        >
-          <div class="patient-avatar" aria-hidden="true">NH</div>
-          <div>
-            <h2>Noah Hernandez</h2>
-            <p>Âge : 11 ans</p>
-          </div>
-          <span class="patient-arrow" aria-hidden="true">→</span>
-        </article>
-
-        <article
-          class="patient-card card"
-          onclick="window.location.href='../patient-menu/patient-menu.html'"
-          onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.click(); }"
-          role="link"
-          tabindex="0"
-        >
-          <div class="patient-avatar" aria-hidden="true">EC</div>
-          <div>
-            <h2>Emma Chevalier</h2>
-            <p>Âge : 6 ans</p>
-          </div>
-          <span class="patient-arrow" aria-hidden="true">→</span>
-        </article>
-      </section>
+      <section class="patient-grid" aria-label="Liste des patients"></section>
     </main>
 
     <button class="floating-action" type="button" aria-label="Ajouter un patient" onclick="window.location.href='../create-profile/create-profile.html'">+</button>
+    <script>
+    const patientGrid = document.querySelector('.patient-grid');
+    const patientCount = document.querySelector('.patient-count');
+
+    const getPatientInitials = (patient) => {
+      const name = patient.firstName || patient.name || '';
+      return name.trim().slice(0, 2).toUpperCase();
+    };
+
+    const renderPatient = (patient) => {
+      const patientCard = document.createElement('article');
+      patientCard.className = 'patient-card card';
+      patientCard.setAttribute('role', 'link');
+      patientCard.setAttribute('tabindex', '0');
+
+      const avatar = document.createElement('div');
+      avatar.className = 'patient-avatar';
+      avatar.setAttribute('aria-hidden', 'true');
+      avatar.textContent = getPatientInitials(patient);
+
+      const details = document.createElement('div');
+      const name = document.createElement('h2');
+      name.textContent = patient.firstName || patient.name || 'Patient';
+      const age = document.createElement('p');
+      age.textContent = `Âge : ${patient.age} ans`;
+      details.append(name, age);
+
+      const arrow = document.createElement('span');
+      arrow.className = 'patient-arrow';
+      arrow.setAttribute('aria-hidden', 'true');
+      arrow.textContent = '→';
+
+      const selectPatient = () => {
+        MockAPI.setCurrentPatient(patient.id);
+        window.location.href = '../patient-menu/patient-menu.html';
+      };
+
+      patientCard.addEventListener('click', selectPatient);
+      patientCard.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          selectPatient();
+        }
+      });
+
+      patientCard.append(avatar, details, arrow);
+      return patientCard;
+    };
+
+    MockAPI.init();
+    const patients = MockAPI.getPatients();
+
+    patientCount.textContent = `${patients.length} patient${patients.length > 1 ? 's' : ''}`;
+    patients.forEach((patient) => patientGrid.appendChild(renderPatient(patient)));
+    </script>
   </body>
 </html>

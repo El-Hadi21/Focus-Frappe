@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../../styles/global.css" />
     <link rel="stylesheet" href="../../components/button/button.css" />
     <link rel="stylesheet" href="configuration.css" />
+    <script src="../../mock-back/mock-api.js"></script>
 </head>
 <body>
 <main class="configuration-page">
@@ -144,23 +145,20 @@
     decreaseDurationButton.addEventListener("click", () => updateDuration(duration - durationStep));
     increaseDurationButton.addEventListener("click", () => updateDuration(duration + durationStep));
 
-    // Initialisation au chargement de la page
-    const savedDefaultConfig = localStorage.getItem('focusFrappe_defaultConfig');
+    // Initialisation avec la configuration du patient courant.
+    const currentPatientConfig = MockAPI.getCurrentPatientConfig();
 
-    if (savedDefaultConfig) {
-      try {
-        const defaultConfig = JSON.parse(savedDefaultConfig);
-        const savedDifficulty = document.querySelector(`input[name="difficulty"][value="${defaultConfig.difficulty}"]`);
+    if (currentPatientConfig) {
+      const savedDifficulty = document.querySelector(
+        `input[name="difficulty"][value="${currentPatientConfig.difficulty}"]`
+      );
 
-        if (savedDifficulty) {
-          savedDifficulty.checked = true;
-        }
+      if (savedDifficulty) {
+        savedDifficulty.checked = true;
+      }
 
-        if (typeof defaultConfig.duration === 'number') {
-          duration = defaultConfig.duration;
-        }
-      } catch (error) {
-        console.error('Impossible de lire la configuration par défaut.', error);
+      if (typeof currentPatientConfig.duration === 'number') {
+        duration = currentPatientConfig.duration;
       }
     }
 

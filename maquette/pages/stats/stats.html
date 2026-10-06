@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="../../styles/global.css" />
   <link rel="stylesheet" href="../../components/button/button.css" />
   <link rel="stylesheet" href="stats.css" />
+  <script src="../../mock-back/mock-api.js"></script>
 </head>
 <body>
 <main class="stats-page">
@@ -18,7 +19,7 @@
     >
       Retour
     </button>
-    <h1>Statistiques de séance - Léo</h1>
+    <h1>Statistiques de séance - <span id="patient-name"></span></h1>
   </header>
 
   <div class="stats-layout">
@@ -36,7 +37,7 @@
             <dt>Temps de réponse moyen</dt>
             <span class="metric-desc">Rapidité face à la consigne</span>
           </div>
-          <dd>1.8<span>s</span></dd>
+          <dd><span id="stat-avg-time">0</span><span>s</span></dd>
         </div>
 
         <div class="metric">
@@ -44,7 +45,7 @@
             <dt>Variabilité</dt>
             <span class="metric-desc">Régularité ou irrégularité des réponses</span>
           </div>
-          <dd>1.2<span>s</span> - 2.5<span>s</span></dd>
+          <dd><span id="stat-var-min">0</span><span>s</span> - <span id="stat-var-max">0</span><span>s</span></dd>
         </div>
 
         <div class="metric metric-wide">
@@ -53,8 +54,8 @@
             <span class="metric-desc">Indicateurs d'impulsivité et motricité</span>
           </div>
           <dd class="sub-metrics">
-            <span><strong>3</strong> Frappes hors-fenêtre</span>
-            <span><strong>2</strong> Erreurs de frappe</span>
+            <span><strong id="stat-out-window">0</strong> Frappes hors-fenêtre</span>
+            <span><strong id="stat-typos">0</strong> Erreurs de frappe</span>
           </dd>
         </div>
 
@@ -63,7 +64,7 @@
             <dt>Série maximale</dt>
             <span class="metric-desc">Capacité à enchaîner sans erreur</span>
           </div>
-          <dd>8 <span>mots</span></dd>
+          <dd><span id="stat-streak">0</span> <span>mots</span></dd>
         </div>
 
         <div class="metric">
@@ -71,7 +72,7 @@
             <dt>Meilleure distance</dt>
             <span class="metric-desc">Performance maximale atteinte</span>
           </div>
-          <dd>145 <span>m</span></dd>
+          <dd><span id="stat-best-distance">0</span> <span>m</span></dd>
         </div>
       </dl>
     </section>
@@ -89,7 +90,7 @@
             <dt>Session moyenne</dt>
             <span class="metric-desc">Temps d'engagement dans l'activité</span>
           </div>
-          <dd>12 <span>min</span></dd>
+          <dd><span id="stat-avg-session">0</span> <span>min</span></dd>
         </div>
 
         <div class="metric">
@@ -97,7 +98,7 @@
             <dt>Abandons</dt>
             <span class="metric-desc">Parties quittées avant la fin</span>
           </div>
-          <dd>1 <span>fois</span></dd>
+          <dd><span id="stat-abandons">0</span> <span>fois</span></dd>
         </div>
       </dl>
 
@@ -167,5 +168,34 @@
 
   </div>
 </main>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const patient = MockAPI.getCurrentPatient();
+
+    if (!patient) {
+      window.location.href = '../dashboard/dashboard.html';
+      return;
+    }
+
+    document.getElementById('patient-name').textContent = patient.firstName;
+
+    const stats = MockAPI.getPatientStats(patient.id);
+    const statValues = {
+      'stat-avg-time': stats.avgTime,
+      'stat-var-min': stats.varMin,
+      'stat-var-max': stats.varMax,
+      'stat-out-window': stats.outOfWindow,
+      'stat-typos': stats.typos,
+      'stat-streak': stats.streak,
+      'stat-best-distance': stats.bestDistance,
+      'stat-avg-session': stats.avgSession,
+      'stat-abandons': stats.abandons
+    };
+
+    Object.entries(statValues).forEach(([id, value]) => {
+      document.getElementById(id).textContent = value;
+    });
+  });
+</script>
 </body>
 </html>
