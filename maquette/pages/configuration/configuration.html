@@ -145,6 +145,25 @@
     increaseDurationButton.addEventListener("click", () => updateDuration(duration + durationStep));
 
     // Initialisation au chargement de la page
+    const savedDefaultConfig = localStorage.getItem('focusFrappe_defaultConfig');
+
+    if (savedDefaultConfig) {
+      try {
+        const defaultConfig = JSON.parse(savedDefaultConfig);
+        const savedDifficulty = document.querySelector(`input[name="difficulty"][value="${defaultConfig.difficulty}"]`);
+
+        if (savedDifficulty) {
+          savedDifficulty.checked = true;
+        }
+
+        if (typeof defaultConfig.duration === 'number') {
+          duration = defaultConfig.duration;
+        }
+      } catch (error) {
+        console.error('Impossible de lire la configuration par défaut.', error);
+      }
+    }
+
     updateDifficultyInfo();
     updateDuration(duration);
 </script>

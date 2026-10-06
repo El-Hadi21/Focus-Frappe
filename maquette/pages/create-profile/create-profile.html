@@ -79,10 +79,39 @@
 
         <div class="form-actions">
           <button type="button" class="btn-secondary" onclick="window.location.href='../dashboard/dashboard.html'">Annuler</button>
-          <button type="submit" class="btn-primary" onclick="window.location.href='../dashboard/dashboard.html'">Enregistrer</button>
+          <button type="submit" class="btn-primary">Enregistrer</button>
         </div>
       </form>
     </div>
   </main>
+
+  <script>
+    document.querySelector('.profile-form').addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const severity = document.querySelector('input[name="dysgraphia-severity"]:checked').value;
+      const attentionProfile = document.querySelector('input[name="attention-profile"]:checked').value;
+
+      const difficultyBySeverity = {
+        severe: 'easy',
+        moderee: 'normal',
+        legere: 'difficult'
+      };
+
+      const durationByAttentionProfile = {
+        inattentif: 60,
+        hyperactif: 90,
+        mixte: 120
+      };
+
+      const defaultConfig = {
+        difficulty: difficultyBySeverity[severity],
+        duration: durationByAttentionProfile[attentionProfile]
+      };
+
+      localStorage.setItem('focusFrappe_defaultConfig', JSON.stringify(defaultConfig));
+      window.location.href = '../dashboard/dashboard.html';
+    });
+  </script>
 </body>
 </html>
