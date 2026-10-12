@@ -35,6 +35,10 @@ export class DashboardComponent implements OnInit {
     void this.router.navigate(['/game', id]);
   }
 
+  goToCreateProfile(): void {
+    void this.router.navigate(['/create-profile']);
+  }
+
   logout(): void {
     void this.router.navigate(['/login']);
   }

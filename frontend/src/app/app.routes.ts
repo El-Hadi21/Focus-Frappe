@@ -8,6 +8,7 @@ import { GameEndComponent } from './features/game/game-end/game-end.component';
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'dashboard', component: DashboardComponent },
+  { path: 'create-profile', loadComponent: () => import('./features/therapist/create-profile/create-profile.component').then(m => m.CreateProfileComponent) },
   { path: 'game/:patientId', component: EngineComponent },
   { path: 'game-end/:sessionId', component: GameEndComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
