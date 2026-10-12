@@ -1,0 +1,20 @@
+@font-face {
+  font-family: 'KenneyGameFont';
+  src: url('/assets/UI/kenny-game-UIs/Font/Kenney%20Future.ttf') format('truetype');
+  font-display: swap;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+.game-font {
+  font-family: 'KenneyGameFont', sans-serif;
+}
