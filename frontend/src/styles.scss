@@ -114,6 +114,57 @@ h3 {
   transform: translateY(0);
 }
 
+.btn-danger {
+  --btn-face-image: url('/assets/UI/kenny-game-UIs/PNG/Red/Default/button_rectangle_depth_flat.png');
+  --btn-base-image: url('/assets/UI/kenny-game-UIs/PNG/Red/Double/button_rectangle_depth_flat.png');
+  --btn-press-depth: 5px;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.85rem 1.75rem;
+  border: 0;
+  border-radius: 10px;
+  color: #ffffff;
+  background:
+    var(--btn-face-image) center / 100% 100% no-repeat,
+    #e74c3c;
+  cursor: pointer;
+  font-family: var(--font-game);
+  font-size: 1rem;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 25%);
+  transform: translateY(calc(-1 * var(--btn-press-depth)));
+  transition: transform 100ms ease;
+}
+
+.btn-danger::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: 10px;
+  background:
+    var(--btn-base-image) center / 100% 100% no-repeat,
+    #c0392b;
+  content: '';
+  transform: translateY(var(--btn-press-depth));
+}
+
+.btn-danger:hover {
+  filter: brightness(1.05);
+}
+
+.btn-danger:active {
+  transform: translateY(0);
+}
+
+.btn-danger:focus-visible {
+  outline: 3px solid rgb(255 255 255 / 65%);
+  outline-offset: 3px;
+}
+
 .game-font {
   font-family: var(--font-game);
 }
