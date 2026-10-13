@@ -15,7 +15,8 @@ export class PatientHubComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly patientService = inject(PatientService);
   private readonly router = inject(Router);
-
+  isDeleting = false;
+  showDeleteModal = false;
   patient: Patient | undefined;
 
   ngOnInit(): void {
@@ -52,5 +53,34 @@ export class PatientHubComponent implements OnInit {
 
   goToDashboard(): void {
     void this.router.navigate(['/dashboard']);
+  }
+  deleteProfile(): void {
+    if (this.patient && !this.isDeleting) {
+      this.showDeleteModal = true;
+    }
+  }
+
+  cancelDelete(): void {
+    if (!this.isDeleting) {
+      this.showDeleteModal = false;
+    }
+  }
+
+  confirmDelete(): void {
+    if (!this.patient || this.isDeleting) {
+      return;
+    }
+
+    this.isDeleting = true;
+    this.showDeleteModal = false;
+
+    this.patientService.deletePatient(this.patient.id).subscribe({
+      next: () => {
+        void this.router.navigate(['/dashboard']);
+      },
+      error: () => {
+        this.isDeleting = false;
+      },
+    });
   }
 }

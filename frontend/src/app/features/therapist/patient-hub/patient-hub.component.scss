@@ -60,6 +60,44 @@
   }
 }
 
+.delete-modal-overlay {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgb(0 0 0 / 50%);
+}
+
+.delete-modal {
+  width: min(100%, 440px);
+  padding: 2rem;
+  text-align: center;
+
+  h2 {
+    margin: 0;
+    color: var(--color-text);
+    font-size: clamp(1.35rem, 4vw, 1.75rem);
+  }
+
+  p {
+    margin: 1rem 0 1.75rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+  }
+}
+
+.delete-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+
+  button {
+    min-width: 120px;
+  }
+}
+
 .btn-secondary {
   min-height: 48px;
   padding: 0.85rem 1.75rem;
@@ -95,5 +133,17 @@
   .patient-menu-header {
     align-items: flex-start;
     flex-wrap: wrap;
+  }
+
+  .delete-modal {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .delete-modal-actions {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
   }
 }

@@ -53,4 +53,12 @@ export class PatientService {
 
     return of(true).pipe(delay(500));
   }
+  deletePatient(id: string): Observable<boolean> {
+       const currentPatients = this.patientsSubject.value;
+       const updatedPatients = currentPatients.filter((p) => p.id !== id);
+       this.patientsSubject.next(updatedPatients);
+
+       // Simulation du délai réseau
+       return of(true).pipe(delay(500));
+     }
 }
