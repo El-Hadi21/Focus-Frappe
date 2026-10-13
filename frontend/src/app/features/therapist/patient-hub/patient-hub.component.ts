@@ -1,0 +1,56 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { Patient } from '../../../core/models/patient.model';
+import { PatientService } from '../../../core/services/patient.service';
+
+@Component({
+  selector: 'app-patient-hub',
+  standalone: true,
+  imports: [],
+  templateUrl: './patient-hub.component.html',
+  styleUrl: './patient-hub.component.scss',
+})
+export class PatientHubComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly patientService = inject(PatientService);
+  private readonly router = inject(Router);
+
+  patient: Patient | undefined;
+
+  ngOnInit(): void {
+    const patientId = this.route.snapshot.paramMap.get('id');
+    const patient = patientId
+      ? this.patientService.getPatientById(patientId)
+      : undefined;
+
+    if (!patient) {
+      void this.router.navigate(['/dashboard']);
+      return;
+    }
+
+    this.patient = patient;
+  }
+
+  goToGame(): void {
+    if (this.patient) {
+      void this.router.navigate(['/game', this.patient.id]);
+    }
+  }
+
+  goToConfig(): void {
+    if (this.patient) {
+      void this.router.navigate(['/configuration', this.patient.id]);
+    }
+  }
+
+  goToStats(): void {
+    if (this.patient) {
+      void this.router.navigate(['/stats', this.patient.id]);
+    }
+  }
+
+  goToDashboard(): void {
+    void this.router.navigate(['/dashboard']);
+  }
+}

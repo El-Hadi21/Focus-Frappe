@@ -1,0 +1,35 @@
+@if (patient) {
+<main class="patient-menu-page">
+  <div class="card patient-menu-card">
+    <header class="patient-menu-header">
+      <div class="patient-avatar" aria-hidden="true">
+        {{ patient.firstName.slice(0, 2).toUpperCase() }}
+      </div>
+
+      <h1>{{ patient.firstName }} {{ patient.lastName }}</h1>
+    </header>
+
+    <nav class="patient-menu-actions" aria-label="Actions du profil">
+      <button type="button" class="btn-primary" (click)="goToGame()">
+        Jouer
+      </button>
+      <button type="button" class="btn-secondary" (click)="goToConfig()">
+        Configurer la séance
+      </button>
+      <button type="button" class="btn-secondary" (click)="goToStats()">
+        Statistiques
+      </button>
+
+      <!-- Le bouton Retour passe tout en bas -->
+      <button
+              type="button"
+              class="btn-secondary back-button"
+              (click)="goToDashboard()"
+              aria-label="Retour au tableau de bord"
+      >
+        ← Retour
+      </button>
+    </nav>
+  </div>
+</main>
+}

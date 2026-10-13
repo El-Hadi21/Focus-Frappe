@@ -39,6 +39,10 @@ export class PatientService {
     return this.patientsSubject.asObservable();
   }
 
+  getPatientById(id: string): Patient | undefined {
+    return this.patientsSubject.value.find((patient) => patient.id === id);
+  }
+
   addPatient(patient: Omit<Patient, 'id'>): Observable<boolean> {
     const newPatient: Patient = {
       ...patient,

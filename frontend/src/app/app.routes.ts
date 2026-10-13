@@ -9,6 +9,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'create-profile', loadComponent: () => import('./features/therapist/create-profile/create-profile.component').then(m => m.CreateProfileComponent) },
+  { path: 'patient/:id', loadComponent: () => import('./features/therapist/patient-hub/patient-hub.component').then(m => m.PatientHubComponent) },
   { path: 'game/:patientId', component: EngineComponent },
   { path: 'game-end/:sessionId', component: GameEndComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
