@@ -1,0 +1,122 @@
+<main class="page-shell">
+  <div class="card profile-card">
+    <header class="profile-header">
+      <h1>Nouveau Patient</h1>
+    </header>
+
+    <form
+      class="profile-form"
+      [formGroup]="patientForm"
+      (ngSubmit)="onSubmit()"
+      novalidate
+    >
+      <section class="form-section" aria-labelledby="basic-information-title">
+        <h2 id="basic-information-title">Infos de base</h2>
+
+        <div class="form-fields">
+          <div class="form-field">
+            <label for="first-name">Prénom</label>
+            <input
+              id="first-name"
+              type="text"
+              autocomplete="given-name"
+              formControlName="firstName"
+              required
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="last-name">Nom</label>
+            <input
+              id="last-name"
+              type="text"
+              autocomplete="family-name"
+              formControlName="lastName"
+              required
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="age">Âge</label>
+            <input
+              id="age"
+              type="number"
+              min="1"
+              max="120"
+              formControlName="age"
+              required
+            />
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="form-section clinical-section"
+        aria-labelledby="clinical-information-title"
+      >
+        <h2 id="clinical-information-title">
+          Clinique <span>(Le plus important)</span>
+        </h2>
+
+        <div class="clinical-field">
+          <span class="field-label">Sévérité de la dysgraphie</span>
+          <div class="selection-boxes">
+            @for (
+              severity of [
+                { value: 'legere', label: 'Légère' },
+                { value: 'moderee', label: 'Modérée' },
+                { value: 'severe', label: 'Sévère' }
+              ];
+              track severity.value
+            ) {
+              <label class="select-box">
+                <input
+                  type="radio"
+                  formControlName="dysgraphiaSeverity"
+                  [value]="severity.value"
+                />
+                <span class="box-label">{{ severity.label }}</span>
+              </label>
+            }
+          </div>
+        </div>
+
+        <div class="clinical-field">
+          <span class="field-label">Profil attentionnel</span>
+          <div class="selection-boxes">
+            @for (
+              profile of [
+                { value: 'inattentif', label: 'Inattentif' },
+                { value: 'mixte', label: 'Mixte' },
+                { value: 'hyperactif', label: 'Hyperactif' }
+              ];
+              track profile.value
+            ) {
+              <label class="select-box">
+                <input
+                  type="radio"
+                  formControlName="attentionProfile"
+                  [value]="profile.value"
+                />
+                <span class="box-label">{{ profile.label }}</span>
+              </label>
+            }
+          </div>
+        </div>
+      </section>
+
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="cancel()">
+          Annuler
+        </button>
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="patientForm.invalid || isSaving"
+        >
+          {{ isSaving ? 'Enregistrement...' : 'Enregistrer' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</main>

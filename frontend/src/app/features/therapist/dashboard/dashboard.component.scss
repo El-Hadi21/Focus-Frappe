@@ -1,0 +1,141 @@
+.dashboard-page {
+  width: min(100% - 3rem, 1120px);
+  margin: 0 auto;
+  padding: 3rem 0 6rem;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 2.75rem);
+  }
+}
+
+.dashboard-intro {
+  margin: 0.5rem 0 0;
+  color: var(--color-text-muted);
+}
+
+.patient-count {
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  color: var(--color-primary-dark);
+  background: rgb(46 204 113 / 12%);
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.dashboard-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.patient-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.patient-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  min-height: 150px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: box-shadow 180ms ease, transform 180ms ease;
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: 0 12px 28px rgb(23 43 77 / 16%);
+    transform: translateY(-6px);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgb(46 204 113 / 35%);
+    outline-offset: 3px;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  p {
+    margin: 0.25rem 0 0;
+    color: var(--color-text-muted);
+  }
+}
+
+.patient-avatar {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--color-primary-dark);
+  background: rgb(46 204 113 / 14%);
+  font-weight: 700;
+}
+
+.patient-arrow {
+  color: var(--color-primary-dark);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.floating-action {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #ffffff;
+  background: var(--color-primary);
+  box-shadow: 0 8px 20px rgb(46 204 113 / 35%);
+  font-size: 2rem;
+  transition: background-color 180ms ease, transform 180ms ease;
+
+  &:hover {
+    background: var(--color-primary-dark);
+    transform: scale(1.05);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgb(46 204 113 / 35%);
+    outline-offset: 3px;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-page {
+    width: min(100% - 2rem, 560px);
+    padding-top: 2rem;
+  }
+
+  .dashboard-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .dashboard-actions {
+    flex-wrap: wrap;
+  }
+
+  .patient-grid {
+    grid-template-columns: 1fr;
+  }
+}
