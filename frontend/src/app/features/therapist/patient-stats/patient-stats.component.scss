@@ -1,0 +1,484 @@
+.stats-page {
+  width: min(100% - 2rem, 850px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 1.5rem 0 3rem;
+}
+
+.stats-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  h1 {
+    margin: 0;
+    color: var(--color-text);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+  }
+}
+
+.stats-status,
+.empty-state {
+  text-align: center;
+}
+
+.stats-status {
+  margin: 3rem 0;
+}
+
+.empty-state {
+  border: 10px solid transparent;
+  border-image: url('/assets/UI/kenny-game-UIs/PNG/Grey/Default/button_rectangle_flat.png') 10 fill;
+  border-radius: 18px;
+  background: #d1d5db;
+  box-shadow: 0 10px 25px rgb(15 23 42 / 12%);
+  padding: 3rem 2rem;
+
+  h2 {
+    margin: 1rem 0 0.5rem;
+    color: #1e293b;
+    font-size: clamp(1.25rem, 3vw, 1.6rem);
+  }
+
+  p {
+    margin: 0;
+    color: #334155;
+  }
+}
+
+.empty-state-icon {
+  font-size: 2.5rem;
+}
+
+.stats-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.stats-card {
+  border: 10px solid transparent;
+  border-image: url('/assets/UI/kenny-game-UIs/PNG/Grey/Default/button_rectangle_flat.png') 10 fill;
+  border-radius: 18px;
+  background: #d1d5db;
+  box-shadow: 0 10px 25px rgb(15 23 42 / 12%);
+  padding: 2rem;
+
+  h2,
+  h3 {
+    color: #1e293b;
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid rgb(15 23 42 / 20%);
+
+  h2 {
+    margin: 0;
+    color: #1e293b;
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+  }
+}
+
+.date-badge,
+.session-count-badge,
+.difficulty-badge {
+  border-radius: 8px;
+  color: #1e293b;
+  background: #e5e7eb;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.date-badge,
+.session-count-badge {
+  padding: 0.4rem 0.8rem;
+  white-space: nowrap;
+}
+
+.session-config {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  color: #334155;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.session-config > span {
+  padding: 0.35rem 0.65rem;
+  border: 1px solid #9ca3af;
+  border-radius: 999px;
+  color: #334155;
+  background: #e5e7eb;
+  white-space: nowrap;
+}
+
+.difficulty-badge {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+}
+
+.metrics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+}
+
+.metric {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid rgb(15 23 42 / 20%);
+}
+
+.metric:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.metric-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.metric dt {
+  color: #1e293b;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.metric-desc {
+  color: #334155;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.metric dd {
+  margin: 0;
+  color: #0f172a;
+  font-size: clamp(1.25rem, 2.5vw, 1.8rem);
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.metric dd span {
+  margin-left: 0.2rem;
+  color: #334155;
+  font-size: 0.6em;
+}
+
+.metric-inline-rate {
+  font-size: 0.65em !important;
+}
+
+.insufficient-data {
+  color: #334155 !important;
+  font-size: 0.9rem !important;
+}
+
+.metric-wide {
+  align-items: flex-start;
+}
+
+.sub-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: right;
+}
+
+.sub-metrics span {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  color: #334155;
+  font-size: 0.95rem !important;
+  font-weight: 600;
+}
+
+.sub-metrics strong {
+  color: #0f172a;
+  font-size: 1.25rem;
+}
+
+.progression-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid rgb(15 23 42 / 20%);
+
+  h3 {
+    margin: 0 0 0.25rem;
+    color: #1e293b;
+    font-size: 1.05rem;
+  }
+}
+
+.chart-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+
+  button {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    color: #1e293b;
+    background: #f8fafc;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  button.active,
+  button:hover {
+    border-color: #6b7280;
+    color: #ffffff;
+    background: #6b7280;
+  }
+}
+
+.chart-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding: 1.25rem 1.25rem 0.5rem 0.5rem;
+  border: 2px solid #cbd5e1;
+  border-radius: 12px;
+  color: #1e293b;
+  background: #f8fafc;
+}
+
+.chart-y-axis {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+}
+
+.y-title {
+  margin-bottom: 0.5rem;
+  color: #1e293b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-align: center;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.y-labels {
+  display: flex;
+  flex: 1;
+  min-width: 32px;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.y-labels span {
+  position: relative;
+  top: -6px;
+}
+
+.chart-content {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.line-chart-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.chart-grid-line {
+  stroke: rgb(71 85 105 / 28%);
+  stroke-dasharray: 4 5;
+  stroke-width: 1;
+}
+
+.chart-area {
+  fill: url('#progression-area-gradient');
+}
+
+.chart-line {
+  fill: none;
+  stroke: #64748b;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+
+.chart-point-group {
+  cursor: pointer;
+}
+
+.chart-point {
+  fill: #64748b;
+  stroke: #ffffff;
+  stroke-width: 2;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 160ms ease, filter 160ms ease;
+}
+
+.chart-point-group:hover .chart-point {
+  filter: drop-shadow(0 0 4px rgb(100 116 139 / 70%));
+  transform: scale(1.25);
+}
+
+.last-point .chart-point {
+  fill: #334155;
+}
+
+.chart-value-label,
+.chart-session-label,
+.chart-axis-title {
+  fill: #0f172a;
+  font-family: var(--font-game);
+  font-size: 10px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.chart-session-label {
+  font-size: 11px;
+}
+
+.chart-axis-title {
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #1e293b;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.legend-color {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.legend-past {
+  background: #64748b;
+}
+
+.legend-current {
+  background: #334155;
+}
+
+.notes-card {
+  h2 {
+    margin: 0 0 0.25rem;
+    color: #1e293b;
+  }
+}
+
+.notes-form {
+  margin-top: 1rem;
+}
+
+.notes-input {
+  width: 100%;
+  min-height: 120px;
+  padding: 1rem;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  color: #1e293b;
+  background: #f8fafc;
+  font: inherit;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.notes-input:focus {
+  border-color: #6b7280;
+  outline: 3px solid rgb(100 116 139 / 20%);
+}
+
+.notes-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.save-feedback {
+  color: var(--color-primary-dark);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.save-feedback-error {
+  color: #c0392b;
+}
+
+@media (max-width: 600px) {
+  .stats-page {
+    width: min(100% - 1.5rem, 600px);
+    padding-top: 1rem;
+  }
+
+  .stats-header,
+  .card-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .metric {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .metric dd,
+  .sub-metrics span {
+    width: 100%;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .notes-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
