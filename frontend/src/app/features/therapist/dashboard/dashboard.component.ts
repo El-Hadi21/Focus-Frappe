@@ -32,12 +32,12 @@ export class DashboardComponent implements OnInit {
   }
 
   goToPatient(id: string): void {
-    void this.router.navigate(['/game', id]);
-  }
+      void this.router.navigate(['/patient', id]);
+    }
 
-  goToCreateProfile(): void {
-    void this.router.navigate(['/create-profile']);
-  }
+    goToCreateProfile(): void {
+      void this.router.navigate(['/create-profile']);
+    }
 
   logout(): void {
     void this.router.navigate(['/login']);

@@ -1,0 +1,75 @@
+@if (patient) {
+<main class="patient-menu-page">
+  <div class="card patient-menu-card">
+    <header class="patient-menu-header">
+      <div class="patient-avatar" aria-hidden="true">
+        {{ patient.firstName.slice(0, 2).toUpperCase() }}
+      </div>
+
+      <h1>{{ patient.firstName }} {{ patient.lastName }}</h1>
+    </header>
+
+    <nav class="patient-menu-actions" aria-label="Actions du profil">
+      <button type="button" class="btn-primary" (click)="goToGame()">
+        Jouer
+      </button>
+      <button type="button" class="btn-secondary" (click)="goToConfig()">
+        Configurer la séance
+      </button>
+      <button type="button" class="btn-secondary" (click)="goToStats()">
+        Statistiques
+      </button>
+      <!-- Nouveau bouton de suppression -->
+      <button
+              type="button"
+              class="btn-danger"
+              (click)="deleteProfile()"
+              [disabled]="isDeleting"
+              style="margin-top: 1rem;"
+      >
+        {{ isDeleting ? 'Suppression...' : 'Supprimer le profil' }}
+      </button>
+      <!-- Le bouton Retour passe tout en bas -->
+      <button
+              type="button"
+              class="btn-secondary back-button"
+              (click)="goToDashboard()"
+              aria-label="Retour au tableau de bord"
+      >
+        ← Retour
+      </button>
+    </nav>
+  </div>
+</main>
+}
+
+@if (showDeleteModal && patient) {
+  <div
+    class="delete-modal-overlay"
+    role="presentation"
+    (click)="cancelDelete()"
+  >
+    <section
+      class="card delete-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="delete-modal-title"
+      (click)="$event.stopPropagation()"
+    >
+      <h2 id="delete-modal-title">Supprimer le profil</h2>
+      <p>
+        Êtes-vous sûr de vouloir supprimer le profil de
+        {{ patient.firstName }} ?
+      </p>
+
+      <div class="delete-modal-actions">
+        <button type="button" class="btn-secondary" (click)="cancelDelete()">
+          Annuler
+        </button>
+        <button type="button" class="btn-danger" (click)="confirmDelete()">
+          Confirmer
+        </button>
+      </div>
+    </section>
+  </div>
+}

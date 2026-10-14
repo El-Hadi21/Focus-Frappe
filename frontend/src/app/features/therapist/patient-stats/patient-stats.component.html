@@ -1,0 +1,223 @@
+@if (patient) {
+  <main class="stats-page">
+    <header class="stats-header">
+      <button type="button" class="btn-secondary" (click)="goBack()"> Retour</button>
+      <h1>Statistiques de séance - {{ patient.firstName }}</h1>
+    </header>
+
+    @if (isLoading) {
+      <p class="stats-status" role="status">Chargement des statistiques...</p>
+    } @else if (sessions.length === 0) {
+      <section class="card empty-state" aria-live="polite">
+        <div class="empty-state-icon" aria-hidden="true">📊</div>
+        <h2>Aucune séance enregistrée pour ce patient</h2>
+        <p>Lancez une première partie pour voir les statistiques.</p>
+      </section>
+    } @else {
+      <div class="stats-layout">
+        @if (lastSession) {
+          <section class="card stats-card" aria-labelledby="last-session-title">
+            <header class="card-header">
+              <h2 id="last-session-title">Dernière séance</h2>
+              <span class="date-badge">{{ lastSession.date | date: 'dd/MM/yyyy à HH:mm' }}</span>
+            </header>
+
+            <div class="session-config" aria-label="Configuration de la séance">
+              <span class="difficulty-badge">Palier {{ lastSession.config.difficulty }}</span>
+              <span>{{ lastSession.config.durationSeconds }} s</span>
+              <span>{{ lastSession.config.mode }}</span>
+              <span>Thème {{ lastSession.config.theme }}</span>
+            </div>
+
+            <dl class="metrics-list">
+              <div class="metric">
+                <div class="metric-label">
+                  <dt>Temps de réponse moyen</dt>
+                  <span class="metric-desc">Rapidité face à la consigne</span>
+                </div>
+                <dd>{{ lastSession.avgResponseTimeSec | number: '1.1-1' }} <span>s</span></dd>
+              </div>
+
+              <div class="metric">
+                <div class="metric-label">
+                  <dt>Obstacles franchis / manqués</dt>
+                  <span class="metric-desc">Taux de réussite sur les obstacles</span>
+                </div>
+                <dd>
+                  {{ lastSession.obstaclesCleared }} franchis /
+                  {{ lastSession.obstaclesMissed }} manqués
+                  <span class="metric-inline-rate">({{ getClearanceRate(lastSession) | number: '1.0-0' }} %)</span>
+                </dd>
+              </div>
+
+              <div class="metric">
+                <div class="metric-label">
+                  <dt>Variabilité</dt>
+                  <span class="metric-desc">Régularité des réponses</span>
+                </div>
+                @if (hasEnoughDataForVariability(lastSession) &&
+                  lastSession.variabilityMinSec !== undefined &&
+                  lastSession.variabilityMaxSec !== undefined) {
+                  <dd>
+                    {{ lastSession.variabilityMinSec | number: '1.1-1' }} s -
+                    {{ lastSession.variabilityMaxSec | number: '1.1-1' }} s
+                  </dd>
+                } @else {
+                  <dd class="insufficient-data">Données insuffisantes (&lt; 10 mots)</dd>
+                }
+              </div>
+
+              <div class="metric metric-wide">
+                <div class="metric-label">
+                  <dt>Clics intempestifs</dt>
+                  <span class="metric-desc">Indicateurs d'impulsivité et motricité</span>
+                </div>
+                <dd class="sub-metrics">
+                  <span><strong>{{ lastSession.outOfWindowClicks }}</strong> Frappes hors-fenêtre</span>
+                  <span><strong>{{ lastSession.typingErrors }}</strong> Erreurs de frappe</span>
+                </dd>
+              </div>
+
+              <div class="metric">
+                <div class="metric-label">
+                  <dt>Série maximale</dt>
+                  <span class="metric-desc">Capacité à enchaîner sans erreur</span>
+                </div>
+                <dd>{{ lastSession.maxStreak }} <span>mots</span></dd>
+              </div>
+
+              <div class="metric">
+                <div class="metric-label">
+                  <dt>Durée jouée / prévue</dt>
+                  <span class="metric-desc">Temps réellement engagé</span>
+                </div>
+                <dd>
+                  {{ formatDuration(lastSession.playedDurationSec) }}
+                  <span>/ {{ formatDuration(lastSession.plannedDurationSec) }} prévues</span>
+                </dd>
+              </div>
+
+              <div class="metric">
+                <div class="metric-label">
+                  <dt>Score de la séance</dt>
+                  <span class="metric-desc">{{ lastSession.gamesCount }} parties jouées</span>
+                </div>
+                <dd>{{ lastSession.score }} <span>pts</span></dd>
+              </div>
+            </dl>
+          </section>
+        }
+
+        <section class="card stats-card" aria-labelledby="global-history-title">
+          <header class="card-header">
+            <h2 id="global-history-title">Historique global</h2>
+            <span class="session-count-badge">
+              {{ sessions.length }} séance{{ sessions.length > 1 ? 's' : '' }} au total
+            </span>
+          </header>
+
+          <dl class="metrics-list">
+            <div class="metric">
+              <div class="metric-label">
+                <dt>Durée jouée / durée prévue cumulée</dt>
+                <span class="metric-desc">Temps d'engagement dans l'activité</span>
+              </div>
+              <dd>
+                {{ formatDuration(totalPlayedDurationSec) }}
+                <span>/ {{ formatDuration(totalPlannedDurationSec) }} prévues</span>
+              </dd>
+            </div>
+            <div class="metric">
+              <div class="metric-label">
+                <dt>Abandons</dt>
+                <span class="metric-desc">Parties quittées avant la fin</span>
+              </div>
+              <dd>{{ totalAbandons }} <span>fois</span></dd>
+            </div>
+          </dl>
+
+          <div class="progression-section">
+            <h3>Courbe de progression</h3>
+            <p class="metric-desc">Évolution des performances et de l'engagement dans le temps.</p>
+
+            <div class="chart-tabs" role="tablist" aria-label="Indicateur affiché">
+              <button type="button" [class.active]="selectedChart === 'score'" (click)="selectedChart = 'score'">
+                Courbe de score
+              </button>
+              <button type="button" [class.active]="selectedChart === 'clearance'" (click)="selectedChart = 'clearance'">
+                Taux de franchissement
+              </button>
+              <button type="button" [class.active]="selectedChart === 'responseTime'" (click)="selectedChart = 'responseTime'">
+                Temps de réponse
+              </button>
+            </div>
+
+            <div class="chart-container" [attr.aria-label]="'Graphique : ' + chartUnit" role="figure">
+              <div class="chart-y-axis" aria-hidden="true">
+                <span class="y-title">{{ chartUnit }}</span>
+                <div class="y-labels">
+                  @for (label of chartScaleLabels; track label) {
+                    <span>{{ label }}</span>
+                  }
+                </div>
+              </div>
+              <div class="chart-content">
+                <svg viewBox="0 0 600 180" class="line-chart-svg" role="img" [attr.aria-label]="'Courbe de ' + chartUnit">
+                  <defs>
+                    <linearGradient id="progression-area-gradient" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="#64748b" stop-opacity="0.28" />
+                      <stop offset="100%" stop-color="#cbd5e1" stop-opacity="0.1" />
+                    </linearGradient>
+                  </defs>
+                  @for (lineY of [18, 48, 78, 108, 138]; track lineY) {
+                    <line x1="42" [attr.y1]="lineY" x2="558" [attr.y2]="lineY" class="chart-grid-line" />
+                  }
+                  <path [attr.d]="areaPath" class="chart-area" />
+                  <polyline [attr.points]="polylinePoints" class="chart-line" />
+                  @for (point of chartPoints; track point.sessionLabel) {
+                    <g class="chart-point-group" [class.last-point]="point.isLast">
+                      <title>{{ point.tooltip }}</title>
+                      <circle [attr.cx]="point.x" [attr.cy]="point.y" [attr.r]="point.isLast ? 6 : 5" class="chart-point" />
+                      <text [attr.x]="point.x" [attr.y]="point.y - 12" class="chart-value-label">{{ point.valueLabel }}</text>
+                      <text [attr.x]="point.x" y="162" class="chart-session-label">{{ point.sessionLabel }}</text>
+                    </g>
+                  }
+                  <text x="300" y="178" class="chart-axis-title">Séances (temps)</text>
+                </svg>
+              </div>
+            </div>
+            <div class="chart-legend">
+              <span class="legend-item"><span class="legend-color legend-past"></span> Séances passées</span>
+              <span class="legend-item"><span class="legend-color legend-current"></span> Dernière séance</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="card stats-card notes-card" aria-labelledby="notes-title">
+          <h2 id="notes-title">Notes d'observation</h2>
+          <p class="metric-desc">Ajoutez vos remarques cliniques sur le comportement de l'enfant durant la séance.</p>
+          <form class="notes-form" (ngSubmit)="saveNotes()">
+            <textarea
+              class="notes-input"
+              name="notes"
+              rows="4"
+              [(ngModel)]="notesDraft"
+              placeholder="Ex : Léo était particulièrement agité aujourd'hui..."
+            ></textarea>
+            <div class="notes-actions">
+              <button type="submit" class="btn-primary" [disabled]="isSavingNotes">
+                {{ isSavingNotes ? 'Enregistrement...' : 'Enregistrer les notes' }}
+              </button>
+              @if (notesSaved) {
+                <span class="save-feedback" role="status">Notes enregistrées avec succès.</span>
+              }
+              @if (notesSaveError) {
+                <span class="save-feedback save-feedback-error" role="alert">Impossible d'enregistrer les notes.</span>
+              }
+            </div>
+          </form>
+        </section>
+      </div>
+    }
+  </main>
+}
