@@ -1,0 +1,113 @@
+@if (patient) {
+  <main class="session-config-page">
+    <div class="session-config-card card">
+      <header class="session-config-header">
+        <button type="button" class="btn-secondary back-button" (click)="goBack()">
+          ← Retour
+        </button>
+        <div>
+          <p class="eyebrow">Préparation de la séance</p>
+          <h1>Configurer la partie</h1>
+          <p class="patient-context">
+            Pour <strong>{{ patient.firstName }} {{ patient.lastName }}</strong>
+          </p>
+        </div>
+      </header>
+
+      <form [formGroup]="configForm" (ngSubmit)="onSubmit()" novalidate>
+        <section class="config-section" aria-labelledby="theme-title">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">01</p>
+              <h2 id="theme-title">Choisir un univers</h2>
+            </div>
+          </div>
+
+          <div class="theme-grid">
+            @for (theme of themes; track theme) {
+              <label class="theme-option" [class.selected]="configForm.controls.theme.value === theme">
+                <input type="radio" formControlName="theme" [value]="theme" />
+                <span class="theme-art" [class.football]="theme === 'Football'" [class.space]="theme === 'Espace'">
+                  <img
+                    [src]="theme === 'Football' ? '/assets/UI/UI-foot.png' : '/assets/UI/UI-space.png'"
+                    [alt]="'Aperçu du thème ' + theme"
+                  />
+                </span>
+                <span class="theme-label">{{ theme }}</span>
+                <span class="selection-mark" aria-hidden="true">✓</span>
+              </label>
+            }
+          </div>
+        </section>
+
+        <div class="config-grid">
+          <section class="config-section" aria-labelledby="difficulty-title">
+            <div class="section-heading">
+              <div>
+                <p class="section-kicker">02</p>
+                <h2 id="difficulty-title">Difficulté</h2>
+              </div>
+              <p>Adaptez le défi.</p>
+            </div>
+
+            <div class="choice-list difficulty-list">
+              @for (difficulty of difficulties; track difficulty) {
+                <label class="choice-option">
+                  <input type="radio" formControlName="difficulty" [value]="difficulty" />
+                  <span class="custom-radio" aria-hidden="true"></span>
+                  <span>{{ difficulty }}</span>
+                </label>
+              }
+            </div>
+          </section>
+
+          <section class="config-section" aria-labelledby="duration-title">
+            <div class="section-heading">
+              <div>
+                <p class="section-kicker">03</p>
+                <h2 id="duration-title">Durée</h2>
+              </div>
+              <p>Des parties courtes et rythmées.</p>
+            </div>
+
+            <div class="duration-grid">
+              @for (duration of durations; track duration) {
+                <label class="duration-option">
+                  <input type="radio" formControlName="durationSeconds" [value]="duration" />
+                  <span>{{ duration }} s</span>
+                </label>
+              }
+            </div>
+          </section>
+        </div>
+
+        <section class="mode-section" aria-labelledby="mode-title">
+          <div>
+            <p class="section-kicker">04</p>
+            <h2 id="mode-title">Mode de frappe</h2>
+            <p class="mode-description">
+              <strong class="warning-label">Attention :</strong> Ce mode rend la session plus exigeante. Le nombre de lettres masquées s'adapte au palier de difficulté sélectionné.
+            </p>
+          </div>
+          <label class="toggle-option">
+            <span class="toggle-text">
+              <strong>Mot à trous</strong>
+              <small>{{ configForm.controls.mode.value === 'Mot à trous' ? 'Activé' : 'Désactivé' }}</small>
+            </span>
+            <input
+              type="checkbox"
+              [checked]="configForm.controls.mode.value === 'Mot à trous'"
+              (change)="toggleMode($event)"
+            />
+            <span class="toggle-track" aria-hidden="true"><span></span></span>
+          </label>
+        </section>
+
+        <footer class="form-actions">
+          <button type="button" class="btn-secondary" (click)="goBack()">Annuler</button>
+          <button type="submit" class="btn-primary">Lancer la partie <span aria-hidden="true">→</span></button>
+        </footer>
+      </form>
+    </div>
+  </main>
+}
