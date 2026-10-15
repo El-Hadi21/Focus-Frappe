@@ -4,11 +4,15 @@ import { delay } from 'rxjs/operators';
 
 import { Patient } from '../models/patient.model';
 import { SessionStats } from '../models/session-stats.model';
+import { GameConfig } from '../models/game-config.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PatientService {
+  private readonly currentConfigSubject = new BehaviorSubject<GameConfig | null>(null);
+  readonly currentConfig$ = this.currentConfigSubject.asObservable();
+
   private readonly statsByPatient: Record<string, SessionStats[]> = {
     'patient-leo': [
       {
@@ -137,6 +141,10 @@ export class PatientService {
 
   getPatients(): Observable<Patient[]> {
     return this.patientsSubject.asObservable();
+  }
+
+  setCurrentConfig(config: GameConfig): void {
+    this.currentConfigSubject.next(config);
   }
 
   getPatientById(id: string): Patient | undefined {
