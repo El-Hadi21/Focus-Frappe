@@ -1,12 +1,170 @@
-import { Component } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChild, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { GameConfig } from '../../../core/models/game-config.model';
+import { Patient } from '../../../core/models/patient.model';
+import { THEME_CONFIGS, ThemeConfig } from '../../../core/models/theme-config.model';
+import { PatientService } from '../../../core/services/patient.service';
+import { FootballSceneRenderer } from '../renderers/football-scene.renderer';
+import { SpaceSceneRenderer } from '../renderers/space-scene.renderer';
+import { RenderPhase, SceneRenderer } from '../renderers/scene-renderer.interface';
+import { GameTelemetryService } from '../services/game-telemetry.service';
+import { WordChallengeService, WordLetterTile } from '../services/word-challenge.service';
+
+type ObstacleType = 'A' | 'B';
 
 @Component({
   selector: 'app-engine',
   standalone: true,
-  imports: [],
+  imports: [DecimalPipe],
   templateUrl: './engine.component.html',
-  styleUrl: './engine.component.scss'
+  styleUrl: './engine.component.scss',
 })
-export class EngineComponent {
+export class EngineComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('gameCanvas') private canvasRef?: ElementRef<HTMLCanvasElement>;
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly patientService = inject(PatientService);
+  private readonly wordService = inject(WordChallengeService);
+  readonly telemetry = inject(GameTelemetryService);
+  readonly themes: GameConfig['theme'][] = ['Football', 'Espace'];
+  readonly themeConfigs = THEME_CONFIGS;
+  readonly phaseLabels: Record<RenderPhase | 'SELECT_THEME', string> = {
+    SELECT_THEME: 'Choisis ton univers !', COUNTDOWN: 'Prépare tes mains...',
+    APPROACHING: 'Obstacle en approche...', FOCUS: 'ZONE DE FOCUS : Tape le mot !',
+    RESOLVING_SUCCESS: 'Super frappe !', PASSING_MISSED: 'Regarde bien le mot :', FINISHED: 'Partie terminée !',
+  };
+  patient?: Patient;
+  config!: GameConfig;
+  selectedTheme: GameConfig['theme'] = 'Football';
+  phase: RenderPhase | 'SELECT_THEME' = 'SELECT_THEME';
+  currentObstacle = 0;
+  totalObstacles = 3;
+  focusProgress = 0;
+  obstacleType: ObstacleType = 'A';
+  targetWord = '';
+  letterTiles: WordLetterTile[] = [];
+  hasTypoShake = false;
+  hasEarlyPressWarning = false;
+  isLoadingTheme = false;
+  countdownValue = 3;
+  private context?: CanvasRenderingContext2D;
+  private frame?: number;
+  private phaseStartedAt = 0;
+  private focusEnteredAt = 0;
+  private obstacleX = 980;
+  private obstacleY = 310;
+  private resolutionStartX = 400;
+  private worldScrollX = 0;
+  private images: Record<string, HTMLImageElement> = {};
+  private renderer!: SceneRenderer;
+  private readonly focusStartX = 640;
+  private readonly focusEndX = 250;
 
+  get obstaclesCleared(): number { return this.telemetry.obstaclesCleared; }
+  get obstaclesMissed(): number { return this.telemetry.obstaclesMissed; }
+  get outOfWindowClicks(): number { return this.telemetry.outOfWindowClicks; }
+  get typingErrors(): number { return this.telemetry.typingErrors; }
+  get currentStreak(): number { return this.telemetry.currentStreak; }
+  get responseTimesMs(): number[] { return this.telemetry.responseTimesMs; }
+  get earnedStars(): 1 | 2 | 3 { return this.telemetry.getStars(this.totalObstacles); }
+  get earnedScore(): number { return this.telemetry.getScore(this.totalObstacles); }
+  get avgResponseTimeSeconds(): number { return this.telemetry.averageResponseTimeSeconds; }
+  get focusDurationSeconds(): number { return this.config?.difficulty === 'Facile' ? 7 : this.config?.difficulty === 'Difficile' ? 4 : 5.5; }
+  get focusRemainingPercent(): number { return this.phase === 'FOCUS' ? Math.max(0, Math.round((1 - this.focusProgress) * 100)) : this.phase === 'APPROACHING' ? 100 : 0; }
+  get countdownLabel(): string { return this.countdownValue > 0 ? String(this.countdownValue) : 'C’est parti !'; }
+
+  ngAfterViewInit(): void {
+    const id = this.route.snapshot.paramMap.get('patientId');
+    this.patient = id ? this.patientService.getPatientById(id) : undefined;
+    if (!this.patient) { void this.router.navigate(['/dashboard']); return; }
+    this.config = this.patientService.currentConfigSnapshot ?? this.defaultConfig(this.patient);
+    this.selectedTheme = this.config.theme;
+    this.totalObstacles = Math.max(3, Math.round(this.config.durationSeconds / 10));
+    if (this.route.snapshot.queryParamMap.get('autostart') === 'true') void this.selectThemeAndStart(this.selectedTheme);
+  }
+
+  ngOnDestroy(): void { this.stopLoop(); }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeydown(event: KeyboardEvent): void {
+    if (event.key.length !== 1 || event.ctrlKey || event.altKey || event.metaKey) return;
+    const char = event.key.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    if (!/^[a-z]$/.test(char)) return;
+    event.preventDefault();
+    if (this.phase !== 'FOCUS') {
+      if (this.phase === 'APPROACHING') { this.telemetry.recordEarlyPress(); this.hasEarlyPressWarning = true; }
+      return;
+    }
+    const result = this.wordService.checkCharacter(char);
+    this.letterTiles = this.wordService.getTiles();
+    if (result === 'complete') this.success(performance.now());
+    else if (result === 'incorrect') { this.telemetry.recordTypingError(); this.hasTypoShake = false; setTimeout(() => this.hasTypoShake = true); }
+  }
+
+  async selectThemeAndStart(theme: GameConfig['theme']): Promise<void> {
+    if (this.isLoadingTheme || !this.patient) return;
+    this.isLoadingTheme = true;
+    this.selectedTheme = theme;
+    this.config = { ...this.config, theme };
+    this.patientService.setCurrentConfig(this.config);
+    this.images = await this.preloadTheme(THEME_CONFIGS[theme]);
+    this.renderer = theme === 'Football' ? new FootballSceneRenderer(THEME_CONFIGS.Football) : new SpaceSceneRenderer(THEME_CONFIGS.Espace);
+    this.isLoadingTheme = false;
+    this.startGame();
+  }
+
+  replaySameTheme(): void { void this.selectThemeAndStart(this.selectedTheme); }
+  openThemeSelection(): void { this.stopLoop(); this.phase = 'SELECT_THEME'; }
+  quitToProfile(): void { this.stopLoop(); if (this.patient) void this.router.navigate(['/patient', this.patient.id]); }
+
+  private startGame(): void {
+    this.stopLoop(); this.telemetry.reset(); this.currentObstacle = 1; this.worldScrollX = 0;
+    this.phase = 'COUNTDOWN'; this.phaseStartedAt = performance.now(); this.countdownValue = 3;
+    setTimeout(() => { this.context = this.canvasRef?.nativeElement.getContext('2d') ?? undefined; this.frame = requestAnimationFrame(t => this.render(t)); });
+  }
+
+  private render(time: number): void { this.update(time); this.draw(time); if (this.phase !== 'FINISHED' && this.phase !== 'SELECT_THEME') this.frame = requestAnimationFrame(t => this.render(t)); }
+  private update(time: number): void {
+    const elapsed = (time - this.phaseStartedAt) / 1000;
+    this.worldScrollX = (this.worldScrollX + 120 / 60) % 960;
+    if (this.phase === 'COUNTDOWN') {
+      this.countdownValue = Math.max(0, 3 - Math.floor(elapsed));
+      if (elapsed >= 3.8) this.spawnObstacle(time);
+    } else if (this.phase === 'APPROACHING') {
+      const progress = Math.min(elapsed / 2.2, 1); this.obstacleX = 980 - (980 - this.focusStartX) * progress;
+      if (progress >= 1) { this.phase = 'FOCUS'; this.phaseStartedAt = time; this.focusEnteredAt = time; }
+    } else if (this.phase === 'FOCUS') {
+      this.focusProgress = Math.min(elapsed / this.focusDurationSeconds, 1); this.obstacleX = this.focusStartX - (this.focusStartX - this.focusEndX) * this.focusProgress;
+      if (this.focusProgress >= 1) this.miss(time);
+    } else if (this.phase === 'RESOLVING_SUCCESS' && elapsed >= 0.9) this.next(time);
+    else if (this.phase === 'PASSING_MISSED' && elapsed >= 1.3) this.next(time);
+  }
+
+  private spawnObstacle(time: number): void {
+    this.phase = 'APPROACHING'; this.phaseStartedAt = time; this.obstacleX = 980; this.obstacleY = 310;
+    this.obstacleType = this.currentObstacle % 2 === 1 ? 'A' : 'B';
+    this.letterTiles = this.wordService.prepareWord(this.selectedTheme, this.config.difficulty, this.config.mode);
+    this.targetWord = this.wordService.targetWord; this.hasEarlyPressWarning = false;
+  }
+  private success(time: number): void { if (this.phase !== 'FOCUS') return; this.telemetry.recordSuccess(time - this.focusEnteredAt); this.resolutionStartX = this.obstacleX; this.phase = 'RESOLVING_SUCCESS'; this.phaseStartedAt = time; }
+  private miss(time: number): void { this.telemetry.recordMiss(); this.letterTiles = this.wordService.revealAllLetters(); this.resolutionStartX = this.obstacleX; this.phase = 'PASSING_MISSED'; this.phaseStartedAt = time; }
+  private next(time: number): void { if (this.currentObstacle >= this.totalObstacles) { this.phase = 'FINISHED'; return; } this.currentObstacle += 1; this.spawnObstacle(time); }
+  private draw(time: number): void {
+    const canvas = this.canvasRef?.nativeElement; if (!canvas || !this.context || !this.renderer) return;
+    const elapsed = (time - this.phaseStartedAt) / 1000;
+    const progress = this.phase === 'RESOLVING_SUCCESS' ? Math.min(elapsed / 0.9, 1) : Math.min(elapsed / 1.3, 1);
+    this.renderer.drawScene(this.context, canvas, this.images, { phase: this.phase as RenderPhase, obstacleType: this.obstacleType, obstacleX: this.obstacleX, obstacleY: this.obstacleY, avatarX: 180, avatarY: 310, resolutionStartX: this.resolutionStartX, worldScrollX: this.worldScrollX, time, progress, focusStartX: this.focusStartX, focusEndX: this.focusEndX });
+  }
+  private stopLoop(): void { if (this.frame !== undefined) cancelAnimationFrame(this.frame); this.frame = undefined; }
+  private async preloadTheme(theme: ThemeConfig): Promise<Record<string, HTMLImageElement>> {
+    const paths = [theme.groundTile, theme.avatarSprite, theme.obstacleASprite, theme.obstacleBSprite, theme.obstacleBCarriedSprite, theme.targetSprite, theme.projectileSprite, theme.effectSprite].filter((path): path is string => Boolean(path));
+    const entries = await Promise.all(paths.map(async path => [path, await this.loadImage(path)] as const)); return Object.fromEntries(entries);
+  }
+  private loadImage(src: string): Promise<HTMLImageElement> { return new Promise(resolve => { const image = new Image(); image.onload = () => resolve(image); image.onerror = () => resolve(image); image.src = src; }); }
+  private defaultConfig(patient: Patient): GameConfig {
+    const normalize = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const severity = normalize(patient.dysgraphiaSeverity); const profile = normalize(patient.attentionProfile);
+    return { difficulty: severity === 'severe' ? 'Facile' : severity === 'moderee' ? 'Normal' : 'Difficile', durationSeconds: profile === 'inattentif' ? 60 : profile === 'hyperactif' ? 120 : 90, mode: 'Mot exact', theme: 'Football' };
+  }
 }

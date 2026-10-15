@@ -1,1 +1,181 @@
-<p>engine works!</p>
+@if (phase === 'SELECT_THEME') {
+<main class="theme-selection-page">
+  <section class="theme-selection-card card" aria-labelledby="theme-selection-title">
+    <p class="eyebrow">Focus &amp; Frappe</p>
+    <h1 id="theme-selection-title">Choisis ton univers !</h1>
+    <p class="intro">Dans quel monde veux-tu jouer cette partie ?</p>
+
+    <div class="theme-choice-grid">
+      @for (theme of themes; track theme) {
+      <button
+              type="button"
+              class="theme-choice"
+              [class.is-selected]="selectedTheme === theme"
+              [disabled]="isLoadingTheme"
+              (click)="selectThemeAndStart(theme)"
+      >
+        <img [src]="themeConfigs[theme].previewImage" [alt]="'Univers ' + theme" />
+        <div class="theme-choice-body">
+          <strong>{{ themeConfigs[theme].label }}</strong>
+          <span>{{ themeConfigs[theme].subtitle }}</span>
+        </div>
+      </button>
+      }
+    </div>
+
+    <button type="button" class="btn-secondary return-button" (click)="quitToProfile()">
+      ← Retour au profil
+    </button>
+  </section>
+</main>
+} @else {
+<main class="game-page">
+  <section class="game-shell card" aria-label="Zone de jeu Focus et Frappe">
+    <!-- BARRE SUPÉRIEURE DU HUD -->
+    <header class="game-hud">
+      <div class="hud-stats">
+        <div class="hud-pill">
+          <span class="hud-label">Obstacle</span>
+          <strong>{{ currentObstacle }} / {{ totalObstacles }}</strong>
+        </div>
+
+        <div class="hud-pill">
+          <span class="hud-label">Franchis</span>
+          <strong class="text-success">{{ obstaclesCleared }}</strong>
+        </div>
+
+        <div class="hud-pill">
+          <span class="hud-label">Série</span>
+          <strong>{{ currentStreak }} 🔥</strong>
+        </div>
+      </div>
+
+      <div class="hud-focus">
+        <div class="focus-header">
+          <span class="hud-label">Temps de ralenti (Zone de Focus)</span>
+          <strong>{{ phase === 'FOCUS' ? focusRemainingPercent + '%' : 'En attente' }}</strong>
+        </div>
+        <div
+                class="focus-meter"
+                [class.is-active]="phase === 'FOCUS'"
+                role="progressbar"
+                [attr.aria-valuenow]="focusRemainingPercent"
+                aria-valuemin="0"
+                aria-valuemax="100"
+        >
+          <span [style.width.%]="focusRemainingPercent"></span>
+        </div>
+      </div>
+
+      <button type="button" class="btn-secondary quit-button" (click)="quitToProfile()">
+        Quitter
+      </button>
+    </header>
+
+    <!-- ZONE CENTRALE : CANVAS + OVERLAYS DOM -->
+    <div class="canvas-wrapper" [class.focus-active]="phase === 'FOCUS'">
+      <canvas #gameCanvas width="960" height="540"></canvas>
+
+      <!-- MOT À TAPER (TUILES INTERACTIVES PENDANT LA ZONE DE FOCUS) -->
+      @if (phase === 'FOCUS' || phase === 'RESOLVING_SUCCESS' || phase === 'PASSING_MISSED') {
+      <div
+              class="word-prompt-box"
+              [class.shake]="hasTypoShake"
+              [class.word-completed]="phase === 'RESOLVING_SUCCESS'"
+              [class.word-missed]="phase === 'PASSING_MISSED'"
+              aria-live="polite"
+      >
+            <span class="prompt-instruction">
+              {{ phase === 'PASSING_MISSED' ? 'Regarde bien le mot :' : config.mode === 'Mot à trous' ? 'Devine et tape le mot complet :' : 'Tape le mot au clavier :' }}
+            </span>
+
+        <div class="letter-tiles">
+          @for (tile of letterTiles; track tile.index) {
+          <span
+                  class="letter-tile"
+                  [class.is-typed]="tile.isTyped"
+                  [class.is-current]="tile.isCurrent && phase === 'FOCUS'"
+                  [class.is-hole]="tile.isHiddenSlot && !tile.isTyped"
+                  [class.is-revealed-after-miss]="tile.isRevealedAfterMiss"
+          >
+                  {{ tile.isHiddenSlot && !tile.isTyped ? '_' : tile.char }}
+                </span>
+          }
+
+        </div>
+      </div>
+
+      }
+
+      @if (phase === 'COUNTDOWN') {
+      <div class="countdown-overlay" role="status" aria-live="assertive">
+        <span class="countdown-value">{{ countdownLabel }}</span>
+      </div>
+      }
+
+      <!-- RAPPEL DOUX SI L'ENFANT TAPE AVANT LA ZONE DE FOCUS -->
+      @if (hasEarlyPressWarning && phase === 'APPROACHING') {
+      <div class="early-press-toast" role="status">
+        ⏳ Attends que l'obstacle entre dans la Zone de Focus !
+      </div>
+      }
+
+      <!-- ÉCRAN DE FIN DE PARTIE VALORISANT (Section 7.3 & 9) -->
+      @if (phase === 'FINISHED') {
+      <div class="finished-overlay" role="dialog" aria-labelledby="end-title">
+        <div class="finished-card">
+          <p class="eyebrow">Partie terminée !</p>
+          <h2 id="end-title">Bravo {{ patient?.firstName }} ! 🎉</h2>
+
+          <div class="stars-row" aria-label="Étoiles gagnées">
+            @for (starIndex of [1, 2, 3]; track starIndex) {
+            <img
+                    class="star-icon"
+                    [class.earned]="starIndex <= earnedStars"
+                    [src]="
+                      starIndex <= earnedStars
+                        ? '/assets/UI/kenny-game-UIs/PNG/Yellow/Default/star.png'
+                        : '/assets/UI/kenny-game-UIs/PNG/Yellow/Default/star_outline.png'
+                    "
+                    alt=""
+            />
+            }
+          </div>
+
+          <div class="score-banner">
+            <strong>+ {{ earnedScore }} points</strong>
+            <span>{{ obstaclesCleared }} / {{ totalObstacles }} obstacles franchis</span>
+          </div>
+
+          <div class="end-actions">
+            <button type="button" class="btn-primary" (click)="replaySameTheme()">
+              Rejouer ({{ selectedTheme }})
+            </button>
+            <button type="button" class="btn-secondary" (click)="openThemeSelection()">
+              Changer d'univers
+            </button>
+          </div>
+
+          <button type="button" class="profile-link-btn" (click)="quitToProfile()">
+            ← Retour au profil (Terminer la séance)
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- PIED DE PAGE : STATUT & TÉLÉMÉTRIE DISCRÈTE POUR LE JURY / ERGO -->
+    <footer class="game-footer">
+      <span class="phase-status">{{ phaseLabels[phase] }}</span>
+      <div class="telemetry-summary">
+        <span>Mode : <strong>{{ config.mode }}</strong> ({{ config.difficulty }})</span>
+        <span>Hors-fenêtre : <strong>{{ outOfWindowClicks }}</strong></span>
+        <span>Fautes corrigées : <strong>{{ typingErrors }}</strong></span>
+        @if (responseTimesMs.length > 0) {
+        <span>Temps moyen : <strong>{{ avgResponseTimeSeconds | number: '1.1-1' }} s</strong></span>
+        }
+      </div>
+    </footer>
+  </section>
+</main>
+}
