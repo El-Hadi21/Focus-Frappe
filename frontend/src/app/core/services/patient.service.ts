@@ -13,6 +13,10 @@ export class PatientService {
   private readonly currentConfigSubject = new BehaviorSubject<GameConfig | null>(null);
   readonly currentConfig$ = this.currentConfigSubject.asObservable();
 
+  get currentConfigSnapshot(): GameConfig | null {
+    return this.currentConfigSubject.value;
+  }
+
   private readonly statsByPatient: Record<string, SessionStats[]> = {
     'patient-leo': [
       {
