@@ -1,0 +1,55 @@
+@if (session && patient) {
+  <main class="game-end-page">
+    <section class="finished-card card" aria-labelledby="end-title">
+      <p class="eyebrow">Partie terminée !</p>
+      <h1 id="end-title">Bravo {{ patient.firstName }} !</h1>
+      <p class="encouragement">Tu as terminé cette séance avec courage et concentration.</p>
+
+      <div class="stars-row" [attr.aria-label]="stars + ' étoiles gagnées sur 3'">
+        @for (starIndex of [1, 2, 3]; track starIndex) {
+          <img
+            class="star-icon"
+            [class.earned]="starIndex <= stars"
+            [src]="starIndex <= stars
+              ? '/assets/UI/kenny-game-UIs/PNG/Yellow/Default/star.png'
+              : '/assets/UI/kenny-game-UIs/PNG/Yellow/Default/star_outline.png'"
+            alt=""
+          />
+        }
+      </div>
+
+      <div class="score-banner">
+        <strong>+ {{ score }} points</strong>
+        <span>{{ session.obstaclesCleared }} / {{ session.obstaclesCleared + session.obstaclesMissed }} obstacles franchis</span>
+      </div>
+
+      <dl class="session-summary">
+        <div>
+          <dt>Temps de jeu</dt>
+          <dd>{{ session.playedDurationSec }} s</dd>
+        </div>
+        <div>
+          <dt>Mode</dt>
+          <dd>{{ session.config.mode }}</dd>
+        </div>
+        <div>
+          <dt>Univers</dt>
+          <dd>{{ session.config.theme }}</dd>
+        </div>
+      </dl>
+
+      <div class="end-actions">
+        <button type="button" class="btn-primary" (click)="replay()">
+          Rejouer ({{ session.config.theme }})
+        </button>
+        <button type="button" class="btn-secondary" (click)="changeTheme()">
+          Changer d'univers
+        </button>
+      </div>
+
+      <button type="button" class="profile-link-btn" (click)="quit()">
+        ← Retour au profil
+      </button>
+    </section>
+  </main>
+}

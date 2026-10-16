@@ -1,0 +1,46 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { Router } from '@angular/router';
+
+import { Patient } from '../../../core/models/patient.model';
+import { PatientService } from '../../../core/services/patient.service';
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
+
+@Component({
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [LoaderComponent],
+  templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss',
+})
+export class DashboardComponent implements OnInit {
+  private readonly patientService = inject(PatientService);
+  private readonly router = inject(Router);
+
+  patients: Patient[] = [];
+  isLoading = true;
+
+  ngOnInit(): void {
+    this.patientService.getPatients().subscribe({
+      next: (patients) => {
+        this.patients = patients;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.patients = [];
+        this.isLoading = false;
+      },
+    });
+  }
+
+  goToPatient(id: string): void {
+      void this.router.navigate(['/patient', id]);
+    }
+
+    goToCreateProfile(): void {
+      void this.router.navigate(['/create-profile']);
+    }
+
+  logout(): void {
+    void this.router.navigate(['/login']);
+  }
+}
