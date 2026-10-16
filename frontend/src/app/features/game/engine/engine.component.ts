@@ -56,6 +56,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   private obstacleY = 310;
   private resolutionStartX = 400;
   private worldScrollX = 0;
+  private gameStartedAt = 0;
   private images: Record<string, HTMLImageElement> = {};
   private renderer!: SceneRenderer;
   private readonly focusStartX = 640;
@@ -67,8 +68,6 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   get typingErrors(): number { return this.telemetry.typingErrors; }
   get currentStreak(): number { return this.telemetry.currentStreak; }
   get responseTimesMs(): number[] { return this.telemetry.responseTimesMs; }
-  get earnedStars(): 1 | 2 | 3 { return this.telemetry.getStars(this.totalObstacles); }
-  get earnedScore(): number { return this.telemetry.getScore(this.totalObstacles); }
   get avgResponseTimeSeconds(): number { return this.telemetry.averageResponseTimeSeconds; }
   get focusDurationSeconds(): number { return this.config?.difficulty === 'Facile' ? 7 : this.config?.difficulty === 'Difficile' ? 4 : 5.5; }
   get focusRemainingPercent(): number { return this.phase === 'FOCUS' ? Math.max(0, Math.round((1 - this.focusProgress) * 100)) : this.phase === 'APPROACHING' ? 100 : 0; }
@@ -121,6 +120,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   private startGame(): void {
     this.stopLoop(); this.telemetry.reset(); this.currentObstacle = 1; this.worldScrollX = 0;
     this.phase = 'COUNTDOWN'; this.phaseStartedAt = performance.now(); this.countdownValue = 3;
+    this.gameStartedAt = this.phaseStartedAt;
     setTimeout(() => { this.context = this.canvasRef?.nativeElement.getContext('2d') ?? undefined; this.frame = requestAnimationFrame(t => this.render(t)); });
   }
 
@@ -149,7 +149,38 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   }
   private success(time: number): void { if (this.phase !== 'FOCUS') return; this.telemetry.recordSuccess(time - this.focusEnteredAt); this.resolutionStartX = this.obstacleX; this.phase = 'RESOLVING_SUCCESS'; this.phaseStartedAt = time; }
   private miss(time: number): void { this.telemetry.recordMiss(); this.letterTiles = this.wordService.revealAllLetters(); this.resolutionStartX = this.obstacleX; this.phase = 'PASSING_MISSED'; this.phaseStartedAt = time; }
-  private next(time: number): void { if (this.currentObstacle >= this.totalObstacles) { this.phase = 'FINISHED'; return; } this.currentObstacle += 1; this.spawnObstacle(time); }
+  private next(time: number): void {
+    if (this.currentObstacle >= this.totalObstacles) {
+      this.finishGame();
+      return;
+    }
+    this.currentObstacle += 1;
+    this.spawnObstacle(time);
+  }
+
+  private finishGame(): void {
+    if (!this.patient) {
+      return;
+    }
+
+    const sessionId = this.patientService.saveSession(this.patient.id, {
+      gamesCount: 1,
+      config: this.config,
+      avgResponseTimeSec: this.avgResponseTimeSeconds,
+      obstaclesCleared: this.telemetry.obstaclesCleared,
+      obstaclesMissed: this.telemetry.obstaclesMissed,
+      outOfWindowClicks: this.telemetry.outOfWindowClicks,
+      typingErrors: this.telemetry.typingErrors,
+      maxStreak: this.telemetry.maxStreak,
+      playedDurationSec: Math.round((performance.now() - this.gameStartedAt) / 1000),
+      plannedDurationSec: this.config.durationSeconds,
+      abandons: 0,
+      score: this.telemetry.getScore(this.totalObstacles),
+    });
+
+    this.stopLoop();
+    void this.router.navigate(['/game-end', sessionId]);
+  }
   private draw(time: number): void {
     const canvas = this.canvasRef?.nativeElement; if (!canvas || !this.context || !this.renderer) return;
     const elapsed = (time - this.phaseStartedAt) / 1000;
