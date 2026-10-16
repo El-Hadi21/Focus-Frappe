@@ -120,48 +120,6 @@
       </div>
       }
 
-      <!-- ÉCRAN DE FIN DE PARTIE VALORISANT (Section 7.3 & 9) -->
-      @if (phase === 'FINISHED') {
-      <div class="finished-overlay" role="dialog" aria-labelledby="end-title">
-        <div class="finished-card">
-          <p class="eyebrow">Partie terminée !</p>
-          <h2 id="end-title">Bravo {{ patient?.firstName }} ! 🎉</h2>
-
-          <div class="stars-row" aria-label="Étoiles gagnées">
-            @for (starIndex of [1, 2, 3]; track starIndex) {
-            <img
-                    class="star-icon"
-                    [class.earned]="starIndex <= earnedStars"
-                    [src]="
-                      starIndex <= earnedStars
-                        ? '/assets/UI/kenny-game-UIs/PNG/Yellow/Default/star.png'
-                        : '/assets/UI/kenny-game-UIs/PNG/Yellow/Default/star_outline.png'
-                    "
-                    alt=""
-            />
-            }
-          </div>
-
-          <div class="score-banner">
-            <strong>+ {{ earnedScore }} points</strong>
-            <span>{{ obstaclesCleared }} / {{ totalObstacles }} obstacles franchis</span>
-          </div>
-
-          <div class="end-actions">
-            <button type="button" class="btn-primary" (click)="replaySameTheme()">
-              Rejouer ({{ selectedTheme }})
-            </button>
-            <button type="button" class="btn-secondary" (click)="openThemeSelection()">
-              Changer d'univers
-            </button>
-          </div>
-
-          <button type="button" class="profile-link-btn" (click)="quitToProfile()">
-            ← Retour au profil (Terminer la séance)
-          </button>
-        </div>
-      </div>
-      }
     </div>
 
     <!-- PIED DE PAGE : STATUT & TÉLÉMÉTRIE DISCRÈTE POUR LE JURY / ERGO -->

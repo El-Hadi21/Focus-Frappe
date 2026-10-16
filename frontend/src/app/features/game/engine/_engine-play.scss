@@ -126,13 +126,6 @@
 }
 
 .early-press-toast { position: absolute; bottom: 1.25rem; left: 50%; padding: 0.6rem 1.2rem; border-radius: 999px; color: #0f172a; background: rgb(254 240 138 / 95%); font-weight: 800; transform: translateX(-50%); }
-.finished-overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 1.5rem; background: rgb(15 23 42 / 82%); }
-.finished-card { width: min(100%, 480px); padding: 2rem; border: 3px solid #eab308; border-radius: 20px; background: #ffffff; text-align: center; }
-.stars-row, .end-actions { display: flex; justify-content: center; gap: 0.85rem; }
-.star-icon { width: 54px; height: 54px; opacity: 0.35; &.earned { opacity: 1; filter: drop-shadow(0 4px 10px rgb(234 179 8 / 45%)); } }
-.score-banner { display: grid; gap: 0.2rem; margin: 1rem 0 1.5rem; padding: 0.85rem; border-radius: 12px; background: #fef9c3; }
-.end-actions button { flex: 1; }
-.profile-link-btn { border: 0; color: #475569; background: transparent; cursor: pointer; font: inherit; text-decoration: underline; }
 .game-footer { flex-wrap: wrap; margin-top: 0.85rem; padding-top: 0.75rem; border-top: 2px solid #e2e8f0; color: #475569; }
 .telemetry-summary { display: flex; flex-wrap: wrap; gap: 1rem; }
 .telemetry-summary strong, .phase-status { color: #0f172a; font-weight: 800; }
@@ -144,5 +137,4 @@
 @media (max-width: 720px) {
   .game-hud { flex-wrap: wrap; }
   .hud-focus { order: 3; width: 100%; max-width: none; }
-  .end-actions { flex-direction: column; }
 }

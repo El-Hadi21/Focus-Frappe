@@ -151,6 +151,36 @@ export class PatientService {
     this.currentConfigSubject.next(config);
   }
 
+  saveSession(
+    patientId: string,
+    sessionData: Omit<SessionStats, 'date' | 'id'>,
+  ): string {
+    const sessionId = `session-${patientId}-${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2, 8)}`;
+    const session: SessionStats = {
+      ...sessionData,
+      id: sessionId,
+      date: new Date(),
+    };
+
+    this.statsByPatient[patientId] ??= [];
+    this.statsByPatient[patientId].push(session);
+    return sessionId;
+  }
+
+  getSessionById(
+    sessionId: string,
+  ): { patientId: string; session: SessionStats } | undefined {
+    for (const [patientId, sessions] of Object.entries(this.statsByPatient)) {
+      const session = sessions.find((item) => item.id === sessionId);
+      if (session) {
+        return { patientId, session };
+      }
+    }
+    return undefined;
+  }
+
   getPatientById(id: string): Patient | undefined {
     return this.patientsSubject.value.find((patient) => patient.id === id);
   }
