@@ -3,11 +3,12 @@ import { Router } from '@angular/router';
 
 import { Patient } from '../../../core/models/patient.model';
 import { PatientService } from '../../../core/services/patient.service';
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [],
+  imports: [LoaderComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })

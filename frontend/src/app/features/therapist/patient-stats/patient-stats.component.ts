@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Patient } from '../../../core/models/patient.model';
 import { SessionStats } from '../../../core/models/session-stats.model';
 import { PatientService } from '../../../core/services/patient.service';
+import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 
 interface ChartPoint {
   x: number;
@@ -19,7 +20,7 @@ interface ChartPoint {
 @Component({
   selector: 'app-patient-stats',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, FormsModule],
+  imports: [DatePipe, DecimalPipe, FormsModule, LoaderComponent],
   templateUrl: './patient-stats.component.html',
   styleUrl: './patient-stats.component.scss',
 })

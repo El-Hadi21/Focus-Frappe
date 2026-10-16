@@ -18,7 +18,7 @@
   </header>
 
   @if (isLoading) {
-    <p class="loading-message" role="status">Chargement des profils...</p>
+    <app-loader text="Chargement des profils..."></app-loader>
   } @else {
     <section class="patient-grid" aria-label="Liste des patients">
       @for (patient of patients; track patient.id) {
