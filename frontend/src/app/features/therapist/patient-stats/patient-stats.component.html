@@ -6,7 +6,7 @@
     </header>
 
     @if (isLoading) {
-      <p class="stats-status" role="status">Chargement des statistiques...</p>
+      <app-loader text="Récupération des données cliniques..."></app-loader>
     } @else if (sessions.length === 0) {
       <section class="card empty-state" aria-live="polite">
         <div class="empty-state-icon" aria-hidden="true">📊</div>
