@@ -1,26 +1,10 @@
 [
   {
-    "id": "patient-leo",
-    "firstName": "Léo",
-    "lastName": "Martin",
-    "age": 8,
-    "dysgraphiaSeverity": "Légère",
-    "attentionProfile": "Inattentif"
-  },
-  {
-    "id": "patient-ines",
-    "firstName": "Inès",
-    "lastName": "Bernard",
+    "firstName": "M.ILIAS",
+    "lastName": "EL HADI",
     "age": 10,
-    "dysgraphiaSeverity": "Modérée",
-    "attentionProfile": "Mixte"
-  },
-  {
-    "id": "patient-noah",
-    "firstName": "Noah",
-    "lastName": "Petit",
-    "age": 9,
-    "dysgraphiaSeverity": "Sévère",
-    "attentionProfile": "Hyperactif"
+    "dysgraphiaSeverity": "severe",
+    "attentionProfile": "hyperactif",
+    "id": "patient-1792435866288-4bwzsq"
   }
 ]

@@ -23,16 +23,28 @@ export class GameEndComponent implements OnInit {
 
   ngOnInit(): void {
     const sessionId = this.route.snapshot.paramMap.get('sessionId');
-    const result = sessionId ? this.patientService.getSessionById(sessionId) : undefined;
-
-    if (!result) {
+    if (!sessionId) {
       void this.router.navigate(['/dashboard']);
       return;
     }
 
-    this.session = result.session;
-    this.patient = this.patientService.getPatientById(result.patientId);
-    this.stars = this.calculateStars(result.session);
+    this.patientService.getSessionById(sessionId).subscribe({
+      next: (result) => {
+        this.session = result.session;
+        this.stars = this.calculateStars(result.session);
+        this.patientService.getPatientById(result.patientId).subscribe({
+          next: (patient) => {
+            this.patient = patient;
+          },
+          error: () => {
+            void this.router.navigate(['/dashboard']);
+          },
+        });
+      },
+      error: () => {
+        void this.router.navigate(['/dashboard']);
+      },
+    });
   }
 
   get score(): number {
@@ -40,8 +52,10 @@ export class GameEndComponent implements OnInit {
   }
 
   replay(): void {
-    if (this.patient) {
-      void this.router.navigate(['/game', this.patient.id], { queryParams: { autostart: true } });
+    if (this.patient && this.session) {
+      void this.router.navigate(['/game', this.patient.id], {
+        queryParams: { autostart: true, sessionId: this.session.id },
+      });
     }
   }
 

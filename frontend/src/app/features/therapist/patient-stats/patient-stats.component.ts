@@ -42,26 +42,32 @@ export class PatientStatsComponent implements OnInit {
 
   ngOnInit(): void {
     this.patientId = this.route.snapshot.paramMap.get('id') ?? '';
-    this.patient = this.patientService.getPatientById(this.patientId);
-
-    if (!this.patient) {
+    if (!this.patientId) {
       void this.router.navigate(['/dashboard']);
       return;
     }
 
-    this.patientService.getPatientStats(this.patientId).subscribe({
-      next: (sessions) => {
-        this.sessions = [...sessions].sort(
-          (first, second) => second.date.getTime() - first.date.getTime(),
-        );
-        this.lastSession = this.sessions[0];
-        this.notesDraft = this.lastSession?.notes ?? '';
-        this.isLoading = false;
+    this.patientService.getPatientById(this.patientId).subscribe({
+      next: (patient) => {
+        this.patient = patient;
+        this.patientService.getPatientStats(this.patientId).subscribe({
+          next: (sessions) => {
+            this.sessions = [...sessions].sort(
+              (first, second) => second.date.getTime() - first.date.getTime(),
+            );
+            this.lastSession = this.sessions[0];
+            this.notesDraft = this.lastSession?.notes ?? '';
+            this.isLoading = false;
+          },
+          error: () => {
+            this.sessions = [];
+            this.lastSession = undefined;
+            this.isLoading = false;
+          },
+        });
       },
       error: () => {
-        this.sessions = [];
-        this.lastSession = undefined;
-        this.isLoading = false;
+        void this.router.navigate(['/dashboard']);
       },
     });
   }

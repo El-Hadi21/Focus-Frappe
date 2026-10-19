@@ -14,5 +14,5 @@ export async function getSession(
     return;
   }
 
-  response.status(200).json(result.session);
+  response.status(200).json(result);
 }
