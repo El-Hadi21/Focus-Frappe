@@ -37,17 +37,20 @@ export class SessionConfigComponent implements OnInit {
 
   ngOnInit(): void {
     const patientId = this.route.snapshot.paramMap.get('id');
-    const patient = patientId
-      ? this.patientService.getPatientById(patientId)
-      : undefined;
-
-    if (!patient) {
+    if (!patientId) {
       void this.router.navigate(['/dashboard']);
       return;
     }
 
-    this.patient = patient;
-    this.configForm.patchValue(this.getClinicalDefaults(patient));
+    this.patientService.getPatientById(patientId).subscribe({
+      next: (patient) => {
+        this.patient = patient;
+        this.configForm.patchValue(this.getClinicalDefaults(patient));
+      },
+      error: () => {
+        void this.router.navigate(['/dashboard']);
+      },
+    });
   }
 
   onSubmit(): void {

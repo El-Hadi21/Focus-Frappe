@@ -12,7 +12,8 @@ export function createApp(storage: JsonStorageService): Express {
   const app = express();
 
   app.use(cors({ origin: 'http://localhost:4200' }));
-  app.use(express.json());
+  app.use(express.json({ limit: '10mb' }));
+  app.use(express.urlencoded({ limit: '10mb', extended: true })); // Optionnel, mais recommandé
   app.use(morgan('dev'));
   app.use('/api/auth', createAuthRouter(storage));
   app.use('/api/dictionaries', createDictionaryRouter(storage));
