@@ -5,6 +5,16 @@ export const loginSchema = Joi.object({
   password: Joi.string().required(),
 }).required();
 
+export const registerSchema = Joi.object({
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
+  email: Joi.string().email().required(),
+  age: Joi.number().integer().min(1).max(120).required(),
+  password: Joi.string().required(),
+  confirmPassword: Joi.string().valid(Joi.ref('password')).required(),
+  profilePicture: Joi.string().allow('').optional(),
+}).required();
+
 export const createPatientSchema = Joi.object({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),

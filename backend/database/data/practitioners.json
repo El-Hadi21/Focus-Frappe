@@ -1,0 +1,11 @@
+[
+  {
+    "id": "practitioner-claire",
+    "firstName": "Claire",
+    "lastName": "Martin",
+    "email": "ergo@focus-frappe.fr",
+    "password": "ergo123",
+    "age": 35,
+    "profilePicture": ""
+  }
+]
