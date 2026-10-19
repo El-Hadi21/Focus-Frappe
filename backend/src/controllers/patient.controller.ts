@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 
 import { Patient } from '../models/patient.model';
+import { SessionStats } from '../models/session-stats.model';
 import { JsonStorageService } from '../services/json-storage.service';
+import { calculateGameScore, calculateVariability } from '../utils/clinical-stats.utils';
 
 export async function listPatients(
   storage: JsonStorageService,
@@ -89,6 +91,108 @@ export async function addCustomWords(
   });
 }
 
+export async function saveSession(
+  storage: JsonStorageService,
+  request: Request,
+  response: Response,
+): Promise<void> {
+  const patientId = request.params.id;
+  const {
+    patientId: bodyPatientId,
+    sessionId,
+    config,
+    responseTimesMs,
+    obstaclesCleared,
+    obstaclesMissed,
+    outOfWindowClicks,
+    typingErrors,
+    currentMaxStreak,
+    playedDurationSec,
+    abandoned,
+  } = request.body as SaveSessionRequest;
+
+  if (bodyPatientId !== patientId) {
+    response.status(400).json({ message: 'Le patientId ne correspond pas au patient demandé' });
+    return;
+  }
+
+  if (!(await storage.getPatientById(patientId))) {
+    response.status(404).json({ message: 'Patient introuvable' });
+    return;
+  }
+
+  const sessionsByPatient = await storage.getSessionsByPatient();
+  const patientSessions = sessionsByPatient[patientId] ?? [];
+  const variability = calculateVariability(responseTimesMs, obstaclesCleared);
+  const gameScore = calculateGameScore(obstaclesCleared, obstaclesMissed, abandoned);
+  const existingSession = sessionId
+    ? patientSessions.find((session) => session.id === sessionId)
+    : undefined;
+
+  if (existingSession && areConfigsEqual(existingSession.config, config)) {
+    const aggregatedResponseTimesMs = existingSession.responseTimesMs
+      ? [...existingSession.responseTimesMs, ...responseTimesMs]
+      : undefined;
+    const aggregatedObstaclesCleared = existingSession.obstaclesCleared + obstaclesCleared;
+    const aggregatedVariability = aggregatedResponseTimesMs
+      ? calculateVariability(aggregatedResponseTimesMs, aggregatedObstaclesCleared)
+      : {
+          avgSec: calculateWeightedAverage(
+            existingSession.avgResponseTimeSec,
+            existingSession.gamesCount,
+            variability.avgSec,
+          ),
+        };
+
+    existingSession.gamesCount += 1;
+    existingSession.obstaclesCleared = aggregatedObstaclesCleared;
+    existingSession.obstaclesMissed += obstaclesMissed;
+    existingSession.outOfWindowClicks += outOfWindowClicks;
+    existingSession.typingErrors += typingErrors;
+    existingSession.playedDurationSec += playedDurationSec;
+    existingSession.plannedDurationSec += config.durationSeconds;
+    existingSession.score += gameScore.score;
+    existingSession.maxStreak = Math.max(existingSession.maxStreak, currentMaxStreak);
+    existingSession.abandons += abandoned ? 1 : 0;
+    existingSession.avgResponseTimeSec = aggregatedVariability.avgSec;
+    existingSession.variabilityMinSec = aggregatedVariability.minSec;
+    existingSession.variabilityMaxSec = aggregatedVariability.maxSec;
+    if (aggregatedResponseTimesMs) {
+      existingSession.responseTimesMs = aggregatedResponseTimesMs;
+    }
+
+    await storage.saveSessionsByPatient(sessionsByPatient);
+    response.status(200).json({ sessionId: existingSession.id, session: existingSession });
+    return;
+  }
+
+  const newSession: SessionStats = {
+    id: createSessionId(patientId),
+    date: new Date().toISOString(),
+    gamesCount: 1,
+    config,
+    responseTimesMs: [...responseTimesMs],
+    avgResponseTimeSec: variability.avgSec,
+    ...(variability.minSec === undefined ? {} : { variabilityMinSec: variability.minSec }),
+    ...(variability.maxSec === undefined ? {} : { variabilityMaxSec: variability.maxSec }),
+    obstaclesCleared,
+    obstaclesMissed,
+    outOfWindowClicks,
+    typingErrors,
+    maxStreak: currentMaxStreak,
+    playedDurationSec,
+    plannedDurationSec: config.durationSeconds,
+    abandons: abandoned ? 1 : 0,
+    score: gameScore.score,
+  };
+
+  patientSessions.push(newSession);
+  sessionsByPatient[patientId] = patientSessions;
+  await storage.saveSessionsByPatient(sessionsByPatient);
+
+  response.status(201).json({ sessionId: newSession.id, session: newSession });
+}
+
 export async function deletePatient(
   storage: JsonStorageService,
   request: Request,
@@ -120,4 +224,40 @@ function createPatientId(patients: Patient[]): string {
   } while (patients.some((patient) => patient.id === id));
 
   return id;
+}
+
+interface SaveSessionRequest {
+  patientId: string;
+  sessionId?: string;
+  config: SessionStats['config'];
+  responseTimesMs: number[];
+  obstaclesCleared: number;
+  obstaclesMissed: number;
+  outOfWindowClicks: number;
+  typingErrors: number;
+  currentMaxStreak: number;
+  playedDurationSec: number;
+  abandoned: boolean;
+}
+
+function areConfigsEqual(
+  first: SessionStats['config'],
+  second: SessionStats['config'],
+): boolean {
+  return first.difficulty === second.difficulty
+    && first.durationSeconds === second.durationSeconds
+    && first.mode === second.mode
+    && first.theme === second.theme;
+}
+
+function calculateWeightedAverage(
+  existingAverage: number,
+  existingGamesCount: number,
+  newAverage: number,
+): number {
+  return (existingAverage * existingGamesCount + newAverage) / (existingGamesCount + 1);
+}
+
+function createSessionId(patientId: string): string {
+  return `session-${patientId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }

@@ -5,6 +5,7 @@ export interface SessionStats {
   date: string;
   gamesCount: number;
   config: GameConfig;
+  responseTimesMs?: number[];
   avgResponseTimeSec: number;
   variabilityMinSec?: number;
   variabilityMaxSec?: number;

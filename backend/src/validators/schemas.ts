@@ -37,3 +37,17 @@ export const gameConfigSchema = Joi.object({
 export const sessionNotesSchema = Joi.object({
   notes: Joi.string().allow('').required(),
 }).required();
+
+export const saveSessionSchema = Joi.object({
+  patientId: Joi.string().required(),
+  sessionId: Joi.string().allow('').optional(),
+  config: gameConfigSchema.required(),
+  responseTimesMs: Joi.array().items(Joi.number().min(0)).required(),
+  obstaclesCleared: Joi.number().integer().min(0).required(),
+  obstaclesMissed: Joi.number().integer().min(0).required(),
+  outOfWindowClicks: Joi.number().integer().min(0).required(),
+  typingErrors: Joi.number().integer().min(0).required(),
+  currentMaxStreak: Joi.number().integer().min(0).required(),
+  playedDurationSec: Joi.number().min(0).required(),
+  abandoned: Joi.boolean().required(),
+}).required();
