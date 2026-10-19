@@ -3,9 +3,12 @@ import { SessionStats } from './session-stats.model';
 
 export interface Practitioner {
   id: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
-  name: string;
+  age: number;
+  profilePicture?: string;
 }
 
 export interface DatabaseSchema {
