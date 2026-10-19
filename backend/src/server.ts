@@ -1,3 +1,7 @@
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
 import { createApp } from './app';
 import { JsonStorageService } from './services/json-storage.service';
 

@@ -27,19 +27,6 @@ export async function login(
     return;
   }
 
-  const isDemoCredentials = password !== 'wrong';
-  if (isDemoCredentials) {
-    response.status(200).json({
-      authenticated: true,
-      practitioner: {
-        id: 'practitioner-demo',
-        name: 'Claire',
-        email: normalizedEmail,
-      },
-    });
-    return;
-  }
-
   response.status(401).json({
     authenticated: false,
     message: 'Identifiants invalides',

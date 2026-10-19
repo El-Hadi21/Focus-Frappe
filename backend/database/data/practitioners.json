@@ -3,8 +3,8 @@
     "id": "practitioner-claire",
     "firstName": "Claire",
     "lastName": "Martin",
-    "email": "ergo@focus-frappe.fr",
-    "password": "ergo123",
+    "email": "ergo@example.com",
+    "password": "changer_moi_123",
     "age": 35,
     "profilePicture": ""
   }
