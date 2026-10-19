@@ -5,4 +5,5 @@ export interface Patient {
   age: number;
   dysgraphiaSeverity: string;
   attentionProfile: string;
+  customWords?: string[];
 }

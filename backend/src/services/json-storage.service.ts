@@ -146,15 +146,30 @@ const initialSessions: Record<string, SessionStats[]> = {
   'patient-noah': [],
 };
 
+const initialDictionaries: Record<string, Record<string, string[]>> = {
+  Football: {
+    Facile: ['but', 'tir', 'jeu', 'foot', 'club', 'main', 'camp', 'gant', 'coup', 'hors'],
+    Normal: ['ballon', 'gardien', 'arbitre', 'terrain', 'dribble', 'joueur', 'corner', 'stade', 'maillot', 'crampon'],
+    Difficile: ['defenseur', 'attaquant', 'entraineur', 'championnat', 'coequipier', 'prolongation', 'supporter'],
+  },
+  Espace: {
+    Facile: ['lune', 'mars', 'ciel', 'ovni', 'star', 'vol', 'vide', 'base', 'nuit', 'noir'],
+    Normal: ['planete', 'comete', 'galaxie', 'cosmos', 'navette', 'orbite', 'etoile', 'station', 'soleil', 'pilote'],
+    Difficile: ['astronaute', 'meteorite', 'apesanteur', 'exploration', 'observatoire', 'constellation', 'telescope'],
+  },
+};
+
 export class JsonStorageService {
   private readonly practitionersPath: string;
   private readonly patientsPath: string;
   private readonly sessionsPath: string;
+  private readonly dictionariesPath: string;
 
   constructor(private readonly dataDirectory = DEFAULT_DATA_DIRECTORY) {
     this.practitionersPath = resolve(dataDirectory, 'practitioners.json');
     this.patientsPath = resolve(dataDirectory, 'patients.json');
     this.sessionsPath = resolve(dataDirectory, 'sessions.json');
+    this.dictionariesPath = resolve(dataDirectory, 'dictionaries.json');
   }
 
   async initialize(): Promise<void> {
@@ -164,6 +179,7 @@ export class JsonStorageService {
       this.ensureFile(this.practitionersPath, initialPractitioners),
       this.ensureFile(this.patientsPath, initialPatients),
       this.ensureFile(this.sessionsPath, initialSessions),
+      this.ensureFile(this.dictionariesPath, initialDictionaries),
     ]);
 
     await this.removeLegacyDatabase();
@@ -181,8 +197,29 @@ export class JsonStorageService {
     return this.readFile(this.patientsPath);
   }
 
+  async getPatientById(id: string): Promise<Patient | undefined> {
+    const patients = await this.getPatients();
+    return patients.find((patient) => patient.id === id);
+  }
+
   async savePatients(patients: Patient[]): Promise<void> {
     await this.writeFile(this.patientsPath, patients);
+  }
+
+  async savePatient(patient: Patient): Promise<void> {
+    const patients = await this.getPatients();
+    const patientIndex = patients.findIndex((item) => item.id === patient.id);
+
+    if (patientIndex === -1) {
+      throw new Error(`Patient introuvable: ${patient.id}`);
+    }
+
+    patients[patientIndex] = patient;
+    await this.savePatients(patients);
+  }
+
+  async getDictionaries(): Promise<Record<string, Record<string, string[]>>> {
+    return this.readFile(this.dictionariesPath);
   }
 
   async getSessionsByPatient(): Promise<Record<string, SessionStats[]>> {

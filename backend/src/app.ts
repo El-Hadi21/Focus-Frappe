@@ -3,6 +3,7 @@ import express, { Express } from 'express';
 import morgan from 'morgan';
 
 import { createAuthRouter } from './routes/auth.routes';
+import { createDictionaryRouter } from './routes/dictionary.routes';
 import { createPatientRouter } from './routes/patient.routes';
 import { JsonStorageService } from './services/json-storage.service';
 
@@ -13,6 +14,7 @@ export function createApp(storage: JsonStorageService): Express {
   app.use(express.json());
   app.use(morgan('dev'));
   app.use('/api/auth', createAuthRouter(storage));
+  app.use('/api/dictionaries', createDictionaryRouter(storage));
   app.use('/api/patients', createPatientRouter(storage));
 
   app.get('/api/health', async (_request, response, next) => {
