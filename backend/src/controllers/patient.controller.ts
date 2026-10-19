@@ -29,6 +29,24 @@ export async function getPatient(
   response.status(200).json(patient);
 }
 
+export async function listPatientSessions(
+  storage: JsonStorageService,
+  request: Request,
+  response: Response,
+): Promise<void> {
+  if (!(await storage.getPatientById(request.params.id))) {
+    response.status(404).json({ message: 'Patient introuvable' });
+    return;
+  }
+
+  const sessionsByPatient = await storage.getSessionsByPatient();
+  const sessions = [...(sessionsByPatient[request.params.id] ?? [])].sort(
+    (first, second) => Date.parse(second.date) - Date.parse(first.date),
+  );
+
+  response.status(200).json(sessions);
+}
+
 export async function createPatient(
   storage: JsonStorageService,
   request: Request,
@@ -191,6 +209,39 @@ export async function saveSession(
   await storage.saveSessionsByPatient(sessionsByPatient);
 
   response.status(201).json({ sessionId: newSession.id, session: newSession });
+}
+
+export async function saveSessionNotes(
+  storage: JsonStorageService,
+  request: Request,
+  response: Response,
+): Promise<void> {
+  const patientId = request.params.id;
+  const patient = await storage.getPatientById(patientId);
+
+  if (!patient) {
+    response.status(404).json({ message: 'Patient introuvable' });
+    return;
+  }
+
+  const sessionsByPatient = await storage.getSessionsByPatient();
+  const sessions = sessionsByPatient[patientId] ?? [];
+  const session = sessions.find((item) => item.id === request.params.sessionId);
+
+  if (!session) {
+    response.status(404).json({ message: 'Séance introuvable' });
+    return;
+  }
+
+  const { notes } = request.body as { notes: string };
+  session.notes = notes;
+  sessionsByPatient[patientId] = sessions;
+  await storage.saveSessionsByPatient(sessionsByPatient);
+
+  response.status(200).json({
+    message: 'Notes enregistrées avec succès',
+    notes,
+  });
 }
 
 export async function deletePatient(

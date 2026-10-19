@@ -230,6 +230,21 @@ export class JsonStorageService {
     await this.writeFile(this.sessionsPath, sessionsByPatient);
   }
 
+  async getSessionById(
+    sessionId: string,
+  ): Promise<{ patientId: string; session: SessionStats } | undefined> {
+    const sessionsByPatient = await this.getSessionsByPatient();
+
+    for (const [patientId, sessions] of Object.entries(sessionsByPatient)) {
+      const session = sessions.find((item) => item.id === sessionId);
+      if (session) {
+        return { patientId, session };
+      }
+    }
+
+    return undefined;
+  }
+
   async getDatabase(): Promise<DatabaseSchema> {
     const [practitioners, patients, sessionsByPatient] = await Promise.all([
       this.getPractitioners(),
