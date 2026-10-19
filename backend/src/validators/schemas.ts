@@ -23,6 +23,10 @@ export const createPatientSchema = Joi.object({
   attentionProfile: Joi.string().required(),
 }).required();
 
+export const customWordsSchema = Joi.object({
+  words: Joi.array().items(Joi.string().trim().min(1)).required(),
+}).required();
+
 export const gameConfigSchema = Joi.object({
   difficulty: Joi.string().valid('Facile', 'Normal', 'Difficile').required(),
   durationSeconds: Joi.number().valid(30, 60, 90, 120, 150, 180).required(),

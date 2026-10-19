@@ -1,0 +1,12 @@
+{
+  "Football": {
+    "Facile": ["but", "tir", "jeu", "foot", "club", "main", "camp", "gant", "coup", "hors"],
+    "Normal": ["ballon", "gardien", "arbitre", "terrain", "dribble", "joueur", "corner", "stade", "maillot", "crampon"],
+    "Difficile": ["defenseur", "attaquant", "entraineur", "championnat", "coequipier", "prolongation", "supporter"]
+  },
+  "Espace": {
+    "Facile": ["lune", "mars", "ciel", "ovni", "star", "vol", "vide", "base", "nuit", "noir"],
+    "Normal": ["planete", "comete", "galaxie", "cosmos", "navette", "orbite", "etoile", "station", "soleil", "pilote"],
+    "Difficile": ["astronaute", "meteorite", "apesanteur", "exploration", "observatoire", "constellation", "telescope"]
+  }
+}

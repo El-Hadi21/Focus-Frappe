@@ -49,6 +49,46 @@ export async function createPatient(
   response.status(201).json(patient);
 }
 
+export async function addCustomWords(
+  storage: JsonStorageService,
+  request: Request,
+  response: Response,
+): Promise<void> {
+  const patient = await storage.getPatientById(request.params.id);
+
+  if (!patient) {
+    response.status(404).json({ message: 'Patient introuvable' });
+    return;
+  }
+
+  const customWords = Array.isArray(patient.customWords) ? patient.customWords : [];
+  const newWords = request.body.words as string[];
+  const existingWords = new Set(customWords);
+  const wordsToAdd = newWords.filter((word) => {
+    if (existingWords.has(word)) {
+      return false;
+    }
+
+    existingWords.add(word);
+    return true;
+  });
+  const updatedPatient: Patient = {
+    ...patient,
+    customWords: [...customWords, ...wordsToAdd],
+  };
+
+  await storage.savePatient(updatedPatient);
+
+  const hasAccentedWord = wordsToAdd.some((word) => /[éèêëàâäôöûüç]/i.test(word));
+  response.status(201).json({
+    message: 'Mots ajoutés avec succès',
+    customWords: updatedPatient.customWords,
+    warning: hasAccentedWord
+      ? 'Attention: certains mots contiennent des accents, ce qui peut impacter la vitesse de frappe.'
+      : null,
+  });
+}
+
 export async function deletePatient(
   storage: JsonStorageService,
   request: Request,
