@@ -7,6 +7,7 @@ import { GameEndComponent } from './features/game/game-end/game-end.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
+  { path: 'register', loadComponent: () => import('./features/therapist/register/register.component').then(m => m.RegisterComponent) },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'create-profile', loadComponent: () => import('./features/therapist/create-profile/create-profile.component').then(m => m.CreateProfileComponent) },
   { path: 'patient/:id', loadComponent: () => import('./features/therapist/patient-hub/patient-hub.component').then(m => m.PatientHubComponent) },

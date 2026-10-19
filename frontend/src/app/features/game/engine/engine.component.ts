@@ -75,12 +75,19 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     const id = this.route.snapshot.paramMap.get('patientId');
-    this.patient = id ? this.patientService.getPatientById(id) : undefined;
-    if (!this.patient) { void this.router.navigate(['/dashboard']); return; }
-    this.config = this.patientService.currentConfigSnapshot ?? this.defaultConfig(this.patient);
-    this.selectedTheme = this.config.theme;
-    this.totalObstacles = Math.max(3, Math.round(this.config.durationSeconds / 10));
-    if (this.route.snapshot.queryParamMap.get('autostart') === 'true') void this.selectThemeAndStart(this.selectedTheme);
+    if (!id) { void this.router.navigate(['/dashboard']); return; }
+    this.patientService.getPatientById(id).subscribe({
+      next: (patient) => {
+        this.patient = patient;
+        this.config = this.patientService.currentConfigSnapshot ?? this.defaultConfig(patient);
+        this.selectedTheme = this.config.theme;
+        this.totalObstacles = Math.max(3, Math.round(this.config.durationSeconds / 10));
+        if (this.route.snapshot.queryParamMap.get('autostart') === 'true') {
+          void this.selectThemeAndStart(this.selectedTheme);
+        }
+      },
+      error: () => void this.router.navigate(['/dashboard']),
+    });
   }
 
   ngOnDestroy(): void { this.stopLoop(); }
@@ -107,6 +114,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     this.selectedTheme = theme;
     this.config = { ...this.config, theme };
     this.patientService.setCurrentConfig(this.config);
+    await this.wordService.loadDictionaries();
     this.images = await this.preloadTheme(THEME_CONFIGS[theme]);
     this.renderer = theme === 'Football' ? new FootballSceneRenderer(THEME_CONFIGS.Football) : new SpaceSceneRenderer(THEME_CONFIGS.Espace);
     this.isLoadingTheme = false;
@@ -163,23 +171,27 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    const sessionId = this.patientService.saveSession(this.patient.id, {
-      gamesCount: 1,
+    const sessionId = this.route.snapshot.queryParamMap.get('sessionId') ?? undefined;
+    this.patientService.saveSession(this.patient.id, {
+      sessionId,
       config: this.config,
-      avgResponseTimeSec: this.avgResponseTimeSeconds,
+      responseTimesMs: this.responseTimesMs,
       obstaclesCleared: this.telemetry.obstaclesCleared,
       obstaclesMissed: this.telemetry.obstaclesMissed,
       outOfWindowClicks: this.telemetry.outOfWindowClicks,
       typingErrors: this.telemetry.typingErrors,
-      maxStreak: this.telemetry.maxStreak,
+      currentMaxStreak: this.telemetry.maxStreak,
       playedDurationSec: Math.round((performance.now() - this.gameStartedAt) / 1000),
-      plannedDurationSec: this.config.durationSeconds,
-      abandons: 0,
-      score: this.telemetry.getScore(this.totalObstacles),
+      abandoned: false,
+    }).subscribe({
+      next: (result) => {
+        this.stopLoop();
+        void this.router.navigate(['/game-end', result.sessionId]);
+      },
+      error: () => {
+        this.stopLoop();
+      },
     });
-
-    this.stopLoop();
-    void this.router.navigate(['/game-end', sessionId]);
   }
   private draw(time: number): void {
     const canvas = this.canvasRef?.nativeElement; if (!canvas || !this.context || !this.renderer) return;

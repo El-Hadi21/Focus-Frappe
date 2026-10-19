@@ -1,0 +1,95 @@
+<main class="register-page">
+  <section class="register-card card" aria-labelledby="register-title">
+    <h1 id="register-title">Créer un compte praticien</h1>
+
+    <form
+      class="register-form"
+      [formGroup]="registerForm"
+      (ngSubmit)="submit()"
+      novalidate
+    >
+      <div class="form-field">
+        <label for="firstName">Prénom</label>
+        <input id="firstName" type="text" autocomplete="given-name" formControlName="firstName" />
+        @if (registerForm.controls.firstName.invalid && registerForm.controls.firstName.touched) {
+          <small class="field-error">Le prénom est obligatoire.</small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="lastName">Nom</label>
+        <input id="lastName" type="text" autocomplete="family-name" formControlName="lastName" />
+        @if (registerForm.controls.lastName.invalid && registerForm.controls.lastName.touched) {
+          <small class="field-error">Le nom est obligatoire.</small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="email" formControlName="email" />
+        @if (registerForm.controls.email.invalid && registerForm.controls.email.touched) {
+          <small class="field-error">Saisissez une adresse email valide.</small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="age">Âge</label>
+        <input id="age" type="number" min="1" max="120" formControlName="age" />
+        @if (registerForm.controls.age.invalid && registerForm.controls.age.touched) {
+          <small class="field-error">L'âge doit être compris entre 1 et 120 ans.</small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="password">Mot de passe</label>
+        <input id="password" type="password" autocomplete="new-password" formControlName="password" />
+      </div>
+
+      <div class="form-field">
+        <label for="confirmPassword">Confirmer le mot de passe</label>
+        <input id="confirmPassword" type="password" autocomplete="new-password" formControlName="confirmPassword" />
+        @if (
+          registerForm.hasError('passwordsMismatch') &&
+          registerForm.controls.confirmPassword.touched
+        ) {
+          <small class="field-error" role="alert">
+            Les mots de passe ne correspondent pas.
+          </small>
+        }
+      </div>
+
+      <div class="avatar-field">
+        <span class="avatar-label">Photo de profil</span>
+        <input
+          type="file"
+          id="avatar-upload"
+          accept="image/*"
+          style="display: none;"
+          (change)="onFileSelected($event)"
+        />
+        <label for="avatar-upload" class="avatar-upload-circle" tabindex="0">
+          @if (picturePreview) {
+            <img [src]="picturePreview" alt="Aperçu de la photo de profil" />
+          } @else {
+            <span class="add-icon" aria-hidden="true">+</span>
+          }
+        </label>
+      </div>
+
+      @if (registerError) {
+        <p class="register-error" role="alert">
+          Impossible de créer le compte. Vérifiez les informations saisies.
+        </p>
+      }
+
+      <div class="register-actions">
+        <button type="submit" class="btn-primary" [disabled]="isLoading">
+          {{ isLoading ? 'Inscription...' : "S'inscrire" }}
+        </button>
+        <button type="button" class="btn-secondary" (click)="goToLogin()">
+          Retour
+        </button>
+      </div>
+    </form>
+  </section>
+</main>

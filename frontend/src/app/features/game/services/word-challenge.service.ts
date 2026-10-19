@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 import { GameConfig } from '../../../core/models/game-config.model';
 import { THEME_CONFIGS } from '../../../core/models/theme-config.model';
@@ -14,17 +16,30 @@ export interface WordLetterTile {
 
 @Injectable({ providedIn: 'root' })
 export class WordChallengeService {
+  private readonly dictionariesUrl = 'http://localhost:3000/api/dictionaries';
+  private dictionaries: Record<string, Record<string, string[]>> | null = null;
   private word = '';
   private typedIndex = 0;
   private hiddenIndices = new Set<number>();
   private mode: GameConfig['mode'] = 'Mot exact';
+
+  constructor(private readonly http: HttpClient) {}
+
+  async loadDictionaries(): Promise<void> {
+    if (!this.dictionaries) {
+      this.dictionaries = await firstValueFrom(
+        this.http.get<Record<string, Record<string, string[]>>>(this.dictionariesUrl),
+      );
+    }
+  }
 
   prepareWord(
     theme: GameConfig['theme'],
     difficulty: GameConfig['difficulty'],
     mode: GameConfig['mode'],
   ): WordLetterTile[] {
-    const words = THEME_CONFIGS[theme].dictionaries[difficulty];
+    const words = this.dictionaries?.[theme]?.[difficulty]
+      ?? THEME_CONFIGS[theme].dictionaries[difficulty];
     this.word = words[Math.floor(Math.random() * words.length)];
     this.typedIndex = 0;
     this.mode = mode;
