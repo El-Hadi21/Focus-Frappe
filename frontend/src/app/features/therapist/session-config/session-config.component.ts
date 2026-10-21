@@ -8,6 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { GameConfig } from '../../../core/models/game-config.model';
 import { Patient } from '../../../core/models/patient.model';
+import { GameConfigService } from '../../../core/services/game-config.service';
 import { PatientService } from '../../../core/services/patient.service';
 
 @Component({
@@ -21,6 +22,7 @@ export class SessionConfigComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly patientService = inject(PatientService);
+  private readonly gameConfigService = inject(GameConfigService);
   private readonly formBuilder = inject(FormBuilder);
 
   readonly difficulties: GameConfig['difficulty'][] = ['Facile', 'Normal', 'Difficile'];
@@ -59,7 +61,7 @@ export class SessionConfigComponent implements OnInit {
       return;
     }
 
-    this.patientService.setCurrentConfig(this.configForm.getRawValue());
+    this.gameConfigService.setCurrentConfig(this.configForm.getRawValue());
     void this.router.navigate(['/game', this.patient.id]);
   }
 

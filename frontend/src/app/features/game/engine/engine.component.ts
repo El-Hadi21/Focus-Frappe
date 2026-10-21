@@ -4,7 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GameConfig } from '../../../core/models/game-config.model';
 import { Patient } from '../../../core/models/patient.model';
 import { THEME_CONFIGS, ThemeConfig } from '../../../core/models/theme-config.model';
+import { GameConfigService } from '../../../core/services/game-config.service';
 import { PatientService } from '../../../core/services/patient.service';
+import { SessionService } from '../../../core/services/session.service';
 import { FootballSceneRenderer } from '../renderers/football-scene.renderer';
 import { SpaceSceneRenderer } from '../renderers/space-scene.renderer';
 import { RenderPhase, SceneRenderer } from '../renderers/scene-renderer.interface';
@@ -25,6 +27,8 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly patientService = inject(PatientService);
+  private readonly gameConfigService = inject(GameConfigService);
+  private readonly sessionService = inject(SessionService);
   private readonly wordService = inject(WordChallengeService);
   readonly telemetry = inject(GameTelemetryService);
   readonly themes: GameConfig['theme'][] = ['Football', 'Espace'];
@@ -79,7 +83,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     this.patientService.getPatientById(id).subscribe({
       next: (patient) => {
         this.patient = patient;
-        this.config = this.patientService.currentConfigSnapshot ?? this.defaultConfig(patient);
+        this.config = this.gameConfigService.currentConfigSnapshot ?? this.defaultConfig(patient);
         this.selectedTheme = this.config.theme;
         this.totalObstacles = Math.max(3, Math.round(this.config.durationSeconds / 10));
         if (this.route.snapshot.queryParamMap.get('autostart') === 'true') {
@@ -113,7 +117,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     this.isLoadingTheme = true;
     this.selectedTheme = theme;
     this.config = { ...this.config, theme };
-    this.patientService.setCurrentConfig(this.config);
+    this.gameConfigService.setCurrentConfig(this.config);
     await this.wordService.loadDictionaries();
     this.images = await this.preloadTheme(THEME_CONFIGS[theme]);
     this.renderer = theme === 'Football' ? new FootballSceneRenderer(THEME_CONFIGS.Football) : new SpaceSceneRenderer(THEME_CONFIGS.Espace);
@@ -172,7 +176,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     }
 
     const sessionId = this.route.snapshot.queryParamMap.get('sessionId') ?? undefined;
-    this.patientService.saveSession(this.patient.id, {
+    this.sessionService.saveSession(this.patient.id, {
       sessionId,
       config: this.config,
       responseTimesMs: this.responseTimesMs,

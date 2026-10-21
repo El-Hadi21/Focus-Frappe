@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Patient } from '../../../core/models/patient.model';
 import { SessionStats } from '../../../core/models/session-stats.model';
 import { PatientService } from '../../../core/services/patient.service';
+import { SessionService } from '../../../core/services/session.service';
 import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 
 interface ChartPoint {
@@ -27,6 +28,7 @@ interface ChartPoint {
 export class PatientStatsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly patientService = inject(PatientService);
+  private readonly sessionService = inject(SessionService);
   private readonly router = inject(Router);
 
   patient: Patient | undefined;
@@ -50,7 +52,7 @@ export class PatientStatsComponent implements OnInit {
     this.patientService.getPatientById(this.patientId).subscribe({
       next: (patient) => {
         this.patient = patient;
-        this.patientService.getPatientStats(this.patientId).subscribe({
+        this.sessionService.getPatientStats(this.patientId).subscribe({
           next: (sessions) => {
             this.sessions = [...sessions].sort(
               (first, second) => second.date.getTime() - first.date.getTime(),
@@ -211,7 +213,7 @@ export class PatientStatsComponent implements OnInit {
     this.isSavingNotes = true;
     this.notesSaved = false;
     this.notesSaveError = false;
-    this.patientService
+    this.sessionService
       .saveSessionNotes(this.patientId, this.lastSession.id, this.notesDraft.trim())
       .subscribe({
         next: (saved) => {

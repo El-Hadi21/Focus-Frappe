@@ -73,6 +73,70 @@
       "plannedDurationSec": 120,
       "abandons": 0,
       "score": 750
+    },
+    {
+      "id": "session-patient-1792435866288-4bwzsq-1792606204287-21qovq",
+      "date": "2026-10-21T18:10:04.287Z",
+      "gamesCount": 1,
+      "config": {
+        "difficulty": "Facile",
+        "durationSeconds": 90,
+        "mode": "Mot exact",
+        "theme": "Espace"
+      },
+      "responseTimesMs": [
+        2120.800000017887,
+        1762.1000000119093,
+        6550.500000005966,
+        2241.5000000119326,
+        6312.5,
+        5420.200000005949,
+        2161.1999999940454,
+        2454.7000000000116,
+        1728.7999999999884
+      ],
+      "avgResponseTimeSec": 3.4169222222275213,
+      "obstaclesCleared": 9,
+      "obstaclesMissed": 0,
+      "outOfWindowClicks": 0,
+      "typingErrors": 0,
+      "maxStreak": 9,
+      "playedDurationSec": 63,
+      "plannedDurationSec": 90,
+      "abandons": 0,
+      "score": 750
+    },
+    {
+      "id": "session-patient-1792435866288-4bwzsq-1792606204342-sxnmsq",
+      "date": "2026-10-21T18:10:04.342Z",
+      "gamesCount": 1,
+      "config": {
+        "difficulty": "Facile",
+        "durationSeconds": 90,
+        "mode": "Mot exact",
+        "theme": "Espace"
+      },
+      "responseTimesMs": [
+        2120.800000017887,
+        1762.1000000119093,
+        6550.500000005966,
+        2241.5000000119326,
+        6312.5,
+        5420.200000005949,
+        2161.1999999940454,
+        2454.7000000000116,
+        1728.7999999999884
+      ],
+      "avgResponseTimeSec": 3.4169222222275213,
+      "obstaclesCleared": 9,
+      "obstaclesMissed": 0,
+      "outOfWindowClicks": 0,
+      "typingErrors": 0,
+      "maxStreak": 9,
+      "playedDurationSec": 63,
+      "plannedDurationSec": 90,
+      "abandons": 0,
+      "score": 750
     }
   ]
 }
