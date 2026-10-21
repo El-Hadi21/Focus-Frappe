@@ -10,6 +10,7 @@ import { GameConfig } from '../../../core/models/game-config.model';
 import { Patient } from '../../../core/models/patient.model';
 import { GameConfigService } from '../../../core/services/game-config.service';
 import { PatientService } from '../../../core/services/patient.service';
+import { ClinicalDefaultsService } from '../../game/services/clinical-defaults.service';
 
 @Component({
   selector: 'app-session-config',
@@ -23,6 +24,7 @@ export class SessionConfigComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly patientService = inject(PatientService);
   private readonly gameConfigService = inject(GameConfigService);
+  private readonly clinicalDefaultsService = inject(ClinicalDefaultsService);
   private readonly formBuilder = inject(FormBuilder);
 
   readonly difficulties: GameConfig['difficulty'][] = ['Facile', 'Normal', 'Difficile'];
@@ -47,7 +49,9 @@ export class SessionConfigComponent implements OnInit {
     this.patientService.getPatientById(patientId).subscribe({
       next: (patient) => {
         this.patient = patient;
-        this.configForm.patchValue(this.getClinicalDefaults(patient));
+        const config = this.gameConfigService.getConfigForPatient(patient.id)
+          ?? this.clinicalDefaultsService.getDefaultConfig(patient);
+        this.configForm.patchValue(config);
       },
       error: () => {
         void this.router.navigate(['/dashboard']);
@@ -61,7 +65,8 @@ export class SessionConfigComponent implements OnInit {
       return;
     }
 
-    this.gameConfigService.setCurrentConfig(this.configForm.getRawValue());
+    const config = this.configForm.getRawValue();
+    this.gameConfigService.setConfigForPatient(this.patient.id, config);
     void this.router.navigate(['/game', this.patient.id]);
   }
 
@@ -74,36 +79,4 @@ export class SessionConfigComponent implements OnInit {
     void this.router.navigate(['/patient', this.patient?.id ?? '']);
   }
 
-  private getClinicalDefaults(patient: Patient): Pick<GameConfig, 'difficulty' | 'durationSeconds'> {
-    const dysgraphiaSeverity = this.normalize(patient.dysgraphiaSeverity);
-    const attentionProfile = this.normalize(patient.attentionProfile);
-
-    const difficulty: GameConfig['difficulty'] =
-      dysgraphiaSeverity === 'severe'
-        ? 'Facile'
-        : dysgraphiaSeverity === 'moderee'
-          ? 'Normal'
-          : dysgraphiaSeverity === 'legere'
-            ? 'Difficile'
-            : 'Normal';
-
-    const durationSeconds: GameConfig['durationSeconds'] =
-      attentionProfile === 'inattentif'
-        ? 60
-        : attentionProfile === 'mixte'
-          ? 90
-          : attentionProfile === 'hyperactif'
-            ? 120
-            : 90;
-
-    return { difficulty, durationSeconds };
-  }
-
-  private normalize(value: string): string {
-    return value
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .trim();
-  }
 }

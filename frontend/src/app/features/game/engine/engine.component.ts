@@ -7,9 +7,9 @@ import { THEME_CONFIGS, ThemeConfig } from '../../../core/models/theme-config.mo
 import { GameConfigService } from '../../../core/services/game-config.service';
 import { PatientService } from '../../../core/services/patient.service';
 import { SessionService } from '../../../core/services/session.service';
-import { FootballSceneRenderer } from '../renderers/football-scene.renderer';
-import { SpaceSceneRenderer } from '../renderers/space-scene.renderer';
 import { RenderPhase, SceneRenderer } from '../renderers/scene-renderer.interface';
+import { getRendererForTheme } from '../renderers/theme-renderer.registry';
+import { ClinicalDefaultsService } from '../services/clinical-defaults.service';
 import { GameTelemetryService } from '../services/game-telemetry.service';
 import { WordChallengeService, WordLetterTile } from '../services/word-challenge.service';
 
@@ -29,6 +29,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   private readonly patientService = inject(PatientService);
   private readonly gameConfigService = inject(GameConfigService);
   private readonly sessionService = inject(SessionService);
+  private readonly clinicalDefaultsService = inject(ClinicalDefaultsService);
   private readonly wordService = inject(WordChallengeService);
   readonly telemetry = inject(GameTelemetryService);
   readonly themes: GameConfig['theme'][] = ['Football', 'Espace'];
@@ -63,6 +64,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   private gameStartedAt = 0;
   private images: Record<string, HTMLImageElement> = {};
   private renderer!: SceneRenderer;
+  private isSavingSession = false;
   private readonly focusStartX = 640;
   private readonly focusEndX = 250;
 
@@ -83,7 +85,9 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     this.patientService.getPatientById(id).subscribe({
       next: (patient) => {
         this.patient = patient;
-        this.config = this.gameConfigService.currentConfigSnapshot ?? this.defaultConfig(patient);
+        this.config = this.gameConfigService.getConfigForPatient(patient.id)
+          ?? this.gameConfigService.currentConfigSnapshot
+          ?? this.clinicalDefaultsService.getDefaultConfig(patient);
         this.selectedTheme = this.config.theme;
         this.totalObstacles = Math.max(3, Math.round(this.config.durationSeconds / 10));
         if (this.route.snapshot.queryParamMap.get('autostart') === 'true') {
@@ -117,20 +121,61 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     this.isLoadingTheme = true;
     this.selectedTheme = theme;
     this.config = { ...this.config, theme };
-    this.gameConfigService.setCurrentConfig(this.config);
+    this.gameConfigService.setConfigForPatient(this.patient.id, this.config);
     await this.wordService.loadDictionaries();
     this.images = await this.preloadTheme(THEME_CONFIGS[theme]);
-    this.renderer = theme === 'Football' ? new FootballSceneRenderer(THEME_CONFIGS.Football) : new SpaceSceneRenderer(THEME_CONFIGS.Espace);
+    this.renderer = getRendererForTheme(theme);
     this.isLoadingTheme = false;
     this.startGame();
   }
 
   replaySameTheme(): void { void this.selectThemeAndStart(this.selectedTheme); }
   openThemeSelection(): void { this.stopLoop(); this.phase = 'SELECT_THEME'; }
-  quitToProfile(): void { this.stopLoop(); if (this.patient) void this.router.navigate(['/patient', this.patient.id]); }
+  quitToProfile(): void {
+    if (!this.patient) {
+      return;
+    }
+
+    if ((this.phase === 'APPROACHING' || this.phase === 'FOCUS') && !this.isSavingSession) {
+      this.isSavingSession = true;
+      this.phase = 'FINISHED';
+      this.stopLoop();
+      const sessionId = this.route.snapshot.queryParamMap.get('sessionId') ?? undefined;
+      this.sessionService.saveSession(this.patient.id, {
+        sessionId,
+        config: this.config,
+        responseTimesMs: this.responseTimesMs,
+        obstaclesCleared: this.telemetry.obstaclesCleared,
+        obstaclesMissed: this.telemetry.obstaclesMissed,
+        outOfWindowClicks: this.telemetry.outOfWindowClicks,
+        typingErrors: this.telemetry.typingErrors,
+        currentMaxStreak: this.telemetry.maxStreak,
+        playedDurationSec: Math.round((performance.now() - this.gameStartedAt) / 1000),
+        abandoned: true,
+      }).subscribe({
+        next: () => void this.router.navigate(['/patient', this.patient!.id]),
+        error: () => void this.router.navigate(['/patient', this.patient!.id]),
+      });
+      return;
+    }
+
+    this.stopLoop();
+    void this.router.navigate(['/patient', this.patient.id]);
+  }
 
   private startGame(): void {
-    this.stopLoop(); this.telemetry.reset(); this.currentObstacle = 1; this.worldScrollX = 0;
+    this.stopLoop();
+    this.telemetry.reset();
+    this.currentObstacle = 1;
+    this.worldScrollX = 0;
+    this.isSavingSession = false;
+    if (this.patient) {
+      this.config = this.gameConfigService.getConfigForPatient(this.patient.id)
+        ?? this.gameConfigService.currentConfigSnapshot
+        ?? this.clinicalDefaultsService.getDefaultConfig(this.patient);
+      this.selectedTheme = this.config.theme;
+    }
+    this.totalObstacles = Math.max(3, Math.round(this.config.durationSeconds / 10));
     this.phase = 'COUNTDOWN'; this.phaseStartedAt = performance.now(); this.countdownValue = 3;
     this.gameStartedAt = this.phaseStartedAt;
     setTimeout(() => { this.context = this.canvasRef?.nativeElement.getContext('2d') ?? undefined; this.frame = requestAnimationFrame(t => this.render(t)); });
@@ -156,7 +201,12 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   private spawnObstacle(time: number): void {
     this.phase = 'APPROACHING'; this.phaseStartedAt = time; this.obstacleX = 980; this.obstacleY = 310;
     this.obstacleType = this.currentObstacle % 2 === 1 ? 'A' : 'B';
-    this.letterTiles = this.wordService.prepareWord(this.selectedTheme, this.config.difficulty, this.config.mode);
+    this.letterTiles = this.wordService.prepareWord(
+      this.selectedTheme,
+      this.config.difficulty,
+      this.config.mode,
+      this.patient?.customWords,
+    );
     this.targetWord = this.wordService.targetWord; this.hasEarlyPressWarning = false;
   }
   private success(time: number): void { if (this.phase !== 'FOCUS') return; this.telemetry.recordSuccess(time - this.focusEnteredAt); this.resolutionStartX = this.obstacleX; this.phase = 'RESOLVING_SUCCESS'; this.phaseStartedAt = time; }
@@ -171,10 +221,13 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   }
 
   private finishGame(): void {
-    if (!this.patient) {
+    if (!this.patient || this.isSavingSession) {
       return;
     }
 
+    this.isSavingSession = true;
+    this.phase = 'FINISHED';
+    this.stopLoop();
     const sessionId = this.route.snapshot.queryParamMap.get('sessionId') ?? undefined;
     this.sessionService.saveSession(this.patient.id, {
       sessionId,
@@ -189,11 +242,10 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
       abandoned: false,
     }).subscribe({
       next: (result) => {
-        this.stopLoop();
         void this.router.navigate(['/game-end', result.sessionId]);
       },
       error: () => {
-        this.stopLoop();
+        this.isSavingSession = false;
       },
     });
   }
@@ -209,9 +261,4 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     const entries = await Promise.all(paths.map(async path => [path, await this.loadImage(path)] as const)); return Object.fromEntries(entries);
   }
   private loadImage(src: string): Promise<HTMLImageElement> { return new Promise(resolve => { const image = new Image(); image.onload = () => resolve(image); image.onerror = () => resolve(image); image.src = src; }); }
-  private defaultConfig(patient: Patient): GameConfig {
-    const normalize = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-    const severity = normalize(patient.dysgraphiaSeverity); const profile = normalize(patient.attentionProfile);
-    return { difficulty: severity === 'severe' ? 'Facile' : severity === 'moderee' ? 'Normal' : 'Difficile', durationSeconds: profile === 'inattentif' ? 60 : profile === 'hyperactif' ? 120 : 90, mode: 'Mot exact', theme: 'Football' };
-  }
 }

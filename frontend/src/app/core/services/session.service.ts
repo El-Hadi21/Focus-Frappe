@@ -47,8 +47,8 @@ export class SessionService {
 
   getSessionById(sessionId: string): Observable<SessionLookupResponse> {
     return this.http
-      .get<SessionStats>(`${this.API_URL}/sessions/${sessionId}`)
-      .pipe(map((session) => ({ patientId: this.extractPatientId(session.id), session: this.mapSession(session) })));
+      .get<SessionLookupResponse>(`${this.API_URL}/sessions/${sessionId}`)
+      .pipe(map((result) => ({ patientId: result.patientId, session: this.mapSession(result.session) })));
   }
 
   getPatientStats(patientId: string): Observable<SessionStats[]> {
@@ -73,8 +73,4 @@ export class SessionService {
     };
   }
 
-  private extractPatientId(sessionId: string): string {
-    const parts = sessionId.split('-');
-    return parts.length >= 3 ? parts.slice(1, -2).join('-') : '';
-  }
 }

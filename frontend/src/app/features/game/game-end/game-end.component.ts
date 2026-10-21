@@ -62,8 +62,10 @@ export class GameEndComponent implements OnInit {
   }
 
   changeTheme(): void {
-    if (this.patient) {
-      void this.router.navigate(['/game', this.patient.id]);
+    if (this.patient && this.session) {
+      void this.router.navigate(['/game', this.patient.id], {
+        queryParams: { sessionId: this.session.id },
+      });
     }
   }
 

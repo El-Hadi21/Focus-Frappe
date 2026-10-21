@@ -19,6 +19,7 @@ export class WordChallengeService {
   private readonly dictionariesUrl = 'http://localhost:3000/api/dictionaries';
   private dictionaries: Record<string, Record<string, string[]>> | null = null;
   private word = '';
+  private lastWord = '';
   private typedIndex = 0;
   private hiddenIndices = new Set<number>();
   private mode: GameConfig['mode'] = 'Mot exact';
@@ -37,24 +38,30 @@ export class WordChallengeService {
     theme: GameConfig['theme'],
     difficulty: GameConfig['difficulty'],
     mode: GameConfig['mode'],
+    customWords: string[] = [],
   ): WordLetterTile[] {
-    const words = this.dictionaries?.[theme]?.[difficulty]
+    const dictionaryWords = this.dictionaries?.[theme]?.[difficulty]
       ?? THEME_CONFIGS[theme].dictionaries[difficulty];
-    this.word = words[Math.floor(Math.random() * words.length)];
+    const minLength = difficulty === 'Facile' ? 1 : difficulty === 'Normal' ? 5 : 9;
+    const maxLength = difficulty === 'Facile' ? 4 : difficulty === 'Normal' ? 8 : Infinity;
+    const matchingCustomWords = customWords.filter(
+      (word) => word.length >= minLength && word.length <= maxLength,
+    );
+    const words = [...new Set([...dictionaryWords, ...matchingCustomWords])];
+    const availableWords = words.length > 1 ? words.filter((candidate) => candidate !== this.lastWord) : words;
+    this.word = availableWords[Math.floor(Math.random() * availableWords.length)] ?? '';
+    this.lastWord = this.word;
     this.typedIndex = 0;
     this.mode = mode;
-    this.hiddenIndices = mode === 'Mot à trous' ? this.computeHiddenIndices(this.word) : new Set();
+    this.hiddenIndices = mode === 'Mot à trous' ? this.computeHiddenIndices(this.word, difficulty) : new Set();
     return this.getTiles();
   }
 
-  computeHiddenIndices(word: string): Set<number> {
-    const hidden = new Set<number>();
-    for (let index = 1; index < word.length - 1; index += 1) {
-      if (index % 2 === 1 || word.length >= 9) {
-        hidden.add(index);
-      }
-    }
-    return hidden;
+  computeHiddenIndices(word: string, difficulty: GameConfig['difficulty']): Set<number> {
+    const hiddenCount = difficulty === 'Facile' ? 1 : difficulty === 'Normal' ? 2 : 3;
+    const candidates = Array.from({ length: Math.max(0, word.length - 2) }, (_, index) => index + 1);
+    const shuffled = candidates.sort(() => Math.random() - 0.5);
+    return new Set(shuffled.slice(0, hiddenCount));
   }
 
   checkCharacter(char: string): 'correct' | 'incorrect' | 'complete' {

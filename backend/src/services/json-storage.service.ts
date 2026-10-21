@@ -41,6 +41,7 @@ export class JsonStorageService {
   private readonly patientsPath: string;
   private readonly sessionsPath: string;
   private readonly dictionariesPath: string;
+  private writeQueue: Promise<void> = Promise.resolve();
 
   constructor(private readonly dataDirectory = DEFAULT_DATA_DIRECTORY) {
     this.practitionersPath = resolve(dataDirectory, 'practitioners.json');
@@ -153,9 +154,13 @@ export class JsonStorageService {
   }
 
   private async writeFile<T>(path: string, value: T): Promise<void> {
-    const temporaryPath = `${path}.tmp`;
-    await writeFile(temporaryPath, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
-    await rename(temporaryPath, path);
+    const writeOperation = this.writeQueue.then(async () => {
+      const temporaryPath = `${path}.${Date.now()}-${Math.random().toString(36).slice(2, 7)}.tmp`;
+      await writeFile(temporaryPath, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+      await rename(temporaryPath, path);
+    });
+    this.writeQueue = writeOperation.catch(() => undefined);
+    await writeOperation;
   }
 
   private async removeLegacyDatabase(): Promise<void> {
