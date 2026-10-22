@@ -8,15 +8,17 @@ import { SessionStats } from '../../../core/models/session-stats.model';
 import { PatientService } from '../../../core/services/patient.service';
 import { SessionService } from '../../../core/services/session.service';
 import { LoaderComponent } from '../../../shared/components/loader/loader.component';
-
-interface ChartPoint {
-  x: number;
-  y: number;
-  valueLabel: string;
-  sessionLabel: string;
-  tooltip: string;
-  isLast: boolean;
-}
+import {
+  ChartMetric,
+  ChartPoint,
+  getAreaPath,
+  getChartMaxValue,
+  getChartPointTooltip,
+  getChartPoints,
+  getChartScaleLabels,
+  getChartValue as getChartMetricValue,
+  getPolylinePoints,
+} from '../../../shared/utils/stats-chart.utils';
 
 @Component({
   selector: 'app-patient-stats',
@@ -35,7 +37,7 @@ export class PatientStatsComponent implements OnInit {
   sessions: SessionStats[] = [];
   lastSession: SessionStats | undefined;
   isLoading = true;
-  selectedChart: 'score' | 'clearance' | 'responseTime' = 'score';
+  selectedChart: ChartMetric = 'score';
   notesDraft = '';
   notesSaved = false;
   notesSaveError = false;
@@ -116,93 +118,27 @@ export class PatientStatsComponent implements OnInit {
   }
 
   get chartScaleLabels(): string[] {
-    const max = this.chartMaxValue;
-    const suffix = this.selectedChart === 'score' ? ' pts' : this.selectedChart === 'clearance' ? ' %' : ' s';
-
-    return [1, 0.75, 0.5, 0.25, 0].map((ratio) => {
-      const value = max * ratio;
-      return `${value.toFixed(this.selectedChart === 'score' ? 0 : 1)}${suffix}`;
-    });
+    return getChartScaleLabels(this.chronologicalSessions, this.selectedChart);
   }
 
   get chartMaxValue(): number {
-    return Math.max(...this.chronologicalSessions.map((session) => this.getChartValue(session)), 1);
+    return getChartMaxValue(this.chronologicalSessions, this.selectedChart);
   }
 
   get chartPoints(): ChartPoint[] {
-    const sessions = this.chronologicalSessions;
-    const xStart = 42;
-    const xEnd = 558;
-    const yTop = 18;
-    const yBottom = 138;
-    const xStep = sessions.length > 1 ? (xEnd - xStart) / (sessions.length - 1) : 0;
-    const max = this.chartMaxValue;
-
-    return sessions.map((session, index) => {
-      const value = this.getChartValue(session);
-      const point: ChartPoint = {
-        x: sessions.length > 1 ? xStart + index * xStep : (xStart + xEnd) / 2,
-        y: yBottom - (value / max) * (yBottom - yTop),
-        valueLabel: this.formatChartValue(value),
-        sessionLabel: `S${index + 1}`,
-        tooltip: this.getChartPointTooltip(session, index),
-        isLast: index === sessions.length - 1,
-      };
-
-      return point;
-    });
+    return getChartPoints(this.chronologicalSessions, this.selectedChart);
   }
 
   get polylinePoints(): string {
-    return this.chartPoints.map(({ x, y }) => `${x},${y}`).join(' ');
+    return getPolylinePoints(this.chartPoints);
   }
 
   get areaPath(): string {
-    const points = this.chartPoints;
-    if (points.length === 0) {
-      return '';
-    }
-
-    const baseline = 138;
-    const first = points[0];
-    const last = points[points.length - 1];
-    return `M ${first.x} ${baseline} L ${points.map(({ x, y }) => `${x} ${y}`).join(' L ')} L ${last.x} ${baseline} Z`;
-  }
-
-  private formatChartValue(value: number): string {
-    if (this.selectedChart === 'score') {
-      return `${value.toFixed(0)} pts`;
-    }
-
-    return `${value.toFixed(1)}${this.selectedChart === 'clearance' ? ' %' : ' s'}`;
-  }
-
-  private getChartPointTooltip(session: SessionStats, index: number): string {
-    return [
-      `${this.getChartPointDate(session)} - Séance ${index + 1}`,
-      `Valeur : ${this.formatChartValue(this.getChartValue(session))}`,
-      `Palier ${session.config.difficulty}`,
-      `Mode : ${session.config.mode}`,
-      `Durée : ${session.config.durationSeconds}s`,
-    ].join(' | ');
-  }
-
-  private getChartPointDate(session: SessionStats): string {
-    return new Intl.DateTimeFormat('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    }).format(session.date);
+    return getAreaPath(this.chartPoints);
   }
 
   getChartValue(session: SessionStats): number {
-    if (this.selectedChart === 'clearance') {
-      return this.getClearanceRate(session);
-    }
-
-    return this.selectedChart === 'responseTime'
-      ? session.avgResponseTimeSec
-      : session.score;
+    return getChartMetricValue(session, this.selectedChart);
   }
 
   saveNotes(): void {

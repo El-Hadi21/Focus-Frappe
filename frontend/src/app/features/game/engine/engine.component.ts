@@ -55,6 +55,9 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   countdownValue = 3;
   private context?: CanvasRenderingContext2D;
   private frame?: number;
+  private lastFrameTime = 0;
+  private visibilityPauseStartedAt = 0;
+  private isPausedByVisibility = false;
   private phaseStartedAt = 0;
   private focusEnteredAt = 0;
   private obstacleX = 980;
@@ -114,6 +117,36 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     this.letterTiles = this.wordService.getTiles();
     if (result === 'complete') this.success(performance.now());
     else if (result === 'incorrect') { this.telemetry.recordTypingError(); this.hasTypoShake = false; setTimeout(() => this.hasTypoShake = true); }
+  }
+
+  @HostListener('document:visibilitychange')
+  handleVisibilityChange(): void {
+    const isGameInProgress = this.phase !== 'SELECT_THEME' && this.phase !== 'FINISHED';
+
+    if (document.hidden) {
+      if (isGameInProgress && !this.isPausedByVisibility) {
+        this.isPausedByVisibility = true;
+        this.visibilityPauseStartedAt = performance.now();
+        this.stopLoop();
+      }
+      return;
+    }
+
+    if (!this.isPausedByVisibility) {
+      return;
+    }
+
+    const resumedAt = performance.now();
+    const pausedDuration = resumedAt - this.visibilityPauseStartedAt;
+    this.lastFrameTime = resumedAt;
+    this.phaseStartedAt += pausedDuration;
+    this.focusEnteredAt += pausedDuration;
+    this.gameStartedAt += pausedDuration;
+    this.isPausedByVisibility = false;
+
+    if (isGameInProgress) {
+      this.frame = requestAnimationFrame((time) => this.render(time));
+    }
   }
 
   async selectThemeAndStart(theme: GameConfig['theme']): Promise<void> {
@@ -181,7 +214,14 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     setTimeout(() => { this.context = this.canvasRef?.nativeElement.getContext('2d') ?? undefined; this.frame = requestAnimationFrame(t => this.render(t)); });
   }
 
-  private render(time: number): void { this.update(time); this.draw(time); if (this.phase !== 'FINISHED' && this.phase !== 'SELECT_THEME') this.frame = requestAnimationFrame(t => this.render(t)); }
+  private render(time: number): void {
+    this.lastFrameTime = time;
+    this.update(time);
+    this.draw(time);
+    if (this.phase !== 'FINISHED' && this.phase !== 'SELECT_THEME' && !document.hidden) {
+      this.frame = requestAnimationFrame((nextTime) => this.render(nextTime));
+    }
+  }
   private update(time: number): void {
     const elapsed = (time - this.phaseStartedAt) / 1000;
     this.worldScrollX = (this.worldScrollX + 120 / 60) % 960;

@@ -57,6 +57,18 @@ h3 {
   box-shadow: 0 14px 30px rgb(20 30 60 / 25%);
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .btn-primary {
   --btn-face-image: url('/assets/UI/kenny-game-UIs/PNG/Green/Default/button_rectangle_depth_flat.png');
   --btn-base-image: url('/assets/UI/kenny-game-UIs/PNG/Green/Double/button_rectangle_depth_flat.png');

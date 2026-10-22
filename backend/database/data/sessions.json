@@ -418,6 +418,29 @@
       "plannedDurationSec": 240,
       "abandons": 0,
       "score": 1500
+    },
+    {
+      "id": "session-patient-1792435866288-4bwzsq-1792629225549-y6j6rq",
+      "date": "2026-10-22T00:33:45.550Z",
+      "gamesCount": 1,
+      "config": {
+        "difficulty": "Facile",
+        "durationSeconds": 120,
+        "mode": "Mot exact",
+        "theme": "Espace"
+      },
+      "responseTimesMs": [],
+      "avgResponseTimeSec": 0,
+      "obstaclesCleared": 0,
+      "obstaclesMissed": 0,
+      "outOfWindowClicks": 0,
+      "typingErrors": 0,
+      "maxStreak": 0,
+      "playedDurationSec": 12,
+      "plannedDurationSec": 120,
+      "abandons": 1,
+      "score": 0
     }
-  ]
+  ],
+  "patient-1792629269738-4r7rrt": []
 }

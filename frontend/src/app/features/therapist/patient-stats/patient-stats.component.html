@@ -197,7 +197,9 @@
           <h2 id="notes-title">Notes d'observation</h2>
           <p class="metric-desc">Ajoutez vos remarques cliniques sur le comportement de l'enfant durant la séance.</p>
           <form class="notes-form" (ngSubmit)="saveNotes()">
+            <label for="notes-input" class="sr-only">Notes cliniques</label>
             <textarea
+              id="notes-input"
               class="notes-input"
               name="notes"
               rows="4"
