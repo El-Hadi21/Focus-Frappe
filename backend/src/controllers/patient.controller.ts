@@ -99,7 +99,7 @@ export async function addCustomWords(
 
   await storage.savePatient(updatedPatient);
 
-  const hasAccentedWord = wordsToAdd.some((word) => /[éèêëàâäôöûüç]/i.test(word));
+  const hasAccentedWord = wordsToAdd.some((word) => /[àâäçéèêëîïôöùûüÿñæœ]/i.test(word));
   response.status(201).json({
     message: 'Mots ajoutés avec succès',
     customWords: updatedPatient.customWords,
@@ -147,7 +147,7 @@ export async function saveSession(
     ? patientSessions.find((session) => session.id === sessionId)
     : undefined;
 
-  if (existingSession && areConfigsEqual(existingSession.config, config)) {
+  if (existingSession) {
     const aggregatedResponseTimesMs = existingSession.responseTimesMs
       ? [...existingSession.responseTimesMs, ...responseTimesMs]
       : undefined;
@@ -289,16 +289,6 @@ interface SaveSessionRequest {
   currentMaxStreak: number;
   playedDurationSec: number;
   abandoned: boolean;
-}
-
-function areConfigsEqual(
-  first: SessionStats['config'],
-  second: SessionStats['config'],
-): boolean {
-  return first.difficulty === second.difficulty
-    && first.durationSeconds === second.durationSeconds
-    && first.mode === second.mode
-    && first.theme === second.theme;
 }
 
 function calculateWeightedAverage(

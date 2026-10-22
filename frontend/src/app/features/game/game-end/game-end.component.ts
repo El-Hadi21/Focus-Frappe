@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Patient } from '../../../core/models/patient.model';
 import { SessionStats } from '../../../core/models/session-stats.model';
 import { PatientService } from '../../../core/services/patient.service';
+import { SessionService } from '../../../core/services/session.service';
 
 @Component({
   selector: 'app-game-end',
@@ -16,6 +17,7 @@ export class GameEndComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly patientService = inject(PatientService);
+  private readonly sessionService = inject(SessionService);
 
   patient?: Patient;
   session?: SessionStats;
@@ -28,7 +30,7 @@ export class GameEndComponent implements OnInit {
       return;
     }
 
-    this.patientService.getSessionById(sessionId).subscribe({
+    this.sessionService.getSessionById(sessionId).subscribe({
       next: (result) => {
         this.session = result.session;
         this.stars = this.calculateStars(result.session);
@@ -60,8 +62,10 @@ export class GameEndComponent implements OnInit {
   }
 
   changeTheme(): void {
-    if (this.patient) {
-      void this.router.navigate(['/game', this.patient.id]);
+    if (this.patient && this.session) {
+      void this.router.navigate(['/game', this.patient.id], {
+        queryParams: { sessionId: this.session.id },
+      });
     }
   }
 
