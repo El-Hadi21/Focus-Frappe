@@ -7,17 +7,19 @@ import { SessionStats } from '../models/session-stats.model';
 
 const DEFAULT_DATA_DIRECTORY = resolve(process.cwd(), 'database/data');
 
-const initialPractitioners: Practitioner[] = [
-  {
-    id: 'practitioner-claire',
-    firstName: 'Claire',
-    lastName: 'Martin',
-    email: process.env.DEFAULT_ERGO_EMAIL || 'ergo@example.com',
-    password: process.env.DEFAULT_ERGO_PASSWORD || 'password',
-    age: 35,
-    profilePicture: '',
-  },
-];
+function getInitialPractitioners(): Practitioner[] {
+  return [
+    {
+      id: 'practitioner-claire',
+      firstName: 'Claire',
+      lastName: 'Martin',
+      email: process.env.DEFAULT_ERGO_EMAIL || 'ergo@example.com',
+      password: process.env.DEFAULT_ERGO_PASSWORD || 'password',
+      age: 35,
+      profilePicture: '',
+    },
+  ];
+}
 
 const initialPatients: Patient[] = [];
 
@@ -54,7 +56,7 @@ export class JsonStorageService {
     await mkdir(this.dataDirectory, { recursive: true });
 
     await Promise.all([
-      this.ensureFile(this.practitionersPath, initialPractitioners),
+      this.ensureFile(this.practitionersPath, getInitialPractitioners()),
       this.ensureFile(this.patientsPath, initialPatients),
       this.ensureFile(this.sessionsPath, initialSessions),
       this.ensureFile(this.dictionariesPath, initialDictionaries),
