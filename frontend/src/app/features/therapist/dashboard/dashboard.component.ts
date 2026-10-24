@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Patient } from '../../../core/models/patient.model';
+import { AuthService, Practitioner } from '../../../core/services/auth.service';
 import { PatientService } from '../../../core/services/patient.service';
 import { LoaderComponent } from '../../../shared/components/loader/loader.component';
 
@@ -15,8 +16,10 @@ import { LoaderComponent } from '../../../shared/components/loader/loader.compon
 export class DashboardComponent implements OnInit {
   private readonly patientService = inject(PatientService);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
 
   patients: Patient[] = [];
+  practitioner: Practitioner | null = this.authService.currentPractitioner;
   isLoading = true;
 
   ngOnInit(): void {
@@ -41,6 +44,7 @@ export class DashboardComponent implements OnInit {
     }
 
   logout(): void {
+    this.authService.logout();
     void this.router.navigate(['/login']);
   }
 }

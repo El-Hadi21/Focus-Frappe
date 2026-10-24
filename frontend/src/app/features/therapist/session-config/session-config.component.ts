@@ -31,12 +31,16 @@ export class SessionConfigComponent implements OnInit {
   readonly durations: GameConfig['durationSeconds'][] = [30, 60, 90, 120, 150, 180];
   readonly themes: GameConfig['theme'][] = ['Football', 'Espace'];
   patient: Patient | undefined;
+  isAddingWord = false;
+  customWordError = '';
+  customWordMessage = '';
 
   readonly configForm = this.formBuilder.nonNullable.group({
     difficulty: this.formBuilder.nonNullable.control<GameConfig['difficulty']>('Normal', Validators.required),
     durationSeconds: this.formBuilder.nonNullable.control<GameConfig['durationSeconds']>(90, Validators.required),
     mode: this.formBuilder.nonNullable.control<GameConfig['mode']>('Mot exact', Validators.required),
     theme: this.formBuilder.nonNullable.control<GameConfig['theme']>('Football', Validators.required),
+    customWord: this.formBuilder.nonNullable.control(''),
   });
 
   ngOnInit(): void {
@@ -59,13 +63,51 @@ export class SessionConfigComponent implements OnInit {
     });
   }
 
+  addCustomWord(): void {
+    if (!this.patient || this.isAddingWord) {
+      return;
+    }
+
+    const word = this.configForm.controls.customWord.value.trim().toLowerCase();
+    const difficulty = this.configForm.controls.difficulty.value;
+    const minLength = difficulty === 'Facile' ? 1 : difficulty === 'Normal' ? 5 : 9;
+    const maxLength = difficulty === 'Facile' ? 4 : difficulty === 'Normal' ? 8 : Infinity;
+
+    this.customWordError = '';
+    this.customWordMessage = '';
+
+    if (!word) {
+      this.customWordError = 'Saisissez un mot à ajouter.';
+      return;
+    }
+
+    if (word.length < minLength || word.length > maxLength) {
+      this.customWordError = `Pour le niveau ${difficulty}, le mot doit contenir ${maxLength === Infinity ? `${minLength} lettres minimum` : `entre ${minLength} et ${maxLength} lettres`}.`;
+      return;
+    }
+
+    this.isAddingWord = true;
+    this.patientService.addCustomWords(this.patient.id, [word]).subscribe({
+      next: (result) => {
+        this.patient = { ...this.patient!, customWords: result.customWords };
+        this.configForm.controls.customWord.setValue('');
+        this.customWordMessage = result.warning ?? 'Mot ajouté avec succès.';
+        this.isAddingWord = false;
+      },
+      error: () => {
+        this.customWordError = 'Impossible d’ajouter ce mot pour le moment.';
+        this.isAddingWord = false;
+      },
+    });
+  }
+
   onSubmit(): void {
     if (this.configForm.invalid || !this.patient) {
       this.configForm.markAllAsTouched();
       return;
     }
 
-    const config = this.configForm.getRawValue();
+    const { customWord: _customWord, ...config } = this.configForm.getRawValue();
     this.gameConfigService.setConfigForPatient(this.patient.id, config);
     void this.router.navigate(['/game', this.patient.id]);
   }

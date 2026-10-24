@@ -20,8 +20,13 @@ export async function login(
       authenticated: true,
       practitioner: {
         id: practitioner.id,
+        firstName: practitioner.firstName,
+        lastName: practitioner.lastName,
         name: `${practitioner.firstName} ${practitioner.lastName}`,
         email: practitioner.email,
+        ...(practitioner.profilePicture === undefined
+          ? {}
+          : { profilePicture: practitioner.profilePicture }),
       },
     });
     return;

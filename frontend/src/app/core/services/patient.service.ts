@@ -24,9 +24,22 @@ export class PatientService {
     return this.http.post<Patient>(`${this.apiUrl}/patients`, patient);
   }
 
+  addCustomWords(patientId: string, words: string[]): Observable<CustomWordsResponse> {
+    return this.http.post<CustomWordsResponse>(
+      `${this.apiUrl}/patients/${patientId}/custom-words`,
+      { words },
+    );
+  }
+
   deletePatient(id: string): Observable<boolean> {
     return this.http
       .delete<{ deleted: boolean }>(`${this.apiUrl}/patients/${id}`)
       .pipe(map((result) => result.deleted));
   }
+}
+
+export interface CustomWordsResponse {
+  message: string;
+  customWords: string[];
+  warning: string | null;
 }

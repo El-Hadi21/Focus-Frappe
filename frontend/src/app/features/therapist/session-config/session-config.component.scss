@@ -163,6 +163,57 @@ h2 {
   margin-top: 1rem;
 }
 
+.custom-words-section {
+  margin-top: 1rem;
+}
+
+.custom-word-form {
+  display: grid;
+  gap: 0.6rem;
+
+  label {
+    font-weight: 700;
+  }
+}
+
+.custom-word-controls {
+  display: flex;
+  gap: 0.75rem;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    color: #1e293b;
+    font: inherit;
+
+    &:focus {
+      border-color: #3d9ff2;
+      box-shadow: 0 0 0 3px rgb(61 159 242 / 15%);
+      outline: none;
+    }
+  }
+}
+
+.custom-word-feedback {
+  &.error {
+    color: #b91c1c;
+  }
+
+  &.success {
+    color: #15803d;
+  }
+}
+
+.custom-word-list {
+  margin: 1rem 0 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
 .choice-list {
   display: grid;
   gap: 0.65rem;
@@ -344,7 +395,8 @@ h2 {
   }
 
   .mode-section,
-  .form-actions {
+  .form-actions,
+  .custom-word-controls {
     align-items: stretch;
     flex-direction: column;
   }

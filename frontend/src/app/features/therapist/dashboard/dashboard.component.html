@@ -1,51 +1,65 @@
 <main class="dashboard-page">
-  <header class="dashboard-header">
-    <div>
-      <h1>Mes patients</h1>
-      <p class="dashboard-intro">
-        Sélectionnez un patient pour accéder à son suivi.
-      </p>
-    </div>
+  <div class="dashboard-content">
+    <section class="patients-panel" aria-labelledby="dashboard-title">
+      <header class="dashboard-header">
+        <div>
+          <h1 id="dashboard-title">Mes patients</h1>
+          <p class="dashboard-intro">
+            Sélectionnez un patient pour accéder à son suivi.
+          </p>
+        </div>
+        <span class="patient-count">
+          {{ patients.length }} patient{{ patients.length > 1 ? 's' : '' }}
+        </span>
+      </header>
 
-    <div class="dashboard-actions">
-      <span class="patient-count">
-        {{ patients.length }} patient{{ patients.length > 1 ? 's' : '' }}
-      </span>
+      @if (isLoading) {
+        <app-loader text="Chargement des profils..."></app-loader>
+      } @else {
+        <section class="patient-grid" aria-label="Liste des patients">
+          @for (patient of patients; track patient.id) {
+            <article
+              class="patient-card card"
+              role="link"
+              tabindex="0"
+              (click)="goToPatient(patient.id)"
+              (keydown.enter)="goToPatient(patient.id)"
+              (keydown.space)="goToPatient(patient.id); $event.preventDefault()"
+            >
+              <div class="patient-avatar" aria-hidden="true">
+                {{ patient.firstName.slice(0, 2).toUpperCase() }}
+              </div>
+              <div class="patient-details">
+                <h2>{{ patient.firstName }} {{ patient.lastName }}</h2>
+                <p>Âge : {{ patient.age }} ans</p>
+              </div>
+              <span class="patient-arrow" aria-hidden="true">→</span>
+            </article>
+          } @empty {
+            <p class="empty-message">Aucun profil patient disponible.</p>
+          }
+        </section>
+      }
+    </section>
+
+    <aside class="practitioner-card card" aria-labelledby="practitioner-title">
+      <div class="practitioner-avatar">
+        @if (practitioner?.profilePicture) {
+          <img [src]="practitioner?.profilePicture" alt="" />
+        } @else {
+          {{ practitioner ? (practitioner.firstName[0] + practitioner.lastName[0]).toUpperCase() : '?' }}
+        }
+      </div>
+      <p class="practitioner-label">Espace praticien</p>
+      <h2 id="practitioner-title">
+        {{ practitioner?.firstName }} {{ practitioner?.lastName }}
+      </h2>
+      <p class="practitioner-email">{{ practitioner?.email }}</p>
       <button class="btn-danger" type="button" (click)="logout()">
         Déconnexion
       </button>
-    </div>
-  </header>
-
-  @if (isLoading) {
-    <app-loader text="Chargement des profils..."></app-loader>
-  } @else {
-    <section class="patient-grid" aria-label="Liste des patients">
-      @for (patient of patients; track patient.id) {
-        <article
-          class="patient-card card"
-          role="link"
-          tabindex="0"
-          (click)="goToPatient(patient.id)"
-          (keydown.enter)="goToPatient(patient.id)"
-          (keydown.space)="goToPatient(patient.id); $event.preventDefault()"
-        >
-          <div class="patient-avatar" aria-hidden="true">
-            {{ patient.firstName.slice(0, 2).toUpperCase() }}
-          </div>
-
-          <div class="patient-details">
-            <h2>{{ patient.firstName }} {{ patient.lastName }}</h2>
-            <p>Âge : {{ patient.age }} ans</p>
-          </div>
-
-          <span class="patient-arrow" aria-hidden="true">→</span>
-        </article>
-      } @empty {
-        <p class="empty-message">Aucun profil patient disponible.</p>
-      }
-    </section>
-  }
+    </aside>
+  </div>
 </main>
 
 <button
