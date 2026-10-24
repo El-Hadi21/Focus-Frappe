@@ -26,9 +26,8 @@ export function getChartMaxValue(sessions: SessionStats[], metric: ChartMetric):
 
 export function formatChartValue(value: number, metric: ChartMetric): string {
   if (metric === 'score') {
-    return `${value.toFixed(0)} pts`;
+    return `${value.toFixed(0)}`;
   }
-
   return `${value.toFixed(1)}${metric === 'clearance' ? ' %' : ' s'}`;
 }
 
