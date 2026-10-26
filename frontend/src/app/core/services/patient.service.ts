@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-
 import { Patient } from '../models/patient.model';
+
+export interface CustomWordsResponse {
+  message: string;
+  customWords: string[];
+  warning: string | null;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -24,10 +29,15 @@ export class PatientService {
     return this.http.post<Patient>(`${this.apiUrl}/patients`, patient);
   }
 
-  addCustomWords(patientId: string, words: string[]): Observable<CustomWordsResponse> {
-    return this.http.post<CustomWordsResponse>(
-      `${this.apiUrl}/patients/${patientId}/custom-words`,
-      { words },
+  addCustomWords(id: string, words: string[]): Observable<CustomWordsResponse> {
+    return this.http.post<CustomWordsResponse>(`${this.apiUrl}/patients/${id}/custom-words`, {
+      words,
+    });
+  }
+
+  removeCustomWord(id: string, word: string): Observable<CustomWordsResponse> {
+    return this.http.delete<CustomWordsResponse>(
+      `${this.apiUrl}/patients/${id}/custom-words/${encodeURIComponent(word)}`,
     );
   }
 
@@ -36,10 +46,4 @@ export class PatientService {
       .delete<{ deleted: boolean }>(`${this.apiUrl}/patients/${id}`)
       .pipe(map((result) => result.deleted));
   }
-}
-
-export interface CustomWordsResponse {
-  message: string;
-  customWords: string[];
-  warning: string | null;
 }

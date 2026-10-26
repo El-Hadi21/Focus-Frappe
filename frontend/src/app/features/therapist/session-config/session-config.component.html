@@ -85,35 +85,68 @@
           <div class="section-heading">
             <div>
               <p class="section-kicker">04</p>
-              <h2 id="custom-words-title">Mots personnalisés</h2>
+              <h2 id="custom-words-title">Dictionnaire personnalisé du patient</h2>
             </div>
-            <p>Le mot doit respecter la longueur du niveau sélectionné.</p>
+            <p>Classés automatiquement selon leur longueur (Facile 1-4, Normal 5-8, Difficile 9+).</p>
           </div>
+
+          <!-- Box contenant les mots ajoutés AU-DESSUS du champ d'ajout -->
+          <div class="custom-words-box" aria-live="polite">
+            @if (patient.customWords && patient.customWords.length > 0) {
+            <div class="custom-words-tags">
+              @for (word of patient.customWords; track word) {
+              <span class="word-chip">
+                    <span class="word-chip-text">{{ word }}</span>
+                    <small class="word-chip-level">{{ getWordLevelLabel(word) }}</small>
+                    <button
+                            type="button"
+                            class="word-chip-remove"
+                            [disabled]="removingWord === word"
+                            [attr.aria-label]="'Supprimer le mot ' + word"
+                            (click)="removeCustomWord(word)"
+                    >
+                      &times;
+                    </button>
+                  </span>
+              }
+            </div>
+            } @else {
+            <p class="custom-words-empty">
+              Aucun mot personnalisé pour {{ patient.firstName }}. Le dictionnaire de base est utilisé.
+            </p>
+            }
+          </div>
+
           <div class="custom-word-form">
-            <label for="custom-word">Ajouter un mot pour le niveau {{ configForm.controls.difficulty.value }}</label>
+            <label for="custom-word">Ajouter un nouveau mot au profil</label>
             <div class="custom-word-controls">
               <input
-                id="custom-word"
-                type="text"
-                maxlength="30"
-                formControlName="customWord"
-                placeholder="Ex. ballon"
+                      id="custom-word"
+                      type="text"
+                      maxlength="30"
+                      formControlName="customWord"
+                      placeholder="Ex. renard, galaxie, entraineur..."
+                      (keydown.enter)="addCustomWord(); $event.preventDefault()"
               />
-              <button type="button" class="btn-secondary" [disabled]="isAddingWord" (click)="addCustomWord()">
+              <button
+                      type="button"
+                      class="btn-secondary"
+                      [disabled]="isAddingWord"
+                      (click)="addCustomWord()"
+              >
                 {{ isAddingWord ? 'Ajout...' : 'Ajouter' }}
               </button>
             </div>
             @if (customWordError) {
-              <small class="custom-word-feedback error" role="alert">{{ customWordError }}</small>
-            } @else if (customWordMessage) {
-              <small class="custom-word-feedback success" role="status">{{ customWordMessage }}</small>
+            <small class="custom-word-feedback error" role="alert">{{ customWordError }}</small>
+            }
+            @if (customWordMessage) {
+            <small class="custom-word-feedback success" role="status">{{ customWordMessage }}</small>
+            }
+            @if (customWordWarning) {
+            <small class="custom-word-feedback warning" role="status">{{ customWordWarning }}</small>
             }
           </div>
-          @if (patient.customWords?.length) {
-            <p class="custom-word-list">
-              Mots enregistrés : {{ patient.customWords?.join(', ') }}
-            </p>
-          }
         </section>
 
         <section class="mode-section" aria-labelledby="mode-title">

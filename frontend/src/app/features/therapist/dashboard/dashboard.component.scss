@@ -1,14 +1,44 @@
-.dashboard-page {
-  width: min(100% - 3rem, 1120px);
-  margin: 0 auto;
-  padding: 3rem 0 6rem;
+/* --- SÉCURITÉ FOND GLOBAL --- */
+:host {
+  display: block;
+  min-height: 100vh;
+  background: transparent; /* Laisse transparaître l'image de fond globale */
 }
 
-.dashboard-content {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
-  gap: 2rem;
-  align-items: start;
+.dashboard-layout {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-height: 100vh;
+  background: transparent;
+}
+
+/* --- ZONE GAUCHE (3/4+) : PROFILS PATIENTS --- */
+.patients-workspace {
+  flex: 1;
+  position: relative;
+  padding: clamp(2rem, 4vw, 3.5rem) clamp(1.5rem, 4vw, 3.5rem) 6rem;
+  box-sizing: border-box;
+  background: transparent; /* La gauche reste transparente pour voir l'image */
+}
+
+/* --- ZONE DROITE (1/5 PLEINE HAUTEUR) : CARTE PERSONA ERGO --- */
+.persona-sidebar {
+  flex: 0 0 300px;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
+  padding: 2.5rem 1.5rem 2rem;
+  border-left: 2px solid #cbd5e1;
+  color: #1e293b;
+  background: #ffffff; /* Le fond reste 100% blanc opaque ici */
+  box-shadow: -8px 0 24px rgb(15 23 42 / 6%);
+  box-sizing: border-box;
+  z-index: 10;
+  overflow-y: auto;
 }
 
 .dashboard-header {
@@ -16,11 +46,11 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 2.25rem;
 
   h1 {
     margin: 0;
-    font-size: clamp(2rem, 5vw, 2.75rem);
+    font-size: clamp(2rem, 4vw, 2.75rem);
   }
 }
 
@@ -30,71 +60,18 @@
 }
 
 .patient-count {
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem 0.9rem;
   border-radius: 999px;
   color: var(--color-primary-dark);
   background: rgb(46 204 113 / 12%);
   font-size: 0.9rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.dashboard-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.practitioner-card {
-  display: grid;
-  justify-items: center;
-  gap: 0.6rem;
-  padding: 2rem 1.5rem;
-  text-align: center;
-}
-
-.practitioner-avatar {
-  display: grid;
-  width: 96px;
-  height: 96px;
-  place-items: center;
-  overflow: hidden;
-  border-radius: 50%;
-  color: var(--color-primary-dark);
-  background: rgb(46 204 113 / 14%);
-  font-size: 1.5rem;
-  font-weight: 800;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
-
-.practitioner-label {
-  margin: 0.5rem 0 0;
-  color: var(--color-text-muted);
-  font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.practitioner-card h2 {
-  margin: 0;
-  font-size: 1.25rem;
-}
-
-.practitioner-email {
-  margin: 0 0 1rem;
-  color: var(--color-text-muted);
-  overflow-wrap: anywhere;
+  white-space: nowrap;
 }
 
 .patient-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1.5rem;
 }
 
@@ -103,7 +80,7 @@
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 1rem;
-  min-height: 150px;
+  min-height: 140px;
   padding: 1.5rem;
   cursor: pointer;
   transition: box-shadow 180ms ease, transform 180ms ease;
@@ -111,7 +88,7 @@
   &:hover,
   &:focus-visible {
     box-shadow: 0 12px 28px rgb(23 43 77 / 16%);
-    transform: translateY(-6px);
+    transform: translateY(-5px);
   }
 
   &:focus-visible {
@@ -147,25 +124,28 @@
   font-weight: 700;
 }
 
+/* Le bouton + reste dans la zone des profils (à gauche de la sidebar) */
 .floating-action {
   position: fixed;
-  right: 1.5rem;
-  bottom: 1.5rem;
+  right: calc(300px + 2rem); /* 300px (sidebar) + 2rem (marge) */
+  bottom: 2rem;
   display: grid;
-  width: 58px;
-  height: 58px;
+  width: 60px;
+  height: 60px;
   place-items: center;
   border: 0;
   border-radius: 50%;
   color: #ffffff;
   background: var(--color-primary);
   box-shadow: 0 8px 20px rgb(46 204 113 / 35%);
+  cursor: pointer;
   font-size: 2rem;
+  z-index: 20;
   transition: background-color 180ms ease, transform 180ms ease;
 
   &:hover {
     background: var(--color-primary-dark);
-    transform: scale(1.05);
+    transform: scale(1.06);
   }
 
   &:focus-visible {
@@ -174,30 +154,166 @@
   }
 }
 
+/* On ne le passe en dessous que si l'écran est un téléphone */
 @media (max-width: 760px) {
-  .dashboard-page {
-    width: min(100% - 2rem, 560px);
-    padding-top: 2rem;
-  }
-
-  .dashboard-header {
-    align-items: flex-start;
+  .dashboard-layout {
     flex-direction: column;
   }
 
-  .dashboard-content {
+  .persona-sidebar {
+    flex: none;
+    position: static;
+    height: auto;
+    border-top: 2px solid #cbd5e1;
+    border-left: 0;
+  }
+
+  .floating-action {
+    right: 1.5rem;
+  }
+}
+
+/* --- ZONE DROITE (1/5 - 1/4 PLEINE HAUTEUR) : CARTE PERSONA ERGO --- */
+.persona-sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
+  padding: 2.5rem 1.5rem 2rem;
+  border-left: 2px solid #cbd5e1;
+  color: #1e293b;
+  background: #ffffff;
+  box-shadow: -8px 0 24px rgb(15 23 42 / 6%);
+  box-sizing: border-box;
+}
+
+.persona-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+}
+
+.persona-avatar {
+  display: grid;
+  width: 110px;
+  height: 110px;
+  place-items: center;
+  overflow: hidden;
+  border: 4px solid #3d9ff2;
+  border-radius: 50%;
+  color: #1e3a8a;
+  background: #eff6ff;
+  box-shadow: 0 8px 20px rgb(61 159 242 / 20%);
+  font-size: 2rem;
+  font-weight: 800;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.persona-badge {
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  color: #1d4ed8;
+  background: #dbeafe;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.persona-identity {
+  display: grid;
+  width: 100%;
+  gap: 0.65rem;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.identity-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+
+  &:not(:last-child) {
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+}
+
+.identity-label,
+.meta-label {
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.identity-value {
+  color: #0f172a;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.persona-meta {
+  display: grid;
+  width: 100%;
+  gap: 0.75rem;
+}
+
+.meta-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.meta-value {
+  color: #1e293b;
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  &.highlight {
+    color: var(--color-primary-dark);
+  }
+}
+
+.persona-footer {
+  width: 100%;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+
+  .logout-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-layout {
     grid-template-columns: 1fr;
   }
 
-  .practitioner-card {
-    order: -1;
+  .persona-sidebar {
+    position: static;
+    height: auto;
+    border-top: 2px solid #cbd5e1;
+    border-left: 0;
   }
 
-  .dashboard-actions {
-    flex-wrap: wrap;
-  }
-
-  .patient-grid {
-    grid-template-columns: 1fr;
+  .floating-action {
+    right: 1.5rem;
   }
 }

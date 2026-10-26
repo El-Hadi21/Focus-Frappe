@@ -7,6 +7,7 @@ import {
   getPatient,
   listPatientSessions,
   listPatients,
+  removeCustomWord,
   saveSession,
   saveSessionNotes,
 } from '../controllers/patient.controller';
@@ -39,6 +40,9 @@ export function createPatientRouter(storage: JsonStorageService): Router {
   });
   router.post('/:id/sessions', validateBody(saveSessionSchema), (request, response, next) => {
     saveSession(storage, request, response).catch(next);
+  });
+  router.delete('/:id/custom-words/:word', (request, response, next) => {
+    removeCustomWord(storage, request, response).catch(next);
   });
   router.patch(
     '/:id/sessions/:sessionId/notes',

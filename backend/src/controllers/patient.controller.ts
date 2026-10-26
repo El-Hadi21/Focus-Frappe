@@ -108,6 +108,32 @@ export async function addCustomWords(
       : null,
   });
 }
+export async function removeCustomWord(
+  storage: JsonStorageService,
+  request: Request,
+  response: Response,
+): Promise<void> {
+  const patient = await storage.getPatientById(request.params.id);
+  if (!patient) {
+    response.status(404).json({ message: 'Patient introuvable' });
+    return;
+  }
+
+  const wordToRemove = decodeURIComponent(request.params.word).trim().toLowerCase();
+  const customWords = Array.isArray(patient.customWords) ? patient.customWords : [];
+
+  const updatedPatient: Patient = {
+    ...patient,
+    customWords: customWords.filter((word) => word.toLowerCase() !== wordToRemove),
+  };
+
+  await storage.savePatient(updatedPatient);
+
+  response.status(200).json({
+    message: 'Mot supprimé avec succès',
+    customWords: updatedPatient.customWords,
+  });
+}
 
 export async function saveSession(
   storage: JsonStorageService,

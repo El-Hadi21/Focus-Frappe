@@ -5,7 +5,11 @@
     "age": 10,
     "dysgraphiaSeverity": "severe",
     "attentionProfile": "hyperactif",
-    "id": "patient-1792435866288-4bwzsq"
+    "id": "patient-1792435866288-4bwzsq",
+    "customWords": [
+      "nice",
+      "configuration"
+    ]
   },
   {
     "firstName": "ILIAS",
