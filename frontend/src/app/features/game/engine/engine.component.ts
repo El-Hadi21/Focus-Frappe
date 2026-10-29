@@ -50,6 +50,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   targetWord = '';
   letterTiles: WordLetterTile[] = [];
   hasTypoShake = false;
+  hasSoftErrorTile = false;
   hasEarlyPressWarning = false;
   isLoadingTheme = false;
   countdownValue = 3;
@@ -115,8 +116,18 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     }
     const result = this.wordService.checkCharacter(char);
     this.letterTiles = this.wordService.getTiles();
-    if (result === 'complete') this.success(performance.now());
-    else if (result === 'incorrect') { this.telemetry.recordTypingError(); this.hasTypoShake = false; setTimeout(() => this.hasTypoShake = true); }
+    if (result === 'complete') {
+      this.hasSoftErrorTile = false;
+      this.success(performance.now());
+    } else if (result === 'correct') {
+      this.hasSoftErrorTile = false;
+    } else if (result === 'incorrect') {
+      this.telemetry.recordTypingError();
+      this.hasSoftErrorTile = true;
+      setTimeout(() => {
+        this.hasSoftErrorTile = false;
+      }, 320);
+    }
   }
 
   @HostListener('document:visibilitychange')
@@ -247,7 +258,9 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
       this.config.mode,
       this.patient?.customWords,
     );
-    this.targetWord = this.wordService.targetWord; this.hasEarlyPressWarning = false;
+    this.targetWord = this.wordService.targetWord;
+    this.hasEarlyPressWarning = false;
+    this.hasSoftErrorTile = false;
   }
   private success(time: number): void { if (this.phase !== 'FOCUS') return; this.telemetry.recordSuccess(time - this.focusEnteredAt); this.resolutionStartX = this.obstacleX; this.phase = 'RESOLVING_SUCCESS'; this.phaseStartedAt = time; }
   private miss(time: number): void { this.telemetry.recordMiss(); this.letterTiles = this.wordService.revealAllLetters(); this.resolutionStartX = this.obstacleX; this.phase = 'PASSING_MISSED'; this.phaseStartedAt = time; }

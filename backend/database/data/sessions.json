@@ -566,5 +566,38 @@
       "score": 750
     }
   ],
-  "patient-1793050980819-s9av98": []
+  "patient-1793050980819-s9av98": [
+    {
+      "id": "session-patient-1793050980819-s9av98-1793312609145-03190l",
+      "date": "2026-10-29T22:23:29.145Z",
+      "gamesCount": 1,
+      "config": {
+        "difficulty": "Facile",
+        "durationSeconds": 90,
+        "mode": "Mot exact",
+        "theme": "Football"
+      },
+      "responseTimesMs": [
+        2164.39999999851,
+        1995.5000000029795,
+        6354.0000000029795,
+        1832.2999999970198,
+        5843.899999997018,
+        5042.20000000298,
+        2420.9000000000015,
+        1770.4000000000015,
+        2402.5000000014916
+      ],
+      "avgResponseTimeSec": 3.3140111111114425,
+      "obstaclesCleared": 9,
+      "obstaclesMissed": 0,
+      "outOfWindowClicks": 0,
+      "typingErrors": 20,
+      "maxStreak": 9,
+      "playedDurationSec": 62,
+      "plannedDurationSec": 90,
+      "abandons": 0,
+      "score": 750
+    }
+  ]
 }
