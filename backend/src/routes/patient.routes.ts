@@ -7,8 +7,10 @@ import {
   getPatient,
   listPatientSessions,
   listPatients,
+  removeCustomWord,
   saveSession,
   saveSessionNotes,
+  updatePatientAvatar,
 } from '../controllers/patient.controller';
 import { validateBody } from '../middlewares/validate.middleware';
 import { JsonStorageService } from '../services/json-storage.service';
@@ -17,6 +19,7 @@ import {
   customWordsSchema,
   saveSessionSchema,
   sessionNotesSchema,
+  updatePatientAvatarSchema,
 } from '../validators/schemas';
 
 export function createPatientRouter(storage: JsonStorageService): Router {
@@ -34,11 +37,17 @@ export function createPatientRouter(storage: JsonStorageService): Router {
   router.post('/', validateBody(createPatientSchema), (request, response, next) => {
     createPatient(storage, request, response).catch(next);
   });
+  router.patch('/:id/avatar', validateBody(updatePatientAvatarSchema), (request, response, next) => {
+    updatePatientAvatar(storage, request, response).catch(next);
+  });
   router.post('/:id/custom-words', validateBody(customWordsSchema), (request, response, next) => {
     addCustomWords(storage, request, response).catch(next);
   });
   router.post('/:id/sessions', validateBody(saveSessionSchema), (request, response, next) => {
     saveSession(storage, request, response).catch(next);
+  });
+  router.delete('/:id/custom-words/:word', (request, response, next) => {
+    removeCustomWord(storage, request, response).catch(next);
   });
   router.patch(
     '/:id/sessions/:sessionId/notes',

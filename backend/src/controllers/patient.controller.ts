@@ -69,6 +69,27 @@ export async function createPatient(
   response.status(201).json(patient);
 }
 
+export async function updatePatientAvatar(
+  storage: JsonStorageService,
+  request: Request,
+  response: Response,
+): Promise<void> {
+  const patient = await storage.getPatientById(request.params.id);
+  if (!patient) {
+    response.status(404).json({ message: 'Patient introuvable' });
+    return;
+  }
+
+  const { avatar } = request.body as { avatar: string };
+  const updatedPatient: Patient = {
+    ...patient,
+    avatar,
+  };
+
+  await storage.savePatient(updatedPatient);
+  response.status(200).json(updatedPatient);
+}
+
 export async function addCustomWords(
   storage: JsonStorageService,
   request: Request,
@@ -99,13 +120,39 @@ export async function addCustomWords(
 
   await storage.savePatient(updatedPatient);
 
-  const hasAccentedWord = wordsToAdd.some((word) => /[éèêëàâäôöûüç]/i.test(word));
+  const hasAccentedWord = wordsToAdd.some((word) => /[àâäçéèêëîïôöùûüÿñæœ]/i.test(word));
   response.status(201).json({
     message: 'Mots ajoutés avec succès',
     customWords: updatedPatient.customWords,
     warning: hasAccentedWord
       ? 'Attention: certains mots contiennent des accents, ce qui peut impacter la vitesse de frappe.'
       : null,
+  });
+}
+export async function removeCustomWord(
+  storage: JsonStorageService,
+  request: Request,
+  response: Response,
+): Promise<void> {
+  const patient = await storage.getPatientById(request.params.id);
+  if (!patient) {
+    response.status(404).json({ message: 'Patient introuvable' });
+    return;
+  }
+
+  const wordToRemove = decodeURIComponent(request.params.word).trim().toLowerCase();
+  const customWords = Array.isArray(patient.customWords) ? patient.customWords : [];
+
+  const updatedPatient: Patient = {
+    ...patient,
+    customWords: customWords.filter((word) => word.toLowerCase() !== wordToRemove),
+  };
+
+  await storage.savePatient(updatedPatient);
+
+  response.status(200).json({
+    message: 'Mot supprimé avec succès',
+    customWords: updatedPatient.customWords,
   });
 }
 
@@ -147,7 +194,7 @@ export async function saveSession(
     ? patientSessions.find((session) => session.id === sessionId)
     : undefined;
 
-  if (existingSession && areConfigsEqual(existingSession.config, config)) {
+  if (existingSession) {
     const aggregatedResponseTimesMs = existingSession.responseTimesMs
       ? [...existingSession.responseTimesMs, ...responseTimesMs]
       : undefined;
@@ -289,16 +336,6 @@ interface SaveSessionRequest {
   currentMaxStreak: number;
   playedDurationSec: number;
   abandoned: boolean;
-}
-
-function areConfigsEqual(
-  first: SessionStats['config'],
-  second: SessionStats['config'],
-): boolean {
-  return first.difficulty === second.difficulty
-    && first.durationSeconds === second.durationSeconds
-    && first.mode === second.mode
-    && first.theme === second.theme;
 }
 
 function calculateWeightedAverage(

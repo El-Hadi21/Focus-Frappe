@@ -1,2 +1,8 @@
 @use 'engine-selection';
 @use 'engine-play';
+
+.app-logo-small {
+  display: block;
+  max-width: 160px;
+  margin: 0 auto 0.75rem;
+}

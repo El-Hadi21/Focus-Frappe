@@ -5,7 +5,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-
+import { PATIENT_AVATARS } from '../../../core/models/patient.model';
 import { PatientService } from '../../../core/services/patient.service';
 
 @Component({
@@ -20,7 +20,10 @@ export class CreateProfileComponent {
   private readonly patientService = inject(PatientService);
   private readonly router = inject(Router);
 
+  readonly avatars = PATIENT_AVATARS;
+
   readonly patientForm = this.formBuilder.nonNullable.group({
+    avatar: [PATIENT_AVATARS[0].path, Validators.required],
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     age: [0, [Validators.required, Validators.min(1), Validators.max(120)]],

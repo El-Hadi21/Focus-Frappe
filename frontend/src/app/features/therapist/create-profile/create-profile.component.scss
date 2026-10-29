@@ -139,24 +139,96 @@ label,
   transition: all 150ms ease;
 }
 
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  justify-items: center;
+}
+
+.avatar-choice {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0.5rem;
+  border: 2px solid var(--color-border);
+  border-radius: 16px;
+  background: #f8fbfd;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+
+  input[type='radio'] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &:hover {
+    border-color: var(--color-secondary);
+    background: #eef6fd;
+    transform: translateY(-2px);
+  }
+
+  &.selected {
+    border-color: var(--color-primary-dark);
+    background: rgb(46 204 113 / 12%);
+    box-shadow: 0 6px 14px rgb(46 204 113 / 22%);
+    transform: translateY(-2px);
+  }
+}
+
+.avatar-circle {
+  display: grid;
+  width: 72px;
+  height: 72px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #cbd5e1;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.avatar-choice.selected .avatar-circle {
+  border-color: var(--color-primary);
+}
+
+.avatar-badge {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 50%;
+  color: #ffffff;
+  background: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.avatar-choice.selected .avatar-badge {
+  opacity: 1;
+  transform: scale(1);
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
   padding-top: 1rem;
   border-top: 2px solid var(--color-border);
-}
-
-.btn-secondary {
-  min-height: 48px;
-  padding: 0.85rem 1.75rem;
-  border: 2px solid var(--color-secondary);
-  border-radius: 10px;
-  color: var(--color-secondary);
-  background: #ffffff;
-  cursor: pointer;
-  font: inherit;
-  font-weight: 700;
 }
 
 @media (max-width: 600px) {
@@ -166,6 +238,10 @@ label,
 
   .form-fields {
     grid-template-columns: 1fr;
+  }
+
+  .avatar-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .selection-boxes,

@@ -5,6 +5,28 @@
     "age": 10,
     "dysgraphiaSeverity": "severe",
     "attentionProfile": "hyperactif",
-    "id": "patient-1792435866288-4bwzsq"
+    "id": "patient-1792435866288-4bwzsq",
+    "customWords": [
+      "configuration"
+    ],
+    "avatar": "/assets/profile-avatars/foot-av2.jpg"
+  },
+  {
+    "firstName": "ILIAS",
+    "lastName": "EL HADI",
+    "age": 15,
+    "dysgraphiaSeverity": "moderee",
+    "attentionProfile": "hyperactif",
+    "id": "patient-1792629269738-4r7rrt",
+    "avatar": "/assets/profile-avatars/foot-av3.jpg"
+  },
+  {
+    "avatar": "/assets/profile-avatars/space-av3.png",
+    "firstName": "test",
+    "lastName": "tst",
+    "age": 10,
+    "dysgraphiaSeverity": "severe",
+    "attentionProfile": "mixte",
+    "id": "patient-1793050980819-s9av98"
   }
 ]

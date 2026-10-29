@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Patient } from '../../../core/models/patient.model';
@@ -12,6 +12,7 @@ import { PatientService } from '../../../core/services/patient.service';
   styleUrl: './patient-hub.component.scss',
 })
 export class PatientHubComponent implements OnInit {
+  @ViewChild('cancelDeleteButton') private cancelDeleteButton?: ElementRef<HTMLButtonElement>;
   private readonly route = inject(ActivatedRoute);
   private readonly patientService = inject(PatientService);
   private readonly router = inject(Router);
@@ -60,6 +61,14 @@ export class PatientHubComponent implements OnInit {
   deleteProfile(): void {
     if (this.patient && !this.isDeleting) {
       this.showDeleteModal = true;
+      setTimeout(() => this.cancelDeleteButton?.nativeElement.focus());
+    }
+  }
+
+  @HostListener('window:keydown.escape')
+  handleEscape(): void {
+    if (this.showDeleteModal) {
+      this.cancelDelete();
     }
   }
 

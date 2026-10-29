@@ -8,6 +8,24 @@
       (ngSubmit)="submit()"
       novalidate
     >
+      <div class="avatar-field">
+        <span class="avatar-label">Photo de profil</span>
+        <input
+          type="file"
+          id="avatar-upload"
+          accept="image/*"
+          style="display: none;"
+          (change)="onFileSelected($event)"
+        />
+        <label for="avatar-upload" class="avatar-upload-circle" tabindex="0">
+          @if (picturePreview) {
+            <img [src]="picturePreview" alt="Aperçu de la photo de profil" />
+          } @else {
+            <span class="add-icon" aria-hidden="true">+</span>
+          }
+        </label>
+      </div>
+
       <div class="form-field">
         <label for="firstName">Prénom</label>
         <input id="firstName" type="text" autocomplete="given-name" formControlName="firstName" />
@@ -56,24 +74,6 @@
             Les mots de passe ne correspondent pas.
           </small>
         }
-      </div>
-
-      <div class="avatar-field">
-        <span class="avatar-label">Photo de profil</span>
-        <input
-          type="file"
-          id="avatar-upload"
-          accept="image/*"
-          style="display: none;"
-          (change)="onFileSelected($event)"
-        />
-        <label for="avatar-upload" class="avatar-upload-circle" tabindex="0">
-          @if (picturePreview) {
-            <img [src]="picturePreview" alt="Aperçu de la photo de profil" />
-          } @else {
-            <span class="add-icon" aria-hidden="true">+</span>
-          }
-        </label>
       </div>
 
       @if (registerError) {

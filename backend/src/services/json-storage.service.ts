@@ -7,17 +7,19 @@ import { SessionStats } from '../models/session-stats.model';
 
 const DEFAULT_DATA_DIRECTORY = resolve(process.cwd(), 'database/data');
 
-const initialPractitioners: Practitioner[] = [
-  {
-    id: 'practitioner-claire',
-    firstName: 'Claire',
-    lastName: 'Martin',
-    email: process.env.DEFAULT_ERGO_EMAIL || 'ergo@example.com',
-    password: process.env.DEFAULT_ERGO_PASSWORD || 'password',
-    age: 35,
-    profilePicture: '',
-  },
-];
+function getInitialPractitioners(): Practitioner[] {
+  return [
+    {
+      id: 'practitioner-claire',
+      firstName: 'Claire',
+      lastName: 'Martin',
+      email: process.env.DEFAULT_ERGO_EMAIL || 'ergo@example.com',
+      password: process.env.DEFAULT_ERGO_PASSWORD || 'password',
+      age: 35,
+      profilePicture: '',
+    },
+  ];
+}
 
 const initialPatients: Patient[] = [];
 
@@ -41,6 +43,7 @@ export class JsonStorageService {
   private readonly patientsPath: string;
   private readonly sessionsPath: string;
   private readonly dictionariesPath: string;
+  private writeQueue: Promise<void> = Promise.resolve();
 
   constructor(private readonly dataDirectory = DEFAULT_DATA_DIRECTORY) {
     this.practitionersPath = resolve(dataDirectory, 'practitioners.json');
@@ -53,7 +56,7 @@ export class JsonStorageService {
     await mkdir(this.dataDirectory, { recursive: true });
 
     await Promise.all([
-      this.ensureFile(this.practitionersPath, initialPractitioners),
+      this.ensureFile(this.practitionersPath, getInitialPractitioners()),
       this.ensureFile(this.patientsPath, initialPatients),
       this.ensureFile(this.sessionsPath, initialSessions),
       this.ensureFile(this.dictionariesPath, initialDictionaries),
@@ -153,9 +156,13 @@ export class JsonStorageService {
   }
 
   private async writeFile<T>(path: string, value: T): Promise<void> {
-    const temporaryPath = `${path}.tmp`;
-    await writeFile(temporaryPath, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
-    await rename(temporaryPath, path);
+    const writeOperation = this.writeQueue.then(async () => {
+      const temporaryPath = `${path}.${Date.now()}-${Math.random().toString(36).slice(2, 7)}.tmp`;
+      await writeFile(temporaryPath, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+      await rename(temporaryPath, path);
+    });
+    this.writeQueue = writeOperation.catch(() => undefined);
+    await writeOperation;
   }
 
   private async removeLegacyDatabase(): Promise<void> {
