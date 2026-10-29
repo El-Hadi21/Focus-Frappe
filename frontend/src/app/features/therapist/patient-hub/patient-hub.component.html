@@ -3,7 +3,11 @@
   <div class="card patient-menu-card">
     <header class="patient-menu-header">
       <div class="patient-avatar" aria-hidden="true">
-        {{ patient.firstName.slice(0, 2).toUpperCase() }}
+        @if (patient.avatar) {
+          <img [src]="patient.avatar" alt="" />
+        } @else {
+          {{ patient.firstName.slice(0, 2).toUpperCase() }}
+        }
       </div>
 
       <h1>{{ patient.firstName }} {{ patient.lastName }}</h1>

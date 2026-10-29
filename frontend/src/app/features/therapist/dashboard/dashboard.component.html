@@ -27,7 +27,11 @@
               (keydown.space)="goToPatient(patient.id); $event.preventDefault()"
       >
         <div class="patient-avatar" aria-hidden="true">
-          {{ patient.firstName.slice(0, 2).toUpperCase() }}
+          @if (patient.avatar) {
+            <img [src]="patient.avatar" alt="" />
+          } @else {
+            {{ patient.firstName.slice(0, 2).toUpperCase() }}
+          }
         </div>
         <div class="patient-details">
           <h2>{{ patient.firstName }} {{ patient.lastName }}</h2>

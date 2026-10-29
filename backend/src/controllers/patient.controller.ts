@@ -69,6 +69,27 @@ export async function createPatient(
   response.status(201).json(patient);
 }
 
+export async function updatePatientAvatar(
+  storage: JsonStorageService,
+  request: Request,
+  response: Response,
+): Promise<void> {
+  const patient = await storage.getPatientById(request.params.id);
+  if (!patient) {
+    response.status(404).json({ message: 'Patient introuvable' });
+    return;
+  }
+
+  const { avatar } = request.body as { avatar: string };
+  const updatedPatient: Patient = {
+    ...patient,
+    avatar,
+  };
+
+  await storage.savePatient(updatedPatient);
+  response.status(200).json(updatedPatient);
+}
+
 export async function addCustomWords(
   storage: JsonStorageService,
   request: Request,

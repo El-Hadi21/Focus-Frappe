@@ -6,7 +6,7 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameConfig } from '../../../core/models/game-config.model';
-import { Patient } from '../../../core/models/patient.model';
+import { PATIENT_AVATARS, Patient } from '../../../core/models/patient.model';
 import { GameConfigService } from '../../../core/services/game-config.service';
 import { PatientService } from '../../../core/services/patient.service';
 import { ClinicalDefaultsService } from '../../game/services/clinical-defaults.service';
@@ -29,8 +29,11 @@ export class SessionConfigComponent implements OnInit {
   readonly difficulties: GameConfig['difficulty'][] = ['Facile', 'Normal', 'Difficile'];
   readonly durations: GameConfig['durationSeconds'][] = [30, 60, 90, 120, 150, 180];
   readonly themes: GameConfig['theme'][] = ['Football', 'Espace'];
+  readonly avatars = PATIENT_AVATARS;
 
   patient: Patient | undefined;
+  isUpdatingAvatar = false;
+  avatarMessage = '';
   isAddingWord = false;
   removingWord: string | null = null;
   customWordError = '';
@@ -131,6 +134,26 @@ export class SessionConfigComponent implements OnInit {
       error: () => {
         this.customWordError = 'Impossible de supprimer ce mot.';
         this.removingWord = null;
+      },
+    });
+  }
+
+  selectAvatar(avatarPath: string): void {
+    if (!this.patient || this.isUpdatingAvatar || this.patient.avatar === avatarPath) {
+      return;
+    }
+
+    this.isUpdatingAvatar = true;
+    this.avatarMessage = '';
+
+    this.patientService.updatePatientAvatar(this.patient.id, avatarPath).subscribe({
+      next: (updatedPatient) => {
+        this.patient = updatedPatient;
+        this.isUpdatingAvatar = false;
+        this.avatarMessage = 'Photo de profil mise à jour !';
+      },
+      error: () => {
+        this.isUpdatingAvatar = false;
       },
     });
   }

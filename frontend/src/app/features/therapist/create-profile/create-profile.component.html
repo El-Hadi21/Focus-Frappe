@@ -10,6 +10,28 @@
       (ngSubmit)="onSubmit()"
       novalidate
     >
+      <section class="form-section" aria-labelledby="avatar-selection-title">
+        <h2 id="avatar-selection-title">Avatar du profil</h2>
+        <div class="avatar-grid">
+          @for (avatarOption of avatars; track avatarOption.id) {
+            <label
+              class="avatar-choice"
+              [class.selected]="patientForm.controls.avatar.value === avatarOption.path"
+            >
+              <input
+                type="radio"
+                formControlName="avatar"
+                [value]="avatarOption.path"
+              />
+              <span class="avatar-circle">
+                <img [src]="avatarOption.path" [alt]="avatarOption.label" />
+              </span>
+              <span class="avatar-badge" aria-hidden="true">✓</span>
+            </label>
+          }
+        </div>
+      </section>
+
       <section class="form-section" aria-labelledby="basic-information-title">
         <h2 id="basic-information-title">Infos de base</h2>
 

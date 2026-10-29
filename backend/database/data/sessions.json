@@ -527,6 +527,44 @@
       "plannedDurationSec": 120,
       "abandons": 1,
       "score": 0
+    },
+    {
+      "id": "session-patient-1792629269738-4r7rrt-1793046860943-wtrd6p",
+      "date": "2026-10-26T20:34:20.943Z",
+      "gamesCount": 1,
+      "config": {
+        "difficulty": "Normal",
+        "durationSeconds": 120,
+        "mode": "Mot exact",
+        "theme": "Football"
+      },
+      "responseTimesMs": [
+        3843.3000000059837,
+        2855.800000002957,
+        3059.6000000089407,
+        3775.8000000089523,
+        3298.200000005949,
+        3479.500000005937,
+        3400.6000000089407,
+        3682.600000005972,
+        3086.0999999999767,
+        4592.800000008952,
+        3123.7000000089174,
+        2754.4000000118976
+      ],
+      "avgResponseTimeSec": 3.412700000006948,
+      "variabilityMinSec": 2.9246064673033607,
+      "variabilityMaxSec": 3.900793532710535,
+      "obstaclesCleared": 12,
+      "obstaclesMissed": 0,
+      "outOfWindowClicks": 0,
+      "typingErrors": 8,
+      "maxStreak": 12,
+      "playedDurationSec": 82,
+      "plannedDurationSec": 120,
+      "abandons": 0,
+      "score": 750
     }
-  ]
+  ],
+  "patient-1793050980819-s9av98": []
 }

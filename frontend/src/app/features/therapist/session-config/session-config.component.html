@@ -15,6 +15,38 @@
       </header>
 
       <form [formGroup]="configForm" (ngSubmit)="onSubmit()" novalidate>
+        <section class="config-section avatar-config-section" aria-labelledby="avatar-config-title">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Profil</p>
+              <h2 id="avatar-config-title">Photo de profil de {{ patient.firstName }}</h2>
+            </div>
+            @if (avatarMessage) {
+              <p class="avatar-saved-feedback" role="status">{{ avatarMessage }}</p>
+            } @else {
+              <p>Cliquez sur un avatar pour modifier sa photo.</p>
+            }
+          </div>
+
+          <div class="config-avatar-grid">
+            @for (avatarOption of avatars; track avatarOption.id) {
+              <button
+                type="button"
+                class="config-avatar-option"
+                [class.selected]="patient.avatar === avatarOption.path"
+                [disabled]="isUpdatingAvatar"
+                [attr.aria-label]="'Choisir l avatar ' + avatarOption.label"
+                (click)="selectAvatar(avatarOption.path)"
+              >
+                <span class="config-avatar-circle">
+                  <img [src]="avatarOption.path" [alt]="avatarOption.label" />
+                </span>
+                <span class="selection-mark" aria-hidden="true">✓</span>
+              </button>
+            }
+          </div>
+        </section>
+
         <section class="config-section" aria-labelledby="theme-title">
           <div class="section-heading">
             <div>

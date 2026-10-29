@@ -112,10 +112,17 @@
   width: 52px;
   height: 52px;
   place-items: center;
+  overflow: hidden;
   border-radius: 50%;
   color: var(--color-primary-dark);
   background: rgb(46 204 113 / 14%);
   font-weight: 700;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
 .patient-arrow {

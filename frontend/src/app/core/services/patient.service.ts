@@ -29,6 +29,10 @@ export class PatientService {
     return this.http.post<Patient>(`${this.apiUrl}/patients`, patient);
   }
 
+  updatePatientAvatar(id: string, avatar: string): Observable<Patient> {
+    return this.http.patch<Patient>(`${this.apiUrl}/patients/${id}/avatar`, { avatar });
+  }
+
   addCustomWords(id: string, words: string[]): Observable<CustomWordsResponse> {
     return this.http.post<CustomWordsResponse>(`${this.apiUrl}/patients/${id}/custom-words`, {
       words,

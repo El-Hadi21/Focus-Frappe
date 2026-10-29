@@ -21,6 +21,11 @@ export const createPatientSchema = Joi.object({
   age: Joi.number().integer().min(1).max(120).required(),
   dysgraphiaSeverity: Joi.string().required(),
   attentionProfile: Joi.string().required(),
+  avatar: Joi.string().allow('').optional(),
+}).required();
+
+export const updatePatientAvatarSchema = Joi.object({
+  avatar: Joi.string().required(),
 }).required();
 
 export const customWordsSchema = Joi.object({
