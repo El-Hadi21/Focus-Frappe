@@ -1,5 +1,3 @@
-import { WordLetterTile } from '../services/word-challenge.service';
-
 export type RenderPhase =
   | 'COUNTDOWN'
   | 'APPROACHING'
@@ -19,6 +17,7 @@ export interface RenderState {
   worldScrollX: number;
   time: number;
   progress: number;
+  focusProgress: number;
   focusStartX: number;
   focusEndX: number;
 }

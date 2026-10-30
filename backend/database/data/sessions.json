@@ -564,6 +564,90 @@
       "plannedDurationSec": 120,
       "abandons": 0,
       "score": 750
+    },
+    {
+      "id": "session-patient-1792629269738-4r7rrt-1793315457520-v6px5o",
+      "date": "2026-10-29T23:10:57.520Z",
+      "gamesCount": 1,
+      "config": {
+        "difficulty": "Normal",
+        "durationSeconds": 120,
+        "mode": "Mot exact",
+        "theme": "Football"
+      },
+      "responseTimesMs": [
+        5163.800000002979,
+        4361.500000002983,
+        4103.400000002977,
+        4275.199999999997,
+        2715.0000000014843,
+        3411.6000000029744,
+        3991.699999999997,
+        2194.300000000003,
+        4282.199999999997,
+        3860.700000001496,
+        4020.5000000014843
+      ],
+      "avgResponseTimeSec": 3.85271818181967,
+      "variabilityMinSec": 3.0728317952006443,
+      "variabilityMaxSec": 4.632604568438695,
+      "obstaclesCleared": 11,
+      "obstaclesMissed": 1,
+      "outOfWindowClicks": 0,
+      "typingErrors": 18,
+      "maxStreak": 9,
+      "playedDurationSec": 89,
+      "plannedDurationSec": 120,
+      "abandons": 0,
+      "score": 750
+    },
+    {
+      "id": "session-patient-1792629269738-4r7rrt-1793321810961-l2zm5j",
+      "date": "2026-10-30T00:56:50.962Z",
+      "gamesCount": 1,
+      "config": {
+        "difficulty": "Normal",
+        "durationSeconds": 120,
+        "mode": "Mot exact",
+        "theme": "Espace"
+      },
+      "responseTimesMs": [
+        4532.100000000093
+      ],
+      "avgResponseTimeSec": 4.532100000000093,
+      "obstaclesCleared": 1,
+      "obstaclesMissed": 3,
+      "outOfWindowClicks": 0,
+      "typingErrors": 7,
+      "maxStreak": 1,
+      "playedDurationSec": 42,
+      "plannedDurationSec": 120,
+      "abandons": 1,
+      "score": 0
+    },
+    {
+      "id": "session-patient-1792629269738-4r7rrt-1793321836965-bt7wf1",
+      "date": "2026-10-30T00:57:16.965Z",
+      "gamesCount": 1,
+      "config": {
+        "difficulty": "Normal",
+        "durationSeconds": 120,
+        "mode": "Mot exact",
+        "theme": "Football"
+      },
+      "responseTimesMs": [
+        3820.200000006007
+      ],
+      "avgResponseTimeSec": 3.820200000006007,
+      "obstaclesCleared": 1,
+      "obstaclesMissed": 1,
+      "outOfWindowClicks": 0,
+      "typingErrors": 3,
+      "maxStreak": 1,
+      "playedDurationSec": 24,
+      "plannedDurationSec": 120,
+      "abandons": 1,
+      "score": 0
     }
   ],
   "patient-1793050980819-s9av98": [
@@ -598,6 +682,31 @@
       "plannedDurationSec": 90,
       "abandons": 0,
       "score": 750
+    },
+    {
+      "id": "session-patient-1793050980819-s9av98-1793315260548-j31ab2",
+      "date": "2026-10-29T23:07:40.548Z",
+      "gamesCount": 1,
+      "config": {
+        "difficulty": "Facile",
+        "durationSeconds": 90,
+        "mode": "Mot exact",
+        "theme": "Football"
+      },
+      "responseTimesMs": [
+        2537.0999999970663,
+        2156.0999999984633
+      ],
+      "avgResponseTimeSec": 2.346599999997765,
+      "obstaclesCleared": 2,
+      "obstaclesMissed": 0,
+      "outOfWindowClicks": 0,
+      "typingErrors": 0,
+      "maxStreak": 2,
+      "playedDurationSec": 17,
+      "plannedDurationSec": 90,
+      "abandons": 1,
+      "score": 0
     }
   ]
 }

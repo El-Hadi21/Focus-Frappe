@@ -235,11 +235,13 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   }
   private update(time: number): void {
     const elapsed = (time - this.phaseStartedAt) / 1000;
-    this.worldScrollX = (this.worldScrollX + 120 / 60) % 960;
+    const scrollStep = this.phase === 'FOCUS' ? 0.35 : 2;
+    this.worldScrollX = (this.worldScrollX + scrollStep) % 960;
     if (this.phase === 'COUNTDOWN') {
       this.countdownValue = Math.max(0, 3 - Math.floor(elapsed));
       if (elapsed >= 3.8) this.spawnObstacle(time);
     } else if (this.phase === 'APPROACHING') {
+      this.focusProgress = 0;
       const progress = Math.min(elapsed / 2.2, 1); this.obstacleX = 980 - (980 - this.focusStartX) * progress;
       if (progress >= 1) { this.phase = 'FOCUS'; this.phaseStartedAt = time; this.focusEnteredAt = time; }
     } else if (this.phase === 'FOCUS') {
@@ -306,11 +308,35 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     const canvas = this.canvasRef?.nativeElement; if (!canvas || !this.context || !this.renderer) return;
     const elapsed = (time - this.phaseStartedAt) / 1000;
     const progress = this.phase === 'RESOLVING_SUCCESS' ? Math.min(elapsed / 0.9, 1) : Math.min(elapsed / 1.3, 1);
-    this.renderer.drawScene(this.context, canvas, this.images, { phase: this.phase as RenderPhase, obstacleType: this.obstacleType, obstacleX: this.obstacleX, obstacleY: this.obstacleY, avatarX: 180, avatarY: 310, resolutionStartX: this.resolutionStartX, worldScrollX: this.worldScrollX, time, progress, focusStartX: this.focusStartX, focusEndX: this.focusEndX });
+    this.renderer.drawScene(this.context, canvas, this.images, {
+      phase: this.phase as RenderPhase,
+      obstacleType: this.obstacleType,
+      obstacleX: this.obstacleX,
+      obstacleY: this.obstacleY,
+      avatarX: 180,
+      avatarY: 310,
+      resolutionStartX: this.resolutionStartX,
+      worldScrollX: this.worldScrollX,
+      time,
+      progress,
+      focusProgress: this.focusProgress,
+      focusStartX: this.focusStartX,
+      focusEndX: this.focusEndX,
+    });
   }
   private stopLoop(): void { if (this.frame !== undefined) cancelAnimationFrame(this.frame); this.frame = undefined; }
   private async preloadTheme(theme: ThemeConfig): Promise<Record<string, HTMLImageElement>> {
-    const paths = [theme.groundTile, theme.avatarSprite, theme.obstacleASprite, theme.obstacleBSprite, theme.obstacleBCarriedSprite, theme.targetSprite, theme.projectileSprite, theme.effectSprite].filter((path): path is string => Boolean(path));
+    const paths = [
+      theme.groundTile,
+      theme.avatarSprite,
+      theme.obstacleASprite,
+      theme.obstacleBSprite,
+      theme.obstacleBSlideSprite,
+      theme.obstacleBCarriedSprite,
+      theme.targetSprite,
+      theme.projectileSprite,
+      theme.effectSprite,
+    ].filter((path): path is string => Boolean(path));
     const entries = await Promise.all(paths.map(async path => [path, await this.loadImage(path)] as const)); return Object.fromEntries(entries);
   }
   private loadImage(src: string): Promise<HTMLImageElement> { return new Promise(resolve => { const image = new Image(); image.onload = () => resolve(image); image.onerror = () => resolve(image); image.src = src; }); }

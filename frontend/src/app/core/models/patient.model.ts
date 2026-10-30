@@ -22,7 +22,7 @@ export const PATIENT_AVATARS: PatientAvatarOption[] = [
   { id: 'foot-av3', label: 'Football 3', category: 'Football', path: '/assets/profile-avatars/foot-av3.jpg' },
   { id: 'foot-av4', label: 'Football 4', category: 'Football', path: '/assets/profile-avatars/foot-av4.jpg' },
   { id: 'space-av1', label: 'Espace 1', category: 'Espace', path: '/assets/profile-avatars/space-av1.png' },
-  { id: 'space-av2', label: 'Espace 2', category: 'Espace', path: '/assets/profile-avatars/sapce-av2.png' },
+  { id: 'space-av2', label: 'Espace 2', category: 'Espace', path: '/assets/profile-avatars/space-av2.png' },
   { id: 'space-av3', label: 'Espace 3', category: 'Espace', path: '/assets/profile-avatars/space-av3.png' },
   { id: 'space-av4', label: 'Espace 4', category: 'Espace', path: '/assets/profile-avatars/space-av4.png' },
 ];

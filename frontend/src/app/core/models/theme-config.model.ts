@@ -9,6 +9,7 @@ export interface ThemeConfig {
   avatarSprite: string;
   obstacleASprite: string;
   obstacleBSprite: string;
+  obstacleBSlideSprite?: string;
   obstacleBCarriedSprite: string;
   targetSprite?: string;
   projectileSprite?: string;
@@ -23,9 +24,10 @@ export const THEME_CONFIGS: Record<GameConfig['theme'], ThemeConfig> = {
     subtitle: 'Renvoie le ballon au fond des filets et récupère la balle !',
     previewImage: '/assets/UI/UI-foot.png',
     groundTile: '/assets/theme/foot/Tilesheet/groundGrass_mown.png',
-    avatarSprite: '/assets/theme/foot/PNG/Blue/characterBlue (1).png',
+    avatarSprite: '/assets/personnage-foot/blue-player.png',
     obstacleASprite: '/assets/theme/foot/PNG/Equipment/ball_soccer1.png',
-    obstacleBSprite: '/assets/theme/foot/PNG/Red/characterRed (1).png',
+    obstacleBSprite: '/assets/personnage-foot/red-player-run.png',
+    obstacleBSlideSprite: '/assets/personnage-foot/red-player-tackle.png',
     obstacleBCarriedSprite: '/assets/theme/foot/PNG/Equipment/ball_soccer2.png',
     targetSprite: '/assets/theme/foot/PNG/Elements/element (37).png',
     dictionaries: {

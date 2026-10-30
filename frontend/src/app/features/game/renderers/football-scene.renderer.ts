@@ -1,5 +1,11 @@
 import { ThemeConfig } from '../../../core/models/theme-config.model';
-import { drawCenteredSprite, drawShadow, drawTacticalFocusZone } from './canvas-draw.utils';
+import {
+  drawCenteredSprite,
+  drawFocusBackdropFilter,
+  drawFocusVignette,
+  drawShadow,
+  drawTacticalFocusZone,
+} from './canvas-draw.utils';
 import { SceneRenderer, RenderState } from './scene-renderer.interface';
 
 export class FootballSceneRenderer implements SceneRenderer {
@@ -12,28 +18,82 @@ export class FootballSceneRenderer implements SceneRenderer {
     state: RenderState,
   ): void {
     this.drawPitch(ctx, canvas, images[this.theme.groundTile ?? ''], state.worldScrollX);
-    drawTacticalFocusZone(ctx, canvas, state.focusStartX, state.focusEndX, '#facc15');
     this.drawSoccerGoal(ctx);
 
+    drawFocusBackdropFilter(ctx, canvas, state);
+    drawTacticalFocusZone(ctx, canvas, state, '#facc15', '250, 204, 21');
+
     const resolving = state.phase === 'RESOLVING_SUCCESS';
-    const progress = resolving ? state.progress : 0;
-    const avatarX = state.avatarX + (state.obstacleType === 'B' && resolving ? Math.sin(progress * Math.PI) * 95 : 0);
-    const avatarY = state.avatarY + (state.obstacleType === 'B' && resolving ? 10 : 0);
-    drawShadow(ctx, avatarX, avatarY + 34, 28, 10);
-    drawCenteredSprite(ctx, images[this.theme.avatarSprite], avatarX, avatarY, 74, 74, 0, false);
+    const missed = state.phase === 'PASSING_MISSED';
+    const progress = resolving || missed ? state.progress : 0;
+
+    // Joueur Bleu (orienté vers la droite, pose prêt / interception)
+    const avatarX =
+      state.avatarX + (state.obstacleType === 'B' && resolving ? Math.sin(progress * Math.PI) * 95 : 0);
+    const avatarY =
+      state.avatarY - (state.obstacleType === 'B' && resolving ? Math.sin(progress * Math.PI) * 18 : 0);
+
+    drawShadow(ctx, avatarX, state.avatarY + 46, 32, 11);
+    drawCenteredSprite(
+      ctx,
+      images[this.theme.avatarSprite],
+      avatarX,
+      avatarY,
+      105,
+      105,
+      0,
+      false,
+      true,
+    );
 
     if (state.obstacleType === 'A') {
+      // Obstacle A : Ballon arrivant de la droite
       const ballX = resolving ? state.resolutionStartX + (885 - state.resolutionStartX) * progress : state.obstacleX;
-      const ballY = resolving ? state.obstacleY - Math.sin(progress * Math.PI) * 65 : state.obstacleY;
-      drawShadow(ctx, ballX, state.obstacleY + 26, 18, 7);
-      drawCenteredSprite(ctx, images[this.theme.obstacleASprite], ballX, ballY, 46, 46, state.time / 120);
+      const ballY = resolving ? state.obstacleY - Math.sin(progress * Math.PI) * 65 : state.obstacleY + 18;
+      drawShadow(ctx, ballX, state.obstacleY + 42, 18, 7);
+      drawCenteredSprite(ctx, images[this.theme.obstacleASprite], ballX, ballY, 44, 44, state.time / 120);
     } else {
+      // Obstacle B : Joueur Rouge (course en approche/focus -> glissade à la résolution)
+      const isSliding = resolving || missed;
+      const attackerSpriteKey =
+        isSliding && this.theme.obstacleBSlideSprite
+          ? this.theme.obstacleBSlideSprite
+          : this.theme.obstacleBSprite;
+
       const attackerX = resolving ? state.resolutionStartX - progress * 90 : state.obstacleX;
-      const attackerY = state.obstacleY - (state.phase === 'PASSING_MISSED' ? Math.sin(progress * Math.PI) * 65 : 0);
-      drawShadow(ctx, attackerX, attackerY + 34, 28, 10);
-      drawCenteredSprite(ctx, images[this.theme.obstacleBSprite], attackerX, attackerY, 74, 74, 0, true);
-      drawCenteredSprite(ctx, images[this.theme.obstacleBCarriedSprite], resolving ? avatarX + 28 : attackerX - 28, state.obstacleY + 14, 36, 36, -state.time / 140);
+      const attackerY = isSliding ? state.obstacleY + 12 : state.obstacleY;
+      const attackerHeight = isSliding ? 88 : 105;
+
+      drawShadow(ctx, attackerX, state.obstacleY + 46, isSliding ? 42 : 32, 11);
+      // flip = false car red-player-run.png et red-player-tackle.png sont déjà orientés vers la gauche
+      drawCenteredSprite(
+        ctx,
+        images[attackerSpriteKey],
+        attackerX,
+        attackerY,
+        attackerHeight,
+        attackerHeight,
+        0,
+        false,
+        true,
+      );
+
+      // Ballon aux pieds de l'attaquant (ou récupéré par le joueur bleu en cas de succès)
+      const carriedBallX = resolving ? avatarX + 38 : attackerX - 36;
+      const carriedBallY = state.obstacleY + 28;
+      drawShadow(ctx, carriedBallX, state.obstacleY + 46, 16, 6);
+      drawCenteredSprite(
+        ctx,
+        images[this.theme.obstacleBCarriedSprite],
+        carriedBallX,
+        carriedBallY,
+        36,
+        36,
+        -state.time / 140,
+      );
     }
+
+    drawFocusVignette(ctx, canvas, state);
   }
 
   private drawPitch(
