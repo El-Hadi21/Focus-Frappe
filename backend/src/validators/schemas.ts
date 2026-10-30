@@ -37,6 +37,7 @@ export const gameConfigSchema = Joi.object({
   durationSeconds: Joi.number().valid(30, 60, 90, 120, 150, 180).required(),
   mode: Joi.string().valid('Mot exact', 'Mot à trous').required(),
   theme: Joi.string().valid('Football', 'Espace').required(),
+  reducedEffects: Joi.boolean().optional(),
 }).required();
 
 export const sessionNotesSchema = Joi.object({

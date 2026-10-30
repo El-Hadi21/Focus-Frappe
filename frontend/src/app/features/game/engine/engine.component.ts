@@ -50,6 +50,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   targetWord = '';
   letterTiles: WordLetterTile[] = [];
   hasTypoShake = false;
+  hasSoftErrorTile = false;
   hasEarlyPressWarning = false;
   isLoadingTheme = false;
   countdownValue = 3;
@@ -80,7 +81,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   get avgResponseTimeSeconds(): number { return this.telemetry.averageResponseTimeSeconds; }
   get focusDurationSeconds(): number { return this.config?.difficulty === 'Facile' ? 7 : this.config?.difficulty === 'Difficile' ? 4 : 5.5; }
   get focusRemainingPercent(): number { return this.phase === 'FOCUS' ? Math.max(0, Math.round((1 - this.focusProgress) * 100)) : this.phase === 'APPROACHING' ? 100 : 0; }
-  get countdownLabel(): string { return this.countdownValue > 0 ? String(this.countdownValue) : 'C’est parti !'; }
+  get countdownLabel(): string { return this.countdownValue > 0 ? String(this.countdownValue) : "C'est parti !"; }
 
   ngAfterViewInit(): void {
     const id = this.route.snapshot.paramMap.get('patientId');
@@ -115,8 +116,18 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     }
     const result = this.wordService.checkCharacter(char);
     this.letterTiles = this.wordService.getTiles();
-    if (result === 'complete') this.success(performance.now());
-    else if (result === 'incorrect') { this.telemetry.recordTypingError(); this.hasTypoShake = false; setTimeout(() => this.hasTypoShake = true); }
+    if (result === 'complete') {
+      this.hasSoftErrorTile = false;
+      this.success(performance.now());
+    } else if (result === 'correct') {
+      this.hasSoftErrorTile = false;
+    } else if (result === 'incorrect') {
+      this.telemetry.recordTypingError();
+      this.hasSoftErrorTile = true;
+      setTimeout(() => {
+        this.hasSoftErrorTile = false;
+      }, 320);
+    }
   }
 
   @HostListener('document:visibilitychange')
@@ -199,6 +210,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   private startGame(): void {
     this.stopLoop();
     this.telemetry.reset();
+    this.wordService.resetSessionWords();
     this.currentObstacle = 1;
     this.worldScrollX = 0;
     this.isSavingSession = false;
@@ -224,11 +236,13 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   }
   private update(time: number): void {
     const elapsed = (time - this.phaseStartedAt) / 1000;
-    this.worldScrollX = (this.worldScrollX + 120 / 60) % 960;
+    const scrollStep = this.config?.reducedEffects ? 0 : this.phase === 'FOCUS' ? 0.35 : 2;
+    this.worldScrollX = (this.worldScrollX + scrollStep) % 960;
     if (this.phase === 'COUNTDOWN') {
       this.countdownValue = Math.max(0, 3 - Math.floor(elapsed));
       if (elapsed >= 3.8) this.spawnObstacle(time);
     } else if (this.phase === 'APPROACHING') {
+      this.focusProgress = 0;
       const progress = Math.min(elapsed / 2.2, 1); this.obstacleX = 980 - (980 - this.focusStartX) * progress;
       if (progress >= 1) { this.phase = 'FOCUS'; this.phaseStartedAt = time; this.focusEnteredAt = time; }
     } else if (this.phase === 'FOCUS') {
@@ -247,7 +261,9 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
       this.config.mode,
       this.patient?.customWords,
     );
-    this.targetWord = this.wordService.targetWord; this.hasEarlyPressWarning = false;
+    this.targetWord = this.wordService.targetWord;
+    this.hasEarlyPressWarning = false;
+    this.hasSoftErrorTile = false;
   }
   private success(time: number): void { if (this.phase !== 'FOCUS') return; this.telemetry.recordSuccess(time - this.focusEnteredAt); this.resolutionStartX = this.obstacleX; this.phase = 'RESOLVING_SUCCESS'; this.phaseStartedAt = time; }
   private miss(time: number): void { this.telemetry.recordMiss(); this.letterTiles = this.wordService.revealAllLetters(); this.resolutionStartX = this.obstacleX; this.phase = 'PASSING_MISSED'; this.phaseStartedAt = time; }
@@ -293,11 +309,36 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     const canvas = this.canvasRef?.nativeElement; if (!canvas || !this.context || !this.renderer) return;
     const elapsed = (time - this.phaseStartedAt) / 1000;
     const progress = this.phase === 'RESOLVING_SUCCESS' ? Math.min(elapsed / 0.9, 1) : Math.min(elapsed / 1.3, 1);
-    this.renderer.drawScene(this.context, canvas, this.images, { phase: this.phase as RenderPhase, obstacleType: this.obstacleType, obstacleX: this.obstacleX, obstacleY: this.obstacleY, avatarX: 180, avatarY: 310, resolutionStartX: this.resolutionStartX, worldScrollX: this.worldScrollX, time, progress, focusStartX: this.focusStartX, focusEndX: this.focusEndX });
+    this.renderer.drawScene(this.context, canvas, this.images, {
+      phase: this.phase as RenderPhase,
+      obstacleType: this.obstacleType,
+      obstacleX: this.obstacleX,
+      obstacleY: this.obstacleY,
+      avatarX: 180,
+      avatarY: 310,
+      resolutionStartX: this.resolutionStartX,
+      worldScrollX: this.worldScrollX,
+      time,
+      progress,
+      focusProgress: this.focusProgress,
+      focusStartX: this.focusStartX,
+      focusEndX: this.focusEndX,
+      reducedEffects: Boolean(this.config?.reducedEffects),
+    });
   }
   private stopLoop(): void { if (this.frame !== undefined) cancelAnimationFrame(this.frame); this.frame = undefined; }
   private async preloadTheme(theme: ThemeConfig): Promise<Record<string, HTMLImageElement>> {
-    const paths = [theme.groundTile, theme.avatarSprite, theme.obstacleASprite, theme.obstacleBSprite, theme.obstacleBCarriedSprite, theme.targetSprite, theme.projectileSprite, theme.effectSprite].filter((path): path is string => Boolean(path));
+    const paths = [
+      theme.groundTile,
+      theme.avatarSprite,
+      theme.obstacleASprite,
+      theme.obstacleBSprite,
+      theme.obstacleBSlideSprite,
+      theme.obstacleBCarriedSprite,
+      theme.targetSprite,
+      theme.projectileSprite,
+      theme.effectSprite,
+    ].filter((path): path is string => Boolean(path));
     const entries = await Promise.all(paths.map(async path => [path, await this.loadImage(path)] as const)); return Object.fromEntries(entries);
   }
   private loadImage(src: string): Promise<HTMLImageElement> { return new Promise(resolve => { const image = new Image(); image.onload = () => resolve(image); image.onerror = () => resolve(image); image.src = src; }); }
