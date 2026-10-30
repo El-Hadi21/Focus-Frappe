@@ -298,34 +298,47 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   }
 
   private finishGame(): void {
-    if (!this.patient || this.isSavingSession) {
-      return;
-    }
+      if (!this.patient || this.isSavingSession) {
+        return;
+      }
 
-    this.isSavingSession = true;
-    this.phase = 'FINISHED';
-    this.stopLoop();
-    const sessionId = this.route.snapshot.queryParamMap.get('sessionId') ?? undefined;
-    this.sessionService.saveSession(this.patient.id, {
-      sessionId,
-      config: this.config,
-      responseTimesMs: this.responseTimesMs,
-      obstaclesCleared: this.telemetry.obstaclesCleared,
-      obstaclesMissed: this.telemetry.obstaclesMissed,
-      outOfWindowClicks: this.telemetry.outOfWindowClicks,
-      typingErrors: this.telemetry.typingErrors,
-      currentMaxStreak: this.telemetry.maxStreak,
-      playedDurationSec: Math.round((performance.now() - this.gameStartedAt) / 1000),
-      abandoned: false,
-    }).subscribe({
-      next: (result) => {
-        void this.router.navigate(['/game-end', result.sessionId]);
-      },
-      error: () => {
-        this.isSavingSession = false;
-      },
-    });
-  }
+      this.isSavingSession = true;
+      this.phase = 'FINISHED';
+      this.stopLoop();
+
+      const sessionId = this.route.snapshot.queryParamMap.get('sessionId') ?? undefined;
+      const sanitizedConfig: GameConfig = {
+        difficulty: this.config.difficulty,
+        durationSeconds: this.config.durationSeconds,
+        mode: this.config.mode,
+        theme: this.config.theme,
+        ...(this.config.reducedEffects !== undefined ? { reducedEffects: Boolean(this.config.reducedEffects) } : {}),
+      };
+
+      const payload = {
+        sessionId,
+        config: sanitizedConfig,
+        responseTimesMs: this.responseTimesMs.map((ms) => Math.max(0, Math.round(ms))),
+        obstaclesCleared: this.telemetry.obstaclesCleared,
+        obstaclesMissed: this.telemetry.obstaclesMissed,
+        outOfWindowClicks: this.telemetry.outOfWindowClicks,
+        typingErrors: this.telemetry.typingErrors,
+        currentMaxStreak: this.telemetry.maxStreak,
+        playedDurationSec: Math.max(1, Math.round((performance.now() - this.gameStartedAt) / 1000)),
+        abandoned: false,
+      };
+
+      this.sessionService.saveSession(this.patient.id, payload).subscribe({
+        next: (result) => {
+          void this.router.navigate(['/game-end', result.sessionId]);
+        },
+        error: () => {
+          // Repli local immédiat pour ne jamais bloquer l'enfant à la fin de la partie
+          const fallbackId = this.sessionService.createLocalFallbackSession(this.patient!.id, payload);
+          void this.router.navigate(['/game-end', fallbackId]);
+        },
+      });
+    }
   private draw(time: number): void {
     const canvas = this.canvasRef?.nativeElement; if (!canvas || !this.context || !this.renderer) return;
     const elapsed = (time - this.phaseStartedAt) / 1000;
