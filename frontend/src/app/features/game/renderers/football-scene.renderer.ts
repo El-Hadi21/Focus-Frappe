@@ -6,9 +6,13 @@ import {
   drawShadow,
   drawTacticalFocusZone,
 } from './canvas-draw.utils';
+import { EffectsSystem } from './effects.system';
 import { SceneRenderer, RenderState } from './scene-renderer.interface';
 
 export class FootballSceneRenderer implements SceneRenderer {
+  private readonly effects = new EffectsSystem();
+  private readonly sparkPalette = ['#facc15', '#4ade80', '#ffffff', '#38bdf8'];
+
   constructor(private readonly theme: ThemeConfig) {}
 
   drawScene(
@@ -47,21 +51,33 @@ export class FootballSceneRenderer implements SceneRenderer {
     );
 
     if (state.obstacleType === 'A') {
-      // Obstacle A : Ballon arrivant de la droite
-      const ballX = resolving ? state.resolutionStartX + (885 - state.resolutionStartX) * progress : state.obstacleX;
+      // Obstacle A : Ballon renvoyé au but si réussi, ou poursuit calmement vers la gauche si manqué
+      const ballX = resolving
+        ? state.resolutionStartX + (885 - state.resolutionStartX) * progress
+        : missed
+          ? state.resolutionStartX - progress * 280
+          : state.obstacleX;
       const ballY = resolving ? state.obstacleY - Math.sin(progress * Math.PI) * 65 : state.obstacleY + 18;
       drawShadow(ctx, ballX, state.obstacleY + 42, 18, 7);
       drawCenteredSprite(ctx, images[this.theme.obstacleASprite], ballX, ballY, 44, 44, state.time / 120);
     } else {
-      // Obstacle B : Joueur Rouge (course en approche/focus -> glissade à la résolution)
-      const isSliding = resolving || missed;
+      // Obstacle B : Joueur Rouge (course en approche/focus -> glissade à la réussite, poursuit sa course si manqué)
+      const isSliding = resolving;
       const attackerSpriteKey =
         isSliding && this.theme.obstacleBSlideSprite
           ? this.theme.obstacleBSlideSprite
           : this.theme.obstacleBSprite;
 
-      const attackerX = resolving ? state.resolutionStartX - progress * 90 : state.obstacleX;
-      const attackerY = isSliding ? state.obstacleY + 12 : state.obstacleY;
+      const attackerX = resolving
+        ? state.resolutionStartX - progress * 90
+        : missed
+          ? state.resolutionStartX - progress * 240
+          : state.obstacleX;
+      const attackerY = isSliding
+        ? state.obstacleY + 12
+        : missed
+          ? state.obstacleY - Math.sin(progress * Math.PI) * 35
+          : state.obstacleY;
       const attackerHeight = isSliding ? 88 : 105;
 
       drawShadow(ctx, attackerX, state.obstacleY + 46, isSliding ? 42 : 32, 11);
@@ -93,6 +109,8 @@ export class FootballSceneRenderer implements SceneRenderer {
       );
     }
 
+    // Étincelles et flash bref de réussite via EffectsSystem
+    this.effects.updateAndDraw(ctx, canvas, state, this.sparkPalette);
     drawFocusVignette(ctx, canvas, state);
   }
 

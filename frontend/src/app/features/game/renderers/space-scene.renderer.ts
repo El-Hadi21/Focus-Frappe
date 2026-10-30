@@ -6,9 +6,13 @@ import {
   drawShadow,
   drawTacticalFocusZone,
 } from './canvas-draw.utils';
+import { EffectsSystem } from './effects.system';
 import { RenderState, SceneRenderer } from './scene-renderer.interface';
 
 export class SpaceSceneRenderer implements SceneRenderer {
+  private readonly effects = new EffectsSystem();
+  private readonly sparkPalette = ['#38bdf8', '#facc15', '#f472b6', '#ffffff'];
+
   constructor(private readonly theme: ThemeConfig) {}
 
   drawScene(
@@ -34,36 +38,86 @@ export class SpaceSceneRenderer implements SceneRenderer {
     drawCenteredSprite(ctx, images[this.theme.avatarSprite], state.avatarX, avatarY, 82, 62, Math.PI / 2);
 
     const resolving = state.phase === 'RESOLVING_SUCCESS';
-    const progress = resolving ? state.progress : 0;
+    const missed = state.phase === 'PASSING_MISSED';
+    const progress = resolving || missed ? state.progress : 0;
 
     if (state.obstacleType === 'A') {
-      const meteorX = resolving ? state.resolutionStartX + progress * 260 : state.obstacleX;
-      drawCenteredSprite(ctx, images[this.theme.obstacleASprite], meteorX, state.obstacleY, 62, 62, state.time / 280);
-      if (resolving) {
+      const meteorX = resolving
+        ? state.resolutionStartX + progress * 140
+        : missed
+          ? state.resolutionStartX - progress * 260
+          : state.obstacleX;
+
+      // En cas de réussite, la météorite rétrécit sous l'impact du missile laser
+      const meteorScale = resolving ? Math.max(0, 1 - progress * 1.15) : 1;
+      if (meteorScale > 0.05) {
         drawCenteredSprite(
           ctx,
-          images[this.theme.projectileSprite ?? ''],
-          state.avatarX + progress * 260,
-          state.avatarY,
-          54,
-          32,
-          Math.PI / 2,
+          images[this.theme.obstacleASprite],
+          meteorX,
+          state.obstacleY,
+          62 * meteorScale,
+          62 * meteorScale,
+          state.time / 280,
         );
-        drawCenteredSprite(ctx, images[this.theme.effectSprite ?? ''], meteorX, state.obstacleY, 80, 80);
+      }
+
+      if (resolving) {
+        const laserX = state.avatarX + (meteorX - state.avatarX) * Math.min(1, progress * 2.2);
+        if (progress < 0.55) {
+          drawCenteredSprite(
+            ctx,
+            images[this.theme.projectileSprite ?? ''],
+            laserX,
+            state.avatarY,
+            54,
+            32,
+            Math.PI / 2,
+          );
+        }
+        // Explosion progressive avec le sprite spaceEffects du pack Kenney
+        const explosionSize = 55 + Math.sin(progress * Math.PI) * 65;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, 1 - progress * 0.85);
+        drawCenteredSprite(
+          ctx,
+          images[this.theme.effectSprite ?? ''],
+          meteorX,
+          state.obstacleY,
+          explosionSize,
+          explosionSize,
+          progress * 1.5,
+        );
+        ctx.restore();
       }
     } else {
-      const rivalX = resolving ? state.resolutionStartX - progress * 90 : state.obstacleX;
-      drawCenteredSprite(ctx, images[this.theme.obstacleBSprite], rivalX, state.obstacleY, 82, 62, Math.PI / 2, true);
+      const rivalX = resolving
+        ? state.resolutionStartX - progress * 90
+        : missed
+          ? state.resolutionStartX - progress * 250
+          : state.obstacleX;
+      const rivalY = missed ? state.obstacleY - Math.sin(progress * Math.PI) * 40 : state.obstacleY;
+
+      drawCenteredSprite(ctx, images[this.theme.obstacleBSprite], rivalX, rivalY, 82, 62, Math.PI / 2, true);
+      const starX = resolving
+        ? state.resolutionStartX - 28 + (state.avatarX - (state.resolutionStartX - 28)) * progress
+        : rivalX - 28;
+      const starY = resolving
+        ? state.obstacleY + 8 - Math.sin(progress * Math.PI) * 28
+        : rivalY + 8;
       drawCenteredSprite(
         ctx,
         images[this.theme.obstacleBCarriedSprite],
-        resolving ? state.avatarX : rivalX - 28,
-        state.obstacleY + 8,
-        32,
-        32,
+        starX,
+        starY,
+        34,
+        34,
+        state.time / 220,
       );
     }
 
+    // Étincelles et flash bref de réussite via EffectsSystem
+    this.effects.updateAndDraw(ctx, canvas, state, this.sparkPalette);
     drawFocusVignette(ctx, canvas, state);
   }
 
