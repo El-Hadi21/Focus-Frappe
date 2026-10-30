@@ -12,6 +12,7 @@ import { getRendererForTheme } from '../renderers/theme-renderer.registry';
 import { ClinicalDefaultsService } from '../services/clinical-defaults.service';
 import { GameTelemetryService } from '../services/game-telemetry.service';
 import { WordChallengeService, WordLetterTile } from '../services/word-challenge.service';
+import { AudioService } from '../services/audio.service';
 
 type ObstacleType = 'A' | 'B';
 
@@ -31,6 +32,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   private readonly sessionService = inject(SessionService);
   private readonly clinicalDefaultsService = inject(ClinicalDefaultsService);
   private readonly wordService = inject(WordChallengeService);
+  readonly audioService = inject(AudioService);
   readonly telemetry = inject(GameTelemetryService);
   readonly themes: GameConfig['theme'][] = ['Football', 'Espace'];
   readonly themeConfigs = THEME_CONFIGS;
@@ -115,19 +117,22 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
       return;
     }
     const result = this.wordService.checkCharacter(char);
-    this.letterTiles = this.wordService.getTiles();
-    if (result === 'complete') {
-      this.hasSoftErrorTile = false;
-      this.success(performance.now());
-    } else if (result === 'correct') {
-      this.hasSoftErrorTile = false;
-    } else if (result === 'incorrect') {
-      this.telemetry.recordTypingError();
-      this.hasSoftErrorTile = true;
-      setTimeout(() => {
-        this.hasSoftErrorTile = false;
-      }, 320);
-    }
+        this.letterTiles = this.wordService.getTiles();
+        if (result === 'complete') {
+          this.hasSoftErrorTile = false;
+          this.audioService.play('correctLetter');
+          this.success(performance.now());
+        } else if (result === 'correct') {
+          this.hasSoftErrorTile = false;
+          this.audioService.play('correctLetter');
+        } else if (result === 'incorrect') {
+          this.telemetry.recordTypingError();
+          this.audioService.play('typingError');
+          this.hasSoftErrorTile = true;
+          setTimeout(() => {
+            this.hasSoftErrorTile = false;
+          }, 320);
+        }
   }
 
   @HostListener('document:visibilitychange')
@@ -167,6 +172,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     this.config = { ...this.config, theme };
     this.gameConfigService.setConfigForPatient(this.patient.id, this.config);
     await this.wordService.loadDictionaries();
+    this.audioService.preloadThemeSounds(THEME_CONFIGS[theme].sounds);
     this.images = await this.preloadTheme(THEME_CONFIGS[theme]);
     this.renderer = getRendererForTheme(theme);
     this.isLoadingTheme = false;
@@ -265,9 +271,24 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     this.hasEarlyPressWarning = false;
     this.hasSoftErrorTile = false;
   }
-  private success(time: number): void { if (this.phase !== 'FOCUS') return; this.telemetry.recordSuccess(time - this.focusEnteredAt); this.resolutionStartX = this.obstacleX; this.phase = 'RESOLVING_SUCCESS'; this.phaseStartedAt = time; }
-  private miss(time: number): void { this.telemetry.recordMiss(); this.letterTiles = this.wordService.revealAllLetters(); this.resolutionStartX = this.obstacleX; this.phase = 'PASSING_MISSED'; this.phaseStartedAt = time; }
-  private next(time: number): void {
+ private success(time: number): void {
+     if (this.phase !== 'FOCUS') return;
+     this.telemetry.recordSuccess(time - this.focusEnteredAt);
+     this.audioService.play('obstacleCleared');
+     this.resolutionStartX = this.obstacleX;
+     this.phase = 'RESOLVING_SUCCESS';
+     this.phaseStartedAt = time;
+   }
+
+   private miss(time: number): void {
+     this.telemetry.recordMiss();
+     this.audioService.play('obstacleMissed');
+     this.letterTiles = this.wordService.revealAllLetters();
+     this.resolutionStartX = this.obstacleX;
+     this.phase = 'PASSING_MISSED';
+     this.phaseStartedAt = time;
+   }
+   private next(time: number): void {
     if (this.currentObstacle >= this.totalObstacles) {
       this.finishGame();
       return;
@@ -342,4 +363,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     const entries = await Promise.all(paths.map(async path => [path, await this.loadImage(path)] as const)); return Object.fromEntries(entries);
   }
   private loadImage(src: string): Promise<HTMLImageElement> { return new Promise(resolve => { const image = new Image(); image.onload = () => resolve(image); image.onerror = () => resolve(image); image.src = src; }); }
+  toggleMute(): void {
+      this.audioService.toggleMute();
+    }
 }
