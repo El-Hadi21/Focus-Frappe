@@ -1,5 +1,9 @@
 @if (session && patient) {
-  <main class="game-end-page">
+  <main
+    class="game-end-page"
+    [class.theme-foot]="session.config.theme === 'Football'"
+    [class.theme-space]="session.config.theme === 'Espace'"
+  >
     <section class="finished-card card" aria-labelledby="end-title">
       <p class="eyebrow">Partie terminée !</p>
       <h1 id="end-title">Bravo {{ patient.firstName }} !</h1>

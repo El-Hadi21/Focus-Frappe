@@ -1,5 +1,9 @@
 @if (phase === 'SELECT_THEME') {
-<main class="theme-selection-page">
+<main
+  class="theme-selection-page"
+  [class.theme-foot]="selectedTheme === 'Football'"
+  [class.theme-space]="selectedTheme === 'Espace'"
+>
   <section class="theme-selection-card card" aria-labelledby="theme-selection-title">
     <img src="/assets/UI/logo.png" alt="Focus & Frappe" class="app-logo-small" />
     <h1 id="theme-selection-title">Choisis ton univers !</h1>
@@ -12,6 +16,7 @@
         class="theme-choice"
         [class.is-selected]="selectedTheme === theme"
         [disabled]="isLoadingTheme"
+        (mouseenter)="selectedTheme = theme"
         (click)="selectThemeAndStart(theme)"
       >
         <img [src]="themeConfigs[theme].previewImage" [alt]="'Univers ' + theme" />
@@ -29,7 +34,11 @@
   </section>
 </main>
 } @else {
-<main class="game-page">
+<main
+  class="game-page"
+  [class.theme-foot]="selectedTheme === 'Football'"
+  [class.theme-space]="selectedTheme === 'Espace'"
+>
   <section class="game-shell card" aria-label="Zone de jeu Focus et Frappe">
     <!-- BARRE SUPÉRIEURE DU HUD LUDIQUE KENNEY -->
     <header class="game-hud">

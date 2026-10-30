@@ -10,6 +10,8 @@ export function drawCenteredSprite(
   rotation = 0,
   flip = false,
   preserveAspectRatio = false,
+  scaleX = 1,
+  scaleY = 1,
 ): void {
   if (!image?.complete || image.naturalWidth === 0 || image.naturalHeight === 0) {
     return;
@@ -27,9 +29,7 @@ export function drawCenteredSprite(
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(rotation);
-  if (flip) {
-    ctx.scale(-1, 1);
-  }
+  ctx.scale((flip ? -1 : 1) * scaleX, scaleY);
   ctx.drawImage(image, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight);
   ctx.restore();
 }
@@ -40,11 +40,12 @@ export function drawShadow(
   y: number,
   width: number,
   height: number,
+  alpha = 0.25,
 ): void {
   ctx.save();
-  ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
+  ctx.fillStyle = `rgba(15, 23, 42, ${alpha})`;
   ctx.beginPath();
-  ctx.ellipse(x, y, width, height, 0, 0, Math.PI * 2);
+  ctx.ellipse(x, y, Math.max(4, width), Math.max(2, height), 0, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
 }
@@ -73,7 +74,7 @@ export function drawTacticalFocusZone(
   ctx.save();
 
   if (state.phase === 'APPROACHING') {
-    const lineGradient = ctx.createLinearGradient(0, 80, 0, canvas.height - 80);
+    const lineGradient = ctx.createLinearGradient(0, 110, 0, canvas.height - 50);
     lineGradient.addColorStop(0, `rgba(${accentRgb}, 0)`);
     lineGradient.addColorStop(0.5, `rgba(${accentRgb}, 0.45)`);
     lineGradient.addColorStop(1, `rgba(${accentRgb}, 0)`);
@@ -82,8 +83,8 @@ export function drawTacticalFocusZone(
     ctx.lineWidth = 3;
     ctx.setLineDash([8, 8]);
     ctx.beginPath();
-    ctx.moveTo(state.focusStartX, 85);
-    ctx.lineTo(state.focusStartX, canvas.height - 85);
+    ctx.moveTo(state.focusStartX, 115);
+    ctx.lineTo(state.focusStartX, canvas.height - 55);
     ctx.stroke();
     ctx.setLineDash([]);
     ctx.restore();
@@ -137,7 +138,7 @@ export function drawFocusVignette(
 
   ctx.save();
   const centerX = canvas.width * 0.48;
-  const centerY = canvas.height * 0.54;
+  const centerY = canvas.height * 0.56;
   const innerRadius = canvas.height * 0.34;
   const outerRadius = canvas.width * 0.68;
 
