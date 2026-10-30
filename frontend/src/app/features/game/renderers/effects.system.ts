@@ -22,6 +22,13 @@ export class EffectsSystem {
     state: RenderState,
     palette: string[],
   ): void {
+    if (state.reducedEffects) {
+      this.particles = [];
+      this.flashAlpha = 0;
+      this.lastPhase = state.phase;
+      return;
+    }
+
     const dt = this.lastTime > 0 ? Math.min((state.time - this.lastTime) / 1000, 0.05) : 1 / 60;
     this.lastTime = state.time;
 

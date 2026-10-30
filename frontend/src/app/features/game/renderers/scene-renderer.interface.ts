@@ -20,6 +20,7 @@ export interface RenderState {
   focusProgress: number;
   focusStartX: number;
   focusEndX: number;
+  reducedEffects?: boolean;
 }
 
 export interface SceneRenderer {

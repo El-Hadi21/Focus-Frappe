@@ -132,7 +132,7 @@ export function drawFocusVignette(
   canvas: HTMLCanvasElement,
   state: RenderState,
 ): void {
-  if (state.phase !== 'FOCUS') {
+  if (state.phase !== 'FOCUS' || state.reducedEffects) {
     return;
   }
 

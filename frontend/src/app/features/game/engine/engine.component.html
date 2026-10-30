@@ -150,7 +150,11 @@
 
       @if (phase === 'COUNTDOWN') {
       <div class="countdown-overlay" role="status" aria-live="assertive">
-        <span class="countdown-value">{{ countdownLabel }}</span>
+        @for (tick of [countdownValue]; track tick) {
+          <div class="countdown-badge" [class.is-go]="tick === 0">
+            <span class="countdown-text">{{ countdownLabel }}</span>
+          </div>
+        }
       </div>
       }
 

@@ -203,6 +203,29 @@
           </label>
         </section>
 
+        <section class="mode-section" aria-labelledby="sensory-title">
+          <div>
+            <p class="section-kicker">06</p>
+            <h2 id="sensory-title">Confort sensoriel (TDA/H)</h2>
+            <p class="mode-description">
+              Coupe les particules, le vignettage animé, les confettis et le défilement du décor pour limiter la surcharge visuelle.
+            </p>
+          </div>
+
+          <label class="toggle-option">
+            <span class="toggle-text">
+              <strong>Effets réduits</strong>
+              <small>{{ configForm.controls.reducedEffects.value ? 'Activé' : 'Désactivé' }}</small>
+            </span>
+            <input
+              type="checkbox"
+              [checked]="configForm.controls.reducedEffects.value"
+              (change)="toggleReducedEffects($event)"
+            />
+            <span class="toggle-track" aria-hidden="true"><span></span></span>
+          </label>
+        </section>
+
         <footer class="form-actions">
           <button type="button" class="btn-secondary" (click)="goBack()">Annuler</button>
           <button type="submit" class="btn-primary">Lancer la partie <span aria-hidden="true">→</span></button>

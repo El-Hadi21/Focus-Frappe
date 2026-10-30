@@ -45,6 +45,7 @@ export class SessionConfigComponent implements OnInit {
     durationSeconds: this.formBuilder.nonNullable.control<GameConfig['durationSeconds']>(90, Validators.required),
     mode: this.formBuilder.nonNullable.control<GameConfig['mode']>('Mot exact', Validators.required),
     theme: this.formBuilder.nonNullable.control<GameConfig['theme']>('Football', Validators.required),
+    reducedEffects: this.formBuilder.nonNullable.control<boolean>(false),
     customWord: this.formBuilder.nonNullable.control(''),
   });
 
@@ -60,7 +61,10 @@ export class SessionConfigComponent implements OnInit {
         this.patient = patient;
         const config = this.gameConfigService.getConfigForPatient(patient.id)
           ?? this.clinicalDefaultsService.getDefaultConfig(patient);
-        this.configForm.patchValue(config);
+        this.configForm.patchValue({
+          ...config,
+          reducedEffects: config.reducedEffects ?? false,
+        });
       },
       error: () => {
         void this.router.navigate(['/dashboard']);
@@ -172,6 +176,11 @@ export class SessionConfigComponent implements OnInit {
   toggleMode(event: Event): void {
     const isChecked = (event.target as HTMLInputElement).checked;
     this.configForm.controls.mode.setValue(isChecked ? 'Mot à trous' : 'Mot exact');
+  }
+
+  toggleReducedEffects(event: Event): void {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    this.configForm.controls.reducedEffects.setValue(isChecked);
   }
 
   goBack(): void {

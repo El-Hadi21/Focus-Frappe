@@ -786,6 +786,43 @@
       "plannedDurationSec": 120,
       "abandons": 1,
       "score": 0
+    },
+    {
+      "id": "session-patient-1792629269738-4r7rrt-1793382864247-essf36",
+      "date": "2026-10-30T17:54:24.247Z",
+      "gamesCount": 1,
+      "config": {
+        "difficulty": "Normal",
+        "durationSeconds": 120,
+        "mode": "Mot exact",
+        "theme": "Espace"
+      },
+      "responseTimesMs": [
+        4440.300000005962,
+        4010.300000002979,
+        2680.5,
+        3605.000000005959,
+        3332.5,
+        4938.800000000003,
+        3347.199999997014,
+        3992.0000000059663,
+        5009.800000005955,
+        2928.1000000089407,
+        3492.7999999970198,
+        1999.3000000059546
+      ],
+      "avgResponseTimeSec": 3.6480500000029794,
+      "variabilityMinSec": 2.7923591821058436,
+      "variabilityMaxSec": 4.503740817900115,
+      "obstaclesCleared": 12,
+      "obstaclesMissed": 0,
+      "outOfWindowClicks": 0,
+      "typingErrors": 13,
+      "maxStreak": 12,
+      "playedDurationSec": 85,
+      "plannedDurationSec": 120,
+      "abandons": 0,
+      "score": 750
     }
   ],
   "patient-1793050980819-s9av98": [

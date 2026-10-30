@@ -81,7 +81,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   get avgResponseTimeSeconds(): number { return this.telemetry.averageResponseTimeSeconds; }
   get focusDurationSeconds(): number { return this.config?.difficulty === 'Facile' ? 7 : this.config?.difficulty === 'Difficile' ? 4 : 5.5; }
   get focusRemainingPercent(): number { return this.phase === 'FOCUS' ? Math.max(0, Math.round((1 - this.focusProgress) * 100)) : this.phase === 'APPROACHING' ? 100 : 0; }
-  get countdownLabel(): string { return this.countdownValue > 0 ? String(this.countdownValue) : 'C’est parti !'; }
+  get countdownLabel(): string { return this.countdownValue > 0 ? String(this.countdownValue) : "C'est parti !"; }
 
   ngAfterViewInit(): void {
     const id = this.route.snapshot.paramMap.get('patientId');
@@ -236,7 +236,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   }
   private update(time: number): void {
     const elapsed = (time - this.phaseStartedAt) / 1000;
-    const scrollStep = this.phase === 'FOCUS' ? 0.35 : 2;
+    const scrollStep = this.config?.reducedEffects ? 0 : this.phase === 'FOCUS' ? 0.35 : 2;
     this.worldScrollX = (this.worldScrollX + scrollStep) % 960;
     if (this.phase === 'COUNTDOWN') {
       this.countdownValue = Math.max(0, 3 - Math.floor(elapsed));
@@ -323,6 +323,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
       focusProgress: this.focusProgress,
       focusStartX: this.focusStartX,
       focusEndX: this.focusEndX,
+      reducedEffects: Boolean(this.config?.reducedEffects),
     });
   }
   private stopLoop(): void { if (this.frame !== undefined) cancelAnimationFrame(this.frame); this.frame = undefined; }

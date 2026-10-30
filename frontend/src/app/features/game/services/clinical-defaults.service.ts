@@ -34,6 +34,7 @@ export class ClinicalDefaultsService {
       durationSeconds,
       mode: 'Mot exact',
       theme: 'Football',
+      reducedEffects: false,
     };
   }
 
