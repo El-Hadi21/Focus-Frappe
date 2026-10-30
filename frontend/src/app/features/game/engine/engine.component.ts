@@ -210,6 +210,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   private startGame(): void {
     this.stopLoop();
     this.telemetry.reset();
+    this.wordService.resetSessionWords();
     this.currentObstacle = 1;
     this.worldScrollX = 0;
     this.isSavingSession = false;

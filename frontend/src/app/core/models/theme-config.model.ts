@@ -31,19 +31,22 @@ export const THEME_CONFIGS: Record<GameConfig['theme'], ThemeConfig> = {
     obstacleBCarriedSprite: '/assets/theme/foot/PNG/Equipment/ball_soccer2.png',
     targetSprite: '/assets/theme/foot/PNG/Elements/element (37).png',
     dictionaries: {
-      Facile: ['but', 'tir', 'jeu', 'foot', 'vite', 'main', 'club', 'pass', 'coup', 'filet'],
-      Normal: ['ballon', 'gardien', 'arbitre', 'terrain', 'dribble', 'joueur', ' tribune', 'corner'].map((w) =>
-        w.trim(),
-      ),
-      Difficile: [
-        'defenseur',
-        'attaquant',
-        'entraineur',
-        'championnat',
-        'coequipier',
-        'prolongation',
-      ],
-    },
+      Facile: [
+            'but', 'tir', 'jeu', 'foot', 'club', 'main', 'camp', 'gant', 'coup', 'hors',
+            'banc', 'cage', 'coin', 'duel', 'goal', 'lice', 'mur', 'pied', 'plot', 'pont',
+            'saut', 'test', 'tour', 'vite', 'axe', 'bleu', 'choc', 'clan', 'don', 'passe',
+          ],
+          Normal: [
+            'ballon', 'gardien', 'arbitre', 'terrain', 'dribble', 'joueur', 'corner', 'stade', 'maillot', 'crampon',
+            'attaque', 'brassard', 'buteur', 'centre', 'chrono', 'couloir', 'crochet', 'defense', 'relance', 'gradin',
+            'lucarne', 'offensif', 'pelouse', 'penalty', 'poteau', 'sifflet', 'surface', 'tribune', 'fautes', 'filets',
+          ],
+          Difficile: [
+            'defenseur', 'attaquant', 'entraineur', 'championnat', 'coequipier', 'prolongation', 'supporter', 'adversaire', 'alignement', 'amortissement',
+            'capitaine', 'classement', 'combinaison', 'competition', 'debordement', 'degagement', 'echauffement', 'elimination', 'engagement', 'interception',
+            'partenaire', 'passement', 'preparation', 'remplacant', 'recuperation', 'selectionneur', 'statistique', 'transversale', 'trajectoire', 'victorieux',
+          ],
+      },
   },
   Espace: {
     id: 'Espace',
@@ -58,16 +61,21 @@ export const THEME_CONFIGS: Record<GameConfig['theme'], ThemeConfig> = {
     projectileSprite: '/assets/theme/space/PNG/Sprites/Missiles/spaceMissiles_001.png',
     effectSprite: '/assets/theme/space/PNG/Sprites/Effects/spaceEffects_006.png',
     dictionaries: {
-      Facile: ['lune', 'mars', 'ciel', 'ovni', 'star', 'orb', 'vol', 'vide', 'code', 'base'],
-      Normal: ['planete', 'comete', 'galaxie', 'cosmos', 'navette', 'orbite', 'etoile', 'station'],
-      Difficile: [
-        'astronaute',
-        'meteorite',
-        'constellation',
-        'apesanteur',
-        'exploration',
-        'observatoire',
-      ],
-    },
+      Facile: [
+            'lune', 'mars', 'ciel', 'ovni', 'star', 'vol', 'vide', 'base', 'nuit', 'noir',
+            'axe', 'cap', 'char', 'code', 'cone', 'dome', 'echo', 'feux', 'flux', 'gaz',
+            'halo', 'ion', 'jet', 'nef', 'nova', 'onde', 'pole', 'orb', 'air', 'sol',
+          ],
+          Normal: [
+            'planete', 'comete', 'galaxie', 'cosmos', 'navette', 'orbite', 'etoile', 'station', 'soleil', 'pilote',
+            'anneau', 'antenne', 'capsule', 'cockpit', 'cratere', 'eclipse', 'equipage', 'espace', 'fusee', 'gravite',
+            'horizon', 'impact', 'jupiter', 'lumiere', 'mercure', 'meteore', 'mission', 'neptune', 'pulsar', 'saturne',
+          ],
+          Difficile: [
+            'astronaute', 'meteorite', 'apesanteur', 'exploration', 'observatoire', 'constellation', 'telescope', 'acceleration', 'astrophysique', 'atmosphere',
+            'atterrissage', 'combinaison', 'communication', 'cosmonaute', 'decollage', 'exoplanete', 'extraterrestre', 'gravitation', 'interstellaire', 'laboratoire',
+            'lancement', 'navigation', 'planetaire', 'propulseur', 'rayonnement', 'satellite', 'trajectoire', 'universel', 'astronomie', 'stratosphere',
+          ],
+      },
   },
 };
