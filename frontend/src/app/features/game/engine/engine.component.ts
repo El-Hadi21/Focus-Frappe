@@ -104,7 +104,10 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void { this.stopLoop(); }
+  ngOnDestroy(): void {
+      this.stopLoop();
+      this.audioService.stopBgm();
+    }
 
   @HostListener('window:keydown', ['$event'])
   handleKeydown(event: KeyboardEvent): void {
@@ -140,12 +143,13 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
     const isGameInProgress = this.phase !== 'SELECT_THEME' && this.phase !== 'FINISHED';
 
     if (document.hidden) {
-      if (isGameInProgress && !this.isPausedByVisibility) {
-        this.isPausedByVisibility = true;
-        this.visibilityPauseStartedAt = performance.now();
-        this.stopLoop();
-      }
-      return;
+          if (isGameInProgress && !this.isPausedByVisibility) {
+            this.isPausedByVisibility = true;
+            this.visibilityPauseStartedAt = performance.now();
+            this.audioService.pauseBgm();
+            this.stopLoop();
+          }
+          return;
     }
 
     if (!this.isPausedByVisibility) {
@@ -162,6 +166,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
 
     if (isGameInProgress) {
       this.frame = requestAnimationFrame((time) => this.render(time));
+      this.audioService.resumeBgm();
     }
   }
 
@@ -180,7 +185,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   }
 
   replaySameTheme(): void { void this.selectThemeAndStart(this.selectedTheme); }
-  openThemeSelection(): void { this.stopLoop(); this.phase = 'SELECT_THEME'; }
+  openThemeSelection(): void { this.stopLoop(); this.audioService.stopBgm(); this.phase = 'SELECT_THEME'; }
   quitToProfile(): void {
     if (!this.patient) {
       return;
@@ -190,6 +195,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
       this.isSavingSession = true;
       this.phase = 'FINISHED';
       this.stopLoop();
+      this.audioService.stopBgm();
       const sessionId = this.route.snapshot.queryParamMap.get('sessionId') ?? undefined;
       this.sessionService.saveSession(this.patient.id, {
         sessionId,
@@ -227,6 +233,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
       this.selectedTheme = this.config.theme;
     }
     this.totalObstacles = Math.max(3, Math.round(this.config.durationSeconds / 10));
+    this.audioService.startBgm(Boolean(this.config?.reducedEffects));
     this.phase = 'COUNTDOWN'; this.phaseStartedAt = performance.now(); this.countdownValue = 3;
     this.gameStartedAt = this.phaseStartedAt;
     setTimeout(() => { this.context = this.canvasRef?.nativeElement.getContext('2d') ?? undefined; this.frame = requestAnimationFrame(t => this.render(t)); });
@@ -242,6 +249,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
   }
   private update(time: number): void {
     const elapsed = (time - this.phaseStartedAt) / 1000;
+    this.audioService.setBgmFocusDucking(this.phase === 'FOCUS');
     const scrollStep = this.config?.reducedEffects ? 0 : this.phase === 'FOCUS' ? 0.35 : 2;
     this.worldScrollX = (this.worldScrollX + scrollStep) % 960;
     if (this.phase === 'COUNTDOWN') {
@@ -274,7 +282,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
  private success(time: number): void {
      if (this.phase !== 'FOCUS') return;
      this.telemetry.recordSuccess(time - this.focusEnteredAt);
-     this.audioService.play('obstacleCleared');
+     this.audioService.play(this.obstacleType === 'A' ? 'obstacleACleared' : 'obstacleBCleared');
      this.resolutionStartX = this.obstacleX;
      this.phase = 'RESOLVING_SUCCESS';
      this.phaseStartedAt = time;
@@ -282,12 +290,12 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
 
    private miss(time: number): void {
      this.telemetry.recordMiss();
-     this.audioService.play('obstacleMissed');
      this.letterTiles = this.wordService.revealAllLetters();
      this.resolutionStartX = this.obstacleX;
      this.phase = 'PASSING_MISSED';
      this.phaseStartedAt = time;
    }
+
    private next(time: number): void {
     if (this.currentObstacle >= this.totalObstacles) {
       this.finishGame();
@@ -305,6 +313,7 @@ export class EngineComponent implements AfterViewInit, OnDestroy {
       this.isSavingSession = true;
       this.phase = 'FINISHED';
       this.stopLoop();
+      this.audioService.stopBgm();
 
       const sessionId = this.route.snapshot.queryParamMap.get('sessionId') ?? undefined;
       const sanitizedConfig: GameConfig = {

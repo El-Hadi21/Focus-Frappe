@@ -3,6 +3,7 @@ import { GameSoundEvent, ThemeSoundConfig } from '../../../core/models/theme-con
 
 const STORAGE_VOLUME_KEY = 'ff_audio_volume';
 const STORAGE_MUTED_KEY = 'ff_audio_muted';
+const VICTORY_SOUND_PATH = '/assets/sounds/UI/victory-fanfare.mp3';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +11,8 @@ const STORAGE_MUTED_KEY = 'ff_audio_muted';
 export class AudioService {
   private readonly audioCache = new Map<string, HTMLAudioElement>();
   private currentThemeSounds?: ThemeSoundConfig;
-  private audioCtx?: AudioContext;
+  private bgmAudio?: HTMLAudioElement;
+  private isBgmDucked = false;
 
   private _volume = this.loadStoredVolume();
   private _isMuted = this.loadStoredMute();
@@ -29,11 +31,13 @@ export class AudioService {
     if (this._volume > 0 && this._isMuted) {
       this.setMuted(false);
     }
+    this.updateBgmVolume();
   }
 
   setMuted(muted: boolean): void {
     this._isMuted = muted;
     localStorage.setItem(STORAGE_MUTED_KEY, String(this._isMuted));
+    this.updateBgmVolume();
   }
 
   toggleMute(): boolean {
@@ -43,13 +47,67 @@ export class AudioService {
 
   preloadThemeSounds(sounds: ThemeSoundConfig): void {
     this.currentThemeSounds = sounds;
-    for (const path of Object.values(sounds)) {
-      if (!this.audioCache.has(path)) {
+    const allPaths = [
+      sounds.bgm,
+      sounds.correctLetter,
+      sounds.typingError,
+      sounds.obstacleACleared,
+      sounds.obstacleBCleared,
+      VICTORY_SOUND_PATH,
+    ];
+
+    for (const path of allPaths) {
+      if (path && !this.audioCache.has(path)) {
         const audio = new Audio(path);
         audio.preload = 'auto';
         this.audioCache.set(path, audio);
       }
     }
+  }
+
+  startBgm(reducedEffects = false): void {
+    this.stopBgm();
+    if (reducedEffects || !this.currentThemeSounds?.bgm) {
+      return;
+    }
+
+    const bgmPath = this.currentThemeSounds.bgm;
+    const bgm = new Audio(bgmPath);
+    bgm.loop = true;
+    this.bgmAudio = bgm;
+    this.isBgmDucked = false;
+    this.updateBgmVolume();
+
+    if (!this._isMuted && this._volume > 0) {
+      void bgm.play().catch(() => undefined);
+    }
+  }
+
+  setBgmFocusDucking(inFocus: boolean): void {
+    if (this.isBgmDucked === inFocus) {
+      return;
+    }
+    this.isBgmDucked = inFocus;
+    this.updateBgmVolume();
+  }
+
+  pauseBgm(): void {
+    this.bgmAudio?.pause();
+  }
+
+  resumeBgm(): void {
+    if (this.bgmAudio && !this._isMuted && this._volume > 0) {
+      void this.bgmAudio.play().catch(() => undefined);
+    }
+  }
+
+  stopBgm(): void {
+    if (this.bgmAudio) {
+      this.bgmAudio.pause();
+      this.bgmAudio.currentTime = 0;
+      this.bgmAudio = undefined;
+    }
+    this.isBgmDucked = false;
   }
 
   play(event: GameSoundEvent): void {
@@ -58,105 +116,54 @@ export class AudioService {
     }
 
     const src = this.currentThemeSounds?.[event];
-    if (src) {
-      const cached = this.audioCache.get(src);
-      const instance = cached ? (cached.cloneNode(true) as HTMLAudioElement) : new Audio(src);
-
-      // Pondération douce selon la nature clinique de l'événement
-      const eventGain =
-        event === 'typingError'
-          ? 0.35
-          : event === 'obstacleMissed'
-            ? 0.45
-            : event === 'correctLetter'
-              ? 0.75
-              : 0.9;
-
-      instance.volume = Math.min(1, this._volume * eventGain);
-      void instance.play().catch(() => undefined);
+    if (!src) {
+      return;
     }
 
-    // Jingle mélodique doux (Web Audio) pour récompenser clairement l'obstacle franchi
-    if (event === 'obstacleCleared') {
-      this.playSuccessChime();
-    } else if (event === 'obstacleMissed') {
-      this.playNeutralMissTone();
-    }
+    const cached = this.audioCache.get(src);
+    const instance = cached ? (cached.cloneNode(true) as HTMLAudioElement) : new Audio(src);
+
+    const eventGain =
+      event === 'typingError'
+        ? 0.35
+        : event === 'correctLetter'
+          ? 0.7
+          : 0.95;
+
+    instance.volume = Math.min(1, this._volume * eventGain);
+    void instance.play().catch(() => undefined);
   }
 
-  private playSuccessChime(): void {
-    try {
-      const ctx = this.getAudioContext();
-      if (!ctx) {
-        return;
-      }
-      // Petit arpège majeur joyeux et apaisant (Do5 - Mi5 - Sol5)
-      const notes = [523.25, 659.25, 783.99];
-      const now = ctx.currentTime;
-
-      notes.forEach((freq, idx) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, now + idx * 0.065);
-
-        const peakGain = 0.16 * this._volume;
-        gain.gain.setValueAtTime(0.001, now + idx * 0.065);
-        gain.gain.exponentialRampToValueAtTime(peakGain, now + idx * 0.065 + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.065 + 0.24);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now + idx * 0.065);
-        osc.stop(now + idx * 0.065 + 0.25);
-      });
-    } catch {
-      // Ignore si le navigateur bloque l'AudioContext
+  playVictoryFanfare(): void {
+    this.stopBgm();
+    if (this._isMuted || this._volume <= 0) {
+      return;
     }
+
+    const cached = this.audioCache.get(VICTORY_SOUND_PATH);
+    const instance = cached
+      ? (cached.cloneNode(true) as HTMLAudioElement)
+      : new Audio(VICTORY_SOUND_PATH);
+    instance.volume = Math.min(1, this._volume * 0.85);
+    void instance.play().catch(() => undefined);
   }
 
-  private playNeutralMissTone(): void {
-    try {
-      const ctx = this.getAudioContext();
-      if (!ctx) {
-        return;
-      }
-      const now = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(330, now);
-      osc.frequency.exponentialRampToValueAtTime(277.18, now + 0.18);
+  private updateBgmVolume(): void {
+    if (!this.bgmAudio) {
+      return;
+    }
+    if (this._isMuted || this._volume <= 0) {
+      this.bgmAudio.volume = 0;
+      this.bgmAudio.pause();
+      return;
+    }
 
-      const peakGain = 0.08 * this._volume;
-      gain.gain.setValueAtTime(0.001, now);
-      gain.gain.exponentialRampToValueAtTime(peakGain, now + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.22);
-    } catch {
-      // Ignore
+    // Volume doux (22% en approche, réduit à 9% pendant la Zone de Focus pour la concentration)
+    const baseGain = this.isBgmDucked ? 0.09 : 0.22;
+    this.bgmAudio.volume = Math.min(1, this._volume * baseGain);
+    if (this.bgmAudio.paused) {
+      void this.bgmAudio.play().catch(() => undefined);
     }
-  }
-
-  private getAudioContext(): AudioContext | undefined {
-    if (typeof window === 'undefined') {
-      return undefined;
-    }
-    if (!this.audioCtx) {
-      const AudioContextClass =
-        window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      if (AudioContextClass) {
-        this.audioCtx = new AudioContextClass();
-      }
-    }
-    if (this.audioCtx?.state === 'suspended') {
-      void this.audioCtx.resume();
-    }
-    return this.audioCtx;
   }
 
   private loadStoredVolume(): number {

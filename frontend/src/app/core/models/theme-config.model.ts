@@ -1,8 +1,18 @@
 import { GameConfig } from './game-config.model';
 
-export type GameSoundEvent = 'correctLetter' | 'typingError' | 'obstacleCleared' | 'obstacleMissed';
+export type GameSoundEvent =
+  | 'correctLetter'
+  | 'typingError'
+  | 'obstacleACleared'
+  | 'obstacleBCleared';
 
-export type ThemeSoundConfig = Record<GameSoundEvent, string>;
+export interface ThemeSoundConfig {
+  bgm: string;
+  correctLetter: string;
+  typingError: string;
+  obstacleACleared: string;
+  obstacleBCleared: string;
+}
 
 export interface ThemeConfig {
   id: GameConfig['theme'];
@@ -36,10 +46,11 @@ export const THEME_CONFIGS: Record<GameConfig['theme'], ThemeConfig> = {
     obstacleBCarriedSprite: '/assets/theme/foot/PNG/Equipment/ball_soccer2.png',
     targetSprite: '/assets/theme/foot/PNG/Elements/element (37).png',
     sounds: {
+      bgm: '/assets/sounds/foot/bgm-stadium.mp3',
       correctLetter: '/assets/UI/kenny-game-UIs/Sounds/click-a.ogg',
       typingError: '/assets/UI/kenny-game-UIs/Sounds/tap-b.ogg',
-      obstacleCleared: '/assets/UI/kenny-game-UIs/Sounds/switch-a.ogg',
-      obstacleMissed: '/assets/UI/kenny-game-UIs/Sounds/tap-a.ogg',
+      obstacleACleared: '/assets/sounds/foot/kick-goal.mp3',
+      obstacleBCleared: '/assets/sounds/foot/tackle-steal.mp4',
     },
     dictionaries: {
       Facile: [
@@ -72,10 +83,11 @@ export const THEME_CONFIGS: Record<GameConfig['theme'], ThemeConfig> = {
     projectileSprite: '/assets/theme/space/PNG/Sprites/Missiles/spaceMissiles_001.png',
     effectSprite: '/assets/theme/space/PNG/Sprites/Effects/spaceEffects_006.png',
     sounds: {
+      bgm: '/assets/sounds/space/bgm-cosmos.mp3',
       correctLetter: '/assets/UI/kenny-game-UIs/Sounds/click-b.ogg',
       typingError: '/assets/UI/kenny-game-UIs/Sounds/tap-b.ogg',
-      obstacleCleared: '/assets/UI/kenny-game-UIs/Sounds/switch-b.ogg',
-      obstacleMissed: '/assets/UI/kenny-game-UIs/Sounds/tap-a.ogg',
+      obstacleACleared: '/assets/sounds/space/laser-explosion.ogg',
+      obstacleBCleared: '/assets/sounds/space/star-collect.ogg',
     },
     dictionaries: {
       Facile: [

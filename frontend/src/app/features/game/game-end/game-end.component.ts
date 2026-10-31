@@ -4,6 +4,7 @@ import { Patient } from '../../../core/models/patient.model';
 import { SessionStats } from '../../../core/models/session-stats.model';
 import { PatientService } from '../../../core/services/patient.service';
 import { SessionService } from '../../../core/services/session.service';
+import { AudioService } from '../services/audio.service';
 
 export interface ConfettiPiece {
   id: number;
@@ -26,6 +27,7 @@ export class GameEndComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly patientService = inject(PatientService);
   private readonly sessionService = inject(SessionService);
+  private readonly audioService = inject(AudioService);
 
   patient?: Patient;
   session?: SessionStats;
@@ -101,6 +103,7 @@ export class GameEndComponent implements OnInit, OnDestroy {
   }
 
   private startEndAnimations(): void {
+    this.audioService.playVictoryFanfare();
     this.visibleStarsCount = 0;
     this.displayedScore = 0;
 
