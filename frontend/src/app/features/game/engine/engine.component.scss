@@ -6,3 +6,24 @@
   max-width: 160px;
   margin: 0 auto 0.75rem;
 }
+
+.theme-selection-page,
+.game-page {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  transition: background-image 250ms ease-in-out;
+
+  &.theme-foot {
+    background-image:
+      linear-gradient(rgb(15 23 42 / 25%), rgb(15 23 42 / 45%)),
+      url('/assets/UI/UI-foot.png');
+  }
+
+  &.theme-space {
+    background-image:
+      linear-gradient(rgb(9 13 22 / 35%), rgb(9 13 22 / 55%)),
+      url('/assets/UI/UI-space.png');
+  }
+}

@@ -12,6 +12,7 @@ export interface SessionStats {
     durationSeconds: SessionDurationSeconds;
     mode: SessionMode;
     theme: SessionTheme;
+    reducedEffects?: boolean;
   };
   avgResponseTimeSec: number;
   variabilityMinSec?: number;

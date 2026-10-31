@@ -28,5 +28,14 @@
     "dysgraphiaSeverity": "severe",
     "attentionProfile": "mixte",
     "id": "patient-1793050980819-s9av98"
+  },
+  {
+    "avatar": "/assets/profile-avatars/space-av1.png",
+    "firstName": "Stev",
+    "lastName": "harvy",
+    "age": 22,
+    "dysgraphiaSeverity": "severe",
+    "attentionProfile": "mixte",
+    "id": "patient-1793401698911-7yh8cm"
   }
 ]

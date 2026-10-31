@@ -23,20 +23,21 @@ export class AuthService {
   constructor(private readonly http: HttpClient) {}
 
   login(email: string, password: string): Observable<boolean> {
-    return this.http
-      .post<{ authenticated: boolean; practitioner?: Practitioner }>(`${this.apiUrl}/login`, {
-        email,
-        password,
-      })
-      .pipe(
-        tap((result) => {
-          if (result.authenticated && result.practitioner) {
-            this.setPractitioner(result.practitioner);
-          }
-        }),
-        map((result) => result.authenticated),
-      );
-  }
+      return this.http
+        .post<{ authenticated: boolean; practitioner?: Practitioner }>(`${this.apiUrl}/login`, {
+          email,
+          password,
+        })
+        .pipe(
+          tap((result) => {
+            if (result.authenticated && result.practitioner) {
+              localStorage.setItem('ff_last_connected_at', new Date().toISOString());
+              this.setPractitioner(result.practitioner);
+            }
+          }),
+          map((result) => result.authenticated),
+        );
+    }
 
   register(data: RegisterData): Observable<boolean> {
     return this.http

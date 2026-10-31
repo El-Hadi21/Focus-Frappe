@@ -1,5 +1,24 @@
 @if (session && patient) {
-  <main class="game-end-page">
+  <main
+    class="game-end-page"
+    [class.theme-foot]="session.config.theme === 'Football'"
+    [class.theme-space]="session.config.theme === 'Espace'"
+  >
+    @if (stars === 3 && confettiPieces.length > 0) {
+      <div class="confetti-layer" aria-hidden="true">
+        @for (piece of confettiPieces; track piece.id) {
+          <span
+            class="confetti-piece"
+            [style.left.%]="piece.leftPercent"
+            [style.animationDelay.ms]="piece.delayMs"
+            [style.animationDuration.ms]="piece.durationMs"
+            [style.backgroundColor]="piece.color"
+            [style.transform]="'rotate(' + piece.rotationDeg + 'deg)'"
+          ></span>
+        }
+      </div>
+    }
+
     <section class="finished-card card" aria-labelledby="end-title">
       <p class="eyebrow">Partie terminée !</p>
       <h1 id="end-title">Bravo {{ patient.firstName }} !</h1>
@@ -9,18 +28,22 @@
         @for (starIndex of [1, 2, 3]; track starIndex) {
           <img
             class="star-icon"
-            [class.earned]="starIndex <= stars"
-            [src]="starIndex <= stars
-              ? '/assets/UI/kenny-game-UIs/PNG/Yellow/Default/star.png'
-              : '/assets/UI/kenny-game-UIs/PNG/Yellow/Default/star_outline.png'"
+            [class.earned]="starIndex <= visibleStarsCount"
+            [src]="
+              starIndex <= visibleStarsCount
+                ? '/assets/UI/kenny-game-UIs/PNG/Yellow/Default/star.png'
+                : '/assets/UI/kenny-game-UIs/PNG/Yellow/Default/star_outline.png'
+            "
             alt=""
           />
         }
       </div>
 
       <div class="score-banner">
-        <strong>+ {{ score }} points</strong>
-        <span>{{ session.obstaclesCleared }} / {{ session.obstaclesCleared + session.obstaclesMissed }} obstacles franchis</span>
+        <strong>+ {{ displayedScore }} points</strong>
+        <span>
+          {{ session.obstaclesCleared }} / {{ session.obstaclesCleared + session.obstaclesMissed }} obstacles franchis
+        </span>
       </div>
 
       <dl class="session-summary">

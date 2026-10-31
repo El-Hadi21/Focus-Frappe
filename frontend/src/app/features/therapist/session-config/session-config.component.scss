@@ -546,3 +546,22 @@ h2 {
     width: 100%;
   }
 }
+.audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-shrink: 0;
+}
+
+.volume-slider {
+  width: 130px;
+  accent-color: #3d9ff2;
+  cursor: pointer;
+}
+
+.volume-value {
+  min-width: 48px;
+  color: #1e293b;
+  font-weight: 800;
+  text-align: right;
+}

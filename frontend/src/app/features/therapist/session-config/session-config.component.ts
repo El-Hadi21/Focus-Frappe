@@ -10,6 +10,7 @@ import { PATIENT_AVATARS, Patient } from '../../../core/models/patient.model';
 import { GameConfigService } from '../../../core/services/game-config.service';
 import { PatientService } from '../../../core/services/patient.service';
 import { ClinicalDefaultsService } from '../../game/services/clinical-defaults.service';
+import { AudioService } from '../../game/services/audio.service';
 
 @Component({
   selector: 'app-session-config',
@@ -30,6 +31,7 @@ export class SessionConfigComponent implements OnInit {
   readonly durations: GameConfig['durationSeconds'][] = [30, 60, 90, 120, 150, 180];
   readonly themes: GameConfig['theme'][] = ['Football', 'Espace'];
   readonly avatars = PATIENT_AVATARS;
+  readonly audioService = inject(AudioService);
 
   patient: Patient | undefined;
   isUpdatingAvatar = false;
@@ -45,6 +47,7 @@ export class SessionConfigComponent implements OnInit {
     durationSeconds: this.formBuilder.nonNullable.control<GameConfig['durationSeconds']>(90, Validators.required),
     mode: this.formBuilder.nonNullable.control<GameConfig['mode']>('Mot exact', Validators.required),
     theme: this.formBuilder.nonNullable.control<GameConfig['theme']>('Football', Validators.required),
+    reducedEffects: this.formBuilder.nonNullable.control<boolean>(false),
     customWord: this.formBuilder.nonNullable.control(''),
   });
 
@@ -60,7 +63,10 @@ export class SessionConfigComponent implements OnInit {
         this.patient = patient;
         const config = this.gameConfigService.getConfigForPatient(patient.id)
           ?? this.clinicalDefaultsService.getDefaultConfig(patient);
-        this.configForm.patchValue(config);
+        this.configForm.patchValue({
+          ...config,
+          reducedEffects: config.reducedEffects ?? false,
+        });
       },
       error: () => {
         void this.router.navigate(['/dashboard']);
@@ -172,6 +178,22 @@ export class SessionConfigComponent implements OnInit {
   toggleMode(event: Event): void {
     const isChecked = (event.target as HTMLInputElement).checked;
     this.configForm.controls.mode.setValue(isChecked ? 'Mot à trous' : 'Mot exact');
+  }
+
+  toggleReducedEffects(event: Event): void {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    this.configForm.controls.reducedEffects.setValue(isChecked);
+  }
+  get volumePercent(): number {
+      return Math.round(this.audioService.volume * 100);
+  }
+  onVolumeChange(event: Event): void {
+      const value = Number((event.target as HTMLInputElement).value);
+      this.audioService.setVolume(value / 100);
+  }
+
+  toggleAudioMute(): void {
+      this.audioService.toggleMute();
   }
 
   goBack(): void {

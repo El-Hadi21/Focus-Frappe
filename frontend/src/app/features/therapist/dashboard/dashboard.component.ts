@@ -25,8 +25,7 @@ export class DashboardComponent implements OnInit {
   patients: Patient[] = [];
   isLoading = true;
 
-  // Persona Ergothérapeute Principale (Cadrage MVP Single-Tenant)
-  readonly persona = {
+  persona = {
     lastName: 'Martin',
     firstName: 'Claire',
     avatarUrl: '/assets/UI/ergo-persona.png',
@@ -38,6 +37,17 @@ export class DashboardComponent implements OnInit {
   lastPlayedPatientName = 'Aucune séance jouée';
 
   ngOnInit(): void {
+    const practitioner = this.authService.currentPractitioner;
+    if (practitioner) {
+      this.persona = {
+        lastName: practitioner.lastName || 'Martin',
+        firstName: practitioner.firstName || 'Claire',
+        avatarUrl: practitioner.profilePicture || '/assets/UI/ergo-persona.png',
+        initials:
+          `${practitioner.firstName?.[0] ?? 'C'}${practitioner.lastName?.[0] ?? 'M'}`.toUpperCase(),
+      };
+    }
+
     const storedLoginTime = localStorage.getItem('ff_last_connected_at');
     if (storedLoginTime) {
       this.lastConnectedAt = new Date(storedLoginTime);
@@ -66,6 +76,20 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
+    let latestDate = 0;
+    let latestPatient: Patient | null = null;
+
+    // 1. Vérification immédiate du dernier patient enregistré en session locale/active
+    const recentRecord = this.sessionService.getLastPlayedPatientRecord();
+    if (recentRecord) {
+      const matched = patients.find((p) => p.id === recentRecord.patientId);
+      if (matched) {
+        latestDate = recentRecord.timestamp;
+        latestPatient = matched;
+      }
+    }
+
+    // 2. Croisement avec l'historique complet des séances en base
     const statsRequests = patients.map((patient) =>
       this.sessionService.getPatientStats(patient.id).pipe(
         map((sessions) => ({ patient, sessions })),
@@ -74,9 +98,6 @@ export class DashboardComponent implements OnInit {
     );
 
     forkJoin(statsRequests).subscribe((results) => {
-      let latestDate = 0;
-      let latestPatient: Patient | null = null;
-
       for (const { patient, sessions } of results) {
         for (const session of sessions) {
           const sessionTime = session.date.getTime();

@@ -8,4 +8,5 @@ export interface GameConfig {
   durationSeconds: SessionDurationSeconds;
   mode: SessionMode;
   theme: SessionTheme;
+  reducedEffects?: boolean;
 }
