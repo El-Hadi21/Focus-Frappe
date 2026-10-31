@@ -10,6 +10,7 @@ import { PATIENT_AVATARS, Patient } from '../../../core/models/patient.model';
 import { GameConfigService } from '../../../core/services/game-config.service';
 import { PatientService } from '../../../core/services/patient.service';
 import { ClinicalDefaultsService } from '../../game/services/clinical-defaults.service';
+import { AudioService } from '../../game/services/audio.service';
 
 @Component({
   selector: 'app-session-config',
@@ -30,6 +31,7 @@ export class SessionConfigComponent implements OnInit {
   readonly durations: GameConfig['durationSeconds'][] = [30, 60, 90, 120, 150, 180];
   readonly themes: GameConfig['theme'][] = ['Football', 'Espace'];
   readonly avatars = PATIENT_AVATARS;
+  readonly audioService = inject(AudioService);
 
   patient: Patient | undefined;
   isUpdatingAvatar = false;
@@ -181,6 +183,17 @@ export class SessionConfigComponent implements OnInit {
   toggleReducedEffects(event: Event): void {
     const isChecked = (event.target as HTMLInputElement).checked;
     this.configForm.controls.reducedEffects.setValue(isChecked);
+  }
+  get volumePercent(): number {
+      return Math.round(this.audioService.volume * 100);
+  }
+  onVolumeChange(event: Event): void {
+      const value = Number((event.target as HTMLInputElement).value);
+      this.audioService.setVolume(value / 100);
+  }
+
+  toggleAudioMute(): void {
+      this.audioService.toggleMute();
   }
 
   goBack(): void {

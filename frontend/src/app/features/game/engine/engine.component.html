@@ -103,10 +103,21 @@
           <span class="focus-meter-fill" [style.width.%]="focusRemainingPercent"></span>
         </div>
       </div>
+      <div class="hud-actions">
+        <button
+                type="button"
+                class="btn-secondary mute-button"
+                [attr.aria-label]="audioService.isMuted ? 'Activer le son' : 'Couper le son'"
+                [title]="audioService.isMuted ? 'Son coupé (cliquer pour activer)' : 'Son activé (cliquer pour couper)'"
+                (click)="toggleMute()"
+        >
+          <span aria-hidden="true">{{ audioService.isMuted ? '🔇' : '🔊' }}</span>
+        </button>
 
-      <button type="button" class="btn-secondary quit-button" (click)="quitToProfile()">
-        Quitter
-      </button>
+        <button type="button" class="btn-secondary quit-button" (click)="quitToProfile()">
+          Quitter
+        </button>
+      </div>
     </header>
 
     <!-- ZONE CENTRALE : CANVAS + OVERLAYS DOM -->

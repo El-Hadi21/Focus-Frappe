@@ -23,6 +23,18 @@
   align-items: center;
   gap: 1rem;
 }
+.hud-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.mute-button {
+  min-width: 48px;
+  padding: 0.55rem 0.75rem;
+  font-size: 1.15rem;
+  line-height: 1;
+}
 
 .game-hud,
 .game-footer {

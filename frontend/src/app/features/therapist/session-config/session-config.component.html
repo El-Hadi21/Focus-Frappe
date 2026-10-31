@@ -225,6 +225,36 @@
             <span class="toggle-track" aria-hidden="true"><span></span></span>
           </label>
         </section>
+        <section class="mode-section audio-config-section" aria-labelledby="audio-title">
+          <div>
+            <p class="section-kicker">07</p>
+            <h2 id="audio-title">Retour sonore</h2>
+            <p class="mode-description">
+              Ajustez le volume des effets sonores ou activez le mode muet pour la séance.
+            </p>
+          </div>
+
+          <div class="audio-controls">
+            <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="5"
+                    class="volume-slider"
+                    aria-label="Volume sonore"
+                    [value]="audioService.isMuted ? 0 : volumePercent"
+                    (input)="onVolumeChange($event)"
+            />
+            <span class="volume-value">{{ audioService.isMuted ? 'Muet' : volumePercent + ' %' }}</span>
+            <button
+                    type="button"
+                    class="btn-secondary"
+                    (click)="toggleAudioMute()"
+            >
+              {{ audioService.isMuted ? '🔇 Activer' : '🔊 Couper' }}
+            </button>
+          </div>
+        </section>
 
         <footer class="form-actions">
           <button type="button" class="btn-secondary" (click)="goBack()">Annuler</button>
