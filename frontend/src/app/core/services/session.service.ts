@@ -27,6 +27,8 @@ export interface SessionLookupResponse {
   session: SessionStats;
 }
 
+export const LAST_PLAYED_PATIENT_KEY = 'ff_last_played_patient';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -37,6 +39,7 @@ export class SessionService {
   constructor(private readonly http: HttpClient) {}
 
   saveSession(patientId: string, sessionData: SaveSessionData): Observable<SaveSessionResponse> {
+    this.recordLastPlayedPatient(patientId);
     return this.http
       .post<SaveSessionResponse>(`${this.API_URL}/patients/${patientId}/sessions`, {
         patientId,
@@ -52,6 +55,7 @@ export class SessionService {
   }
 
   createLocalFallbackSession(patientId: string, data: SaveSessionData): string {
+    this.recordLastPlayedPatient(patientId);
     const id = data.sessionId || `local-session-${Date.now()}`;
     const total = data.obstaclesCleared + data.obstaclesMissed;
     const rate = total > 0 ? data.obstaclesCleared / total : 0;
@@ -82,6 +86,25 @@ export class SessionService {
     return id;
   }
 
+  getLastPlayedPatientRecord(): { patientId: string; timestamp: number } | null {
+    const raw = localStorage.getItem(LAST_PLAYED_PATIENT_KEY);
+    if (!raw) {
+      return null;
+    }
+    try {
+      return JSON.parse(raw) as { patientId: string; timestamp: number };
+    } catch {
+      return null;
+    }
+  }
+
+  private recordLastPlayedPatient(patientId: string): void {
+    localStorage.setItem(
+      LAST_PLAYED_PATIENT_KEY,
+      JSON.stringify({ patientId, timestamp: Date.now() }),
+    );
+  }
+
   getSessionById(sessionId: string): Observable<SessionLookupResponse> {
     const cached = this.localFallbackSessions.get(sessionId);
     if (sessionId.startsWith('local-session-') && cached) {
@@ -100,9 +123,19 @@ export class SessionService {
   }
 
   getPatientStats(patientId: string): Observable<SessionStats[]> {
-    return this.http
-      .get<SessionStats[]>(`${this.API_URL}/patients/${patientId}/sessions`)
-      .pipe(map((sessions) => sessions.map((session) => this.mapSession(session))));
+    const localSessions = [...this.localFallbackSessions.values()]
+      .filter((entry) => entry.patientId === patientId)
+      .map((entry) => entry.session);
+
+    return this.http.get<SessionStats[]>(`${this.API_URL}/patients/${patientId}/sessions`).pipe(
+      map((sessions) => {
+        const apiSessions = sessions.map((session) => this.mapSession(session));
+        const seenIds = new Set(apiSessions.map((s) => s.id));
+        const onlyLocal = localSessions.filter((s) => !seenIds.has(s.id));
+        return [...apiSessions, ...onlyLocal];
+      }),
+      catchError(() => of(localSessions)),
+    );
   }
 
   saveSessionNotes(patientId: string, sessionId: string, notes: string): Observable<boolean> {

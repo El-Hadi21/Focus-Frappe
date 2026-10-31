@@ -195,20 +195,21 @@ export async function saveSession(
     : undefined;
 
   if (existingSession) {
-    const aggregatedResponseTimesMs = existingSession.responseTimesMs
-      ? [...existingSession.responseTimesMs, ...responseTimesMs]
-      : undefined;
-    const aggregatedObstaclesCleared = existingSession.obstaclesCleared + obstaclesCleared;
-    const aggregatedVariability = aggregatedResponseTimesMs
-      ? calculateVariability(aggregatedResponseTimesMs, aggregatedObstaclesCleared)
-      : {
-          avgSec: calculateWeightedAverage(
-            existingSession.avgResponseTimeSec,
-            existingSession.gamesCount,
-            variability.avgSec,
-          ),
-        };
+      const aggregatedResponseTimesMs = existingSession.responseTimesMs
+        ? [...existingSession.responseTimesMs, ...responseTimesMs]
+        : undefined;
+      const aggregatedObstaclesCleared = existingSession.obstaclesCleared + obstaclesCleared;
+      const aggregatedVariability = aggregatedResponseTimesMs
+        ? calculateVariability(aggregatedResponseTimesMs, aggregatedObstaclesCleared)
+        : {
+            avgSec: calculateWeightedAverage(
+              existingSession.avgResponseTimeSec,
+              existingSession.gamesCount,
+              variability.avgSec,
+            ),
+          };
 
+    existingSession.date = new Date().toISOString();
     existingSession.gamesCount += 1;
     existingSession.obstaclesCleared = aggregatedObstaclesCleared;
     existingSession.obstaclesMissed += obstaclesMissed;
