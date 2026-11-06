@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { GameConfig } from '../../../core/models/game-config.model';
 import { THEME_CONFIGS } from '../../../core/models/theme-config.model';
+import { environment } from '../../../../environments/environment';
 
 export interface WordLetterTile {
   index: number;
@@ -15,7 +16,7 @@ export interface WordLetterTile {
 
 @Injectable({ providedIn: 'root' })
 export class WordChallengeService {
-  private readonly dictionariesUrl = 'http://localhost:3000/api/dictionaries';
+  private readonly dictionariesUrl = `${environment.apiUrl}/dictionaries`;
   private dictionaries: Record<string, Record<string, string[]>> | null = null;
   private word = '';
   private lastWord = '';

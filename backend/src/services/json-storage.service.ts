@@ -5,7 +5,10 @@ import { DatabaseSchema, Practitioner } from '../models/database.model';
 import { Patient } from '../models/patient.model';
 import { SessionStats } from '../models/session-stats.model';
 
-const DEFAULT_DATA_DIRECTORY = resolve(process.cwd(), 'database/data');
+function getDefaultDataDirectory(): string {
+  const folder = process.env.DB_FOLDER ? process.env.DB_FOLDER.replace(/\/$/, '') : 'data';
+  return resolve(process.cwd(), 'database', folder);
+}
 
 function getInitialPractitioners(): Practitioner[] {
   return [
@@ -69,7 +72,7 @@ export class JsonStorageService {
   private readonly dictionariesPath: string;
   private writeQueue: Promise<void> = Promise.resolve();
 
-  constructor(private readonly dataDirectory = DEFAULT_DATA_DIRECTORY) {
+  constructor(private readonly dataDirectory = getDefaultDataDirectory()) {
     this.practitionersPath = resolve(dataDirectory, 'practitioners.json');
     this.patientsPath = resolve(dataDirectory, 'patients.json');
     this.sessionsPath = resolve(dataDirectory, 'sessions.json');

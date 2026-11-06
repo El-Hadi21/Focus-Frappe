@@ -1,0 +1,29 @@
+{
+  "patient-leo-e2e": [
+    {
+      "id": "session-leo-initial",
+      "date": "2026-10-25T10:00:00.000Z",
+      "gamesCount": 1,
+      "config": {
+        "difficulty": "Facile",
+        "durationSeconds": 60,
+        "mode": "Mot exact",
+        "theme": "Football",
+        "reducedEffects": false
+      },
+      "responseTimesMs": [1400, 1600, 1500],
+      "avgResponseTimeSec": 1.5,
+      "obstaclesCleared": 5,
+      "obstaclesMissed": 1,
+      "outOfWindowClicks": 2,
+      "typingErrors": 3,
+      "maxStreak": 4,
+      "playedDurationSec": 60,
+      "plannedDurationSec": 60,
+      "abandons": 0,
+      "score": 750,
+      "notes": "Bonne première séance."
+    }
+  ],
+  "patient-emma-e2e": []
+}

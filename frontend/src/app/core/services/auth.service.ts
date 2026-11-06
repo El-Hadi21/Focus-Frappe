@@ -1,20 +1,21 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, map, tap } from 'rxjs';
+ import { HttpClient } from '@angular/common/http';
+ import { BehaviorSubject, Observable, map, tap } from 'rxjs';
+ import { environment } from '../../../environments/environment';
 
-export interface Practitioner {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  profilePicture?: string;
-}
+ export interface Practitioner {
+   id: string;
+   firstName: string;
+   lastName: string;
+   email: string;
+   profilePicture?: string;
+ }
 
-@Injectable({
-  providedIn: 'root',
-})
-export class AuthService {
-  private readonly apiUrl = 'http://localhost:3000/api/auth';
+ @Injectable({
+   providedIn: 'root',
+ })
+ export class AuthService {
+   private readonly apiUrl = `${environment.apiUrl}/auth`;
   private readonly practitionerSubject = new BehaviorSubject<Practitioner | null>(
     this.getStoredPractitioner(),
   );

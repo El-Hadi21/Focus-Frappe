@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Patient } from '../models/patient.model';
+import { environment } from '../../../environments/environment';
 
 export interface CustomWordsResponse {
   message: string;
@@ -13,7 +14,7 @@ export interface CustomWordsResponse {
   providedIn: 'root',
 })
 export class PatientService {
-  private readonly apiUrl = 'http://localhost:3000/api';
+  private readonly apiUrl = environment.apiUrl;
 
   constructor(private readonly http: HttpClient) {}
 
