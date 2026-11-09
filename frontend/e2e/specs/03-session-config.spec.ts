@@ -18,11 +18,11 @@ test.describe('Suite 3 — Configuration de Séance, Dictionnaire Personnalisé 
     page,
   }) => {
     // Léo a une dysgraphie "severe" (-> Facile) et un profil "inattentif" (-> 60 s)
-    const checkedDifficulty = page.locator('input[formControlName="difficulty"]:checked');
-    const checkedDuration = page.locator('input[formControlName="durationSeconds"]:checked');
+    const facileRadio = page.locator('.choice-option', { hasText: 'Facile' }).locator('input[type="radio"]');
+    const duration60Radio = page.locator('.duration-option', { hasText: '60 s' }).locator('input[type="radio"]');
 
-    await expect(checkedDifficulty).toHaveValue('Facile');
-    await expect(checkedDuration).toHaveValue('60');
+    await expect(facileRadio).toBeChecked();
+    await expect(duration60Radio).toBeChecked();
 
     // Changement d'avatar en direct
     await page.locator('.config-avatar-option').nth(2).click();
