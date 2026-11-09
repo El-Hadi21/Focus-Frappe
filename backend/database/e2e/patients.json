@@ -6,8 +6,11 @@
     "age": 8,
     "dysgraphiaSeverity": "severe",
     "attentionProfile": "inattentif",
-    "avatar": "/assets/profile-avatars/foot-av1.jpg",
-    "customWords": ["renard", "ballon"]
+    "avatar": "/assets/profile-avatars/foot-av3.jpg",
+    "customWords": [
+      "renard",
+      "ballon"
+    ]
   },
   {
     "id": "patient-emma-e2e",

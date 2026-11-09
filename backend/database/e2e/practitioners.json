@@ -7,5 +7,14 @@
     "password": "ergo123",
     "age": 35,
     "profilePicture": ""
+  },
+  {
+    "id": "practitioner-1794061462499-xniq1i",
+    "firstName": "Marc",
+    "lastName": "Lefevre",
+    "email": "marc.1794061462201@example.com",
+    "password": "password123",
+    "age": 29,
+    "profilePicture": ""
   }
 ]

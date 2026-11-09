@@ -11,7 +11,11 @@
         "theme": "Football",
         "reducedEffects": false
       },
-      "responseTimesMs": [1400, 1600, 1500],
+      "responseTimesMs": [
+        1400,
+        1600,
+        1500
+      ],
       "avgResponseTimeSec": 1.5,
       "obstaclesCleared": 5,
       "obstaclesMissed": 1,
@@ -25,5 +29,59 @@
       "notes": "Bonne première séance."
     }
   ],
-  "patient-emma-e2e": []
+  "patient-emma-e2e": [
+    {
+      "id": "session-patient-emma-e2e-1794061489583-4vdsjk",
+      "date": "2026-11-07T14:24:49.583Z",
+      "gamesCount": 1,
+      "config": {
+        "difficulty": "Facile",
+        "durationSeconds": 30,
+        "mode": "Mot exact",
+        "theme": "Football",
+        "reducedEffects": false
+      },
+      "responseTimesMs": [
+        619.1999999999998
+      ],
+      "avgResponseTimeSec": 0.6191999999999999,
+      "obstaclesCleared": 1,
+      "obstaclesMissed": 0,
+      "outOfWindowClicks": 1,
+      "typingErrors": 1,
+      "maxStreak": 1,
+      "playedDurationSec": 8,
+      "plannedDurationSec": 30,
+      "abandons": 1,
+      "score": 0
+    },
+    {
+      "id": "session-patient-emma-e2e-1794061506055-hhibe9",
+      "date": "2026-11-07T14:25:06.055Z",
+      "gamesCount": 1,
+      "config": {
+        "difficulty": "Facile",
+        "durationSeconds": 30,
+        "mode": "Mot exact",
+        "theme": "Espace",
+        "reducedEffects": false
+      },
+      "responseTimesMs": [
+        373,
+        199,
+        261
+      ],
+      "avgResponseTimeSec": 0.2776666666666667,
+      "obstaclesCleared": 3,
+      "obstaclesMissed": 0,
+      "outOfWindowClicks": 0,
+      "typingErrors": 0,
+      "maxStreak": 3,
+      "playedDurationSec": 14,
+      "plannedDurationSec": 30,
+      "abandons": 0,
+      "score": 750,
+      "notes": "Excellente concentration sur le thème Espace."
+    }
+  ]
 }
