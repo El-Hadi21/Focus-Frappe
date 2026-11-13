@@ -22,9 +22,8 @@ test.describe('Suite 5 — Fin de Partie (GameEnd), Statistiques Cliniques et No
     // Configuration d'une manche courte de 30s (3 obstacles)
     await config.selectDifficulty('Facile');
     await config.selectDuration(30);
-    await config.selectTheme('Espace');
     await config.startGame();
-
+    await expect(page).toHaveURL(/\/game\//);
     await game.selectThemeToStart('Espace');
 
     // Franchissement des 3 obstacles de la manche de 30s
