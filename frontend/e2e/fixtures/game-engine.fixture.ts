@@ -35,9 +35,11 @@ export class GameEngineFixture extends E2EComponentFixture {
   }
 
   async selectThemeToStart(theme: 'Football' | 'Espace'): Promise<void> {
-    await this.page.locator('button.theme-choice', { hasText: theme }).click();
-    await expect(this.canvas).toBeVisible();
-  }
+      const themeButton = this.page.getByRole('button', { name: new RegExp(`Univers ${theme}`, 'i') });
+      await expect(themeButton).toBeVisible();
+      await themeButton.click();
+      await expect(this.canvas).toBeVisible({ timeout: 10_000 });
+    }
 
   /**
    * Attend que l'obstacle entre dans la Zone de Focus (.word-prompt-box visible avec une tuile .is-current),

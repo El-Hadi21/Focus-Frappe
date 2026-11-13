@@ -14,3 +14,8 @@ playwright-report/
 .env
 .idea/
 .vscode/
+
+ops/e2e-results/
+frontend/playwright-report/
+frontend/test-results/
+backend/database/e2e

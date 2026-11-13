@@ -1,0 +1,12 @@
+FROM mcr.microsoft.com/playwright:v1.63.0
+
+WORKDIR /usr/local/app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+ENV E2E_BASE_URL=""
+
+CMD ["npx", "playwright", "test"]
