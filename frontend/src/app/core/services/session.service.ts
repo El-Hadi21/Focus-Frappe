@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map, of, catchError } from 'rxjs';
 import { GameConfig } from '../models/game-config.model';
 import { SessionStats } from '../models/session-stats.model';
+import { environment } from '../../../environments/environment';
 
 export interface SaveSessionData {
   sessionId?: string;
@@ -33,7 +34,7 @@ export const LAST_PLAYED_PATIENT_KEY = 'ff_last_played_patient';
   providedIn: 'root',
 })
 export class SessionService {
-  private readonly API_URL = 'http://localhost:3000/api';
+  private readonly API_URL = environment.apiUrl;
   private readonly localFallbackSessions = new Map<string, SessionLookupResponse>();
 
   constructor(private readonly http: HttpClient) {}

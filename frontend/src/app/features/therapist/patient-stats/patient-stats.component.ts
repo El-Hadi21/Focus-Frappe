@@ -60,7 +60,7 @@ export class PatientStatsComponent implements OnInit {
               (first, second) => second.date.getTime() - first.date.getTime(),
             );
             this.lastSession = this.sessions[0];
-            this.notesDraft = this.lastSession?.notes ?? '';
+            this.notesDraft = '';
             this.isLoading = false;
           },
           error: () => {
@@ -141,22 +141,27 @@ export class PatientStatsComponent implements OnInit {
     return getChartMetricValue(session, this.selectedChart);
   }
 
+  get sessionsWithNotes(): SessionStats[] {
+      return this.sessions.filter((session) => Boolean(session.notes && session.notes.trim().length > 0));
+  }
+
   saveNotes(): void {
-    if (!this.lastSession || this.isSavingNotes) {
+    const trimmedNote = this.notesDraft.trim();
+    if (!this.lastSession || this.isSavingNotes || !trimmedNote) {
       return;
     }
-
     this.isSavingNotes = true;
     this.notesSaved = false;
     this.notesSaveError = false;
     this.sessionService
-      .saveSessionNotes(this.patientId, this.lastSession.id, this.notesDraft.trim())
+      .saveSessionNotes(this.patientId, this.lastSession.id, trimmedNote)
       .subscribe({
         next: (saved) => {
           this.isSavingNotes = false;
           this.notesSaved = saved;
           if (saved) {
-            this.lastSession!.notes = this.notesDraft.trim();
+            this.lastSession!.notes = trimmedNote;
+            this.notesDraft = '';
           } else {
             this.notesSaveError = true;
           }

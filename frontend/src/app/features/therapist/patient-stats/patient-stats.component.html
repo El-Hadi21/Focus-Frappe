@@ -196,28 +196,50 @@
         <section class="card stats-card notes-card" aria-labelledby="notes-title">
           <h2 id="notes-title">Notes d'observation</h2>
           <p class="metric-desc">Ajoutez vos remarques cliniques sur le comportement de l'enfant durant la séance.</p>
+
           <form class="notes-form" (ngSubmit)="saveNotes()">
             <label for="notes-input" class="sr-only">Notes cliniques</label>
             <textarea
-              id="notes-input"
-              class="notes-input"
-              name="notes"
-              rows="4"
-              [(ngModel)]="notesDraft"
-              placeholder="Ex : Léo était particulièrement agité aujourd'hui..."
+                    id="notes-input"
+                    class="notes-input"
+                    name="notes"
+                    rows="3"
+                    [(ngModel)]="notesDraft"
+                    placeholder="Ex : Léo était particulièrement concentré aujourd'hui..."
             ></textarea>
             <div class="notes-actions">
-              <button type="submit" class="btn-primary" [disabled]="isSavingNotes">
+              <button type="submit" class="btn-primary" [disabled]="isSavingNotes || !notesDraft.trim()">
                 {{ isSavingNotes ? 'Enregistrement...' : 'Enregistrer les notes' }}
               </button>
               @if (notesSaved) {
-                <span class="save-feedback" role="status">Notes enregistrées avec succès.</span>
+              <span class="save-feedback" role="status">Notes enregistrées avec succès.</span>
               }
               @if (notesSaveError) {
-                <span class="save-feedback save-feedback-error" role="alert">Impossible d'enregistrer les notes.</span>
+              <span class="save-feedback save-feedback-error" role="alert">Impossible d'enregistrer les notes.</span>
               }
             </div>
           </form>
+
+          @if (sessionsWithNotes.length > 0) {
+          <div class="saved-notes-history" aria-label="Historique des notes par séance">
+            <h3>Historique des remarques par séance</h3>
+            <div class="saved-notes-list">
+              @for (sessionItem of sessionsWithNotes; track sessionItem.id) {
+              <article class="saved-note-box">
+                <header class="saved-note-header">
+                      <span class="saved-note-date">
+                        Séance du {{ sessionItem.date | date: 'dd/MM/yyyy à HH:mm' }}
+                      </span>
+                  <span class="saved-note-meta">
+                        Thème {{ sessionItem.config.theme }} · Palier {{ sessionItem.config.difficulty }} ({{ sessionItem.config.durationSeconds }} s)
+                      </span>
+                </header>
+                <p class="saved-note-content">{{ sessionItem.notes }}</p>
+              </article>
+              }
+            </div>
+          </div>
+          }
         </section>
       </div>
     }

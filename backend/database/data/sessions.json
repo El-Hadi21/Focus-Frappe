@@ -823,6 +823,43 @@
       "plannedDurationSec": 120,
       "abandons": 0,
       "score": 750
+    },
+    {
+      "id": "session-patient-1792629269738-4r7rrt-1794678340328-9omxod",
+      "date": "2026-11-14T17:45:40.328Z",
+      "gamesCount": 1,
+      "config": {
+        "difficulty": "Normal",
+        "durationSeconds": 120,
+        "mode": "Mot exact",
+        "theme": "Football",
+        "reducedEffects": false
+      },
+      "responseTimesMs": [
+        3280,
+        2288,
+        2926,
+        4196,
+        4760,
+        2883,
+        4250,
+        2669,
+        3447,
+        4421,
+        4600
+      ],
+      "avgResponseTimeSec": 3.610909090909091,
+      "variabilityMinSec": 2.7863801946134874,
+      "variabilityMaxSec": 4.435437987204694,
+      "obstaclesCleared": 11,
+      "obstaclesMissed": 1,
+      "outOfWindowClicks": 0,
+      "typingErrors": 29,
+      "maxStreak": 9,
+      "playedDurationSec": 87,
+      "plannedDurationSec": 120,
+      "abandons": 0,
+      "score": 750
     }
   ],
   "patient-1793050980819-s9av98": [
@@ -881,8 +918,126 @@
       "playedDurationSec": 17,
       "plannedDurationSec": 90,
       "abandons": 1,
-      "score": 0
+      "score": 0,
+      "notes": "la 1er remarque"
     }
   ],
-  "patient-1793401698911-7yh8cm": []
+  "patient-1793401698911-7yh8cm": [
+    {
+      "id": "session-patient-1793401698911-7yh8cm-1794008310551-f5n1q3",
+      "date": "2026-11-06T23:39:33.774Z",
+      "gamesCount": 2,
+      "config": {
+        "difficulty": "Facile",
+        "durationSeconds": 90,
+        "mode": "Mot exact",
+        "theme": "Espace",
+        "reducedEffects": false
+      },
+      "responseTimesMs": [
+        1740,
+        1887,
+        1245,
+        2544,
+        3663,
+        2547,
+        2241,
+        2040,
+        2778,
+        4164,
+        1979,
+        2344,
+        3714,
+        5212,
+        2562,
+        2438,
+        3014,
+        1345
+      ],
+      "avgResponseTimeSec": 2.6365,
+      "obstaclesCleared": 18,
+      "obstaclesMissed": 0,
+      "outOfWindowClicks": 4,
+      "typingErrors": 44,
+      "maxStreak": 9,
+      "playedDurationSec": 111,
+      "plannedDurationSec": 180,
+      "abandons": 0,
+      "score": 1500,
+      "variabilityMinSec": 1.653166257062232,
+      "variabilityMaxSec": 3.6198337429377676
+    },
+    {
+      "id": "session-patient-1793401698911-7yh8cm-1794008599513-h9uc87",
+      "date": "2026-11-06T23:43:19.513Z",
+      "gamesCount": 1,
+      "config": {
+        "difficulty": "Difficile",
+        "durationSeconds": 180,
+        "mode": "Mot exact",
+        "theme": "Espace",
+        "reducedEffects": false
+      },
+      "responseTimesMs": [
+        2438.9999999970314,
+        3644.5000000015134,
+        3855.7999999999884,
+        3579.3999999955413
+      ],
+      "avgResponseTimeSec": 3.3796749999985187,
+      "obstaclesCleared": 4,
+      "obstaclesMissed": 9,
+      "outOfWindowClicks": 0,
+      "typingErrors": 61,
+      "maxStreak": 3,
+      "playedDurationSec": 99,
+      "plannedDurationSec": 180,
+      "abandons": 1,
+      "score": 0
+    },
+    {
+      "id": "session-patient-1793401698911-7yh8cm-1794008845188-5j2nmn",
+      "date": "2026-11-06T23:47:25.188Z",
+      "gamesCount": 1,
+      "config": {
+        "difficulty": "Normal",
+        "durationSeconds": 180,
+        "mode": "Mot exact",
+        "theme": "Espace",
+        "reducedEffects": false
+      },
+      "responseTimesMs": [
+        2824,
+        3223,
+        2332,
+        3559,
+        3453,
+        2873,
+        2102,
+        3492,
+        2838,
+        2506,
+        3800,
+        2623,
+        5256,
+        3066,
+        3206,
+        4152,
+        2514,
+        2538
+      ],
+      "avgResponseTimeSec": 3.1309444444444443,
+      "variabilityMinSec": 2.394358440397378,
+      "variabilityMaxSec": 3.8675304484915105,
+      "obstaclesCleared": 18,
+      "obstaclesMissed": 0,
+      "outOfWindowClicks": 0,
+      "typingErrors": 17,
+      "maxStreak": 18,
+      "playedDurationSec": 116,
+      "plannedDurationSec": 180,
+      "abandons": 0,
+      "score": 750
+    }
+  ]
 }

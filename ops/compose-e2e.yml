@@ -1,0 +1,57 @@
+name: focus-frappe-e2e
+
+networks:
+  focus-frappe-e2e:
+
+volumes:
+  back-data:
+
+services:
+  back-e2e:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile-e2e
+    networks:
+      - focus-frappe-e2e
+    volumes:
+      - back-data:/var/lib/focus-frappe
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  front-e2e:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        ENVIRONMENT: docker-e2e
+    networks:
+      - focus-frappe-e2e
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      back-e2e:
+        condition: service_healthy
+
+  playwright:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile-e2e
+    networks:
+      - focus-frappe-e2e
+    environment:
+      E2E_BASE_URL: http://front-e2e
+    depends_on:
+      front-e2e:
+        condition: service_healthy
+      back-e2e:
+        condition: service_healthy
+    volumes:
+      - ./e2e-results/test-results/:/usr/local/app/test-results/:rw
+      - ./e2e-results/playwright-report/:/usr/local/app/playwright-report/:rw
