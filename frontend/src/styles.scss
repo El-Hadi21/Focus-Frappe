@@ -1,11 +1,3 @@
-@font-face {
-  font-family: 'Kenney Future';
-  src: url('/assets/UI/kenny-game-UIs/Font/Kenney%20Future.ttf')
-    format('truetype');
-  font-weight: 400 700;
-  font-display: swap;
-}
-
 :root {
   --color-primary: #2ecc71;
   --color-primary-dark: #1f9c56;
@@ -14,7 +6,8 @@
   --color-surface: #ffffff;
   --color-text: #1f2d3d;
   --color-text-muted: #1f2d3d;
-  --font-game: 'Kenney Future', 'Trebuchet MS', sans-serif;
+  --font-sans: 'Verdana', 'Trebuchet MS', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-game: 'Verdana', 'Trebuchet MS', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --bg-global: url('/assets/UI/UI-globale.png');
   --bg-global-fallback: linear-gradient(180deg, #bfe3ff 0%, #eaf7e8 100%);
   --panel-image: url('/assets/UI/kenny-game-UIs/PNG/Blue/Default/button_rectangle_flat.png');
@@ -34,7 +27,11 @@ body {
 
 body {
   color: var(--color-text);
-  font-family: var(--font-game);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  letter-spacing: 0.015em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   background:
     var(--bg-global) center / cover fixed no-repeat,
     var(--bg-global-fallback);
@@ -45,6 +42,7 @@ h2,
 h3 {
   color: var(--color-text);
   font-family: var(--font-game);
+  letter-spacing: 0.01em;
   text-shadow: 1px 1px 2px rgb(255 255 255 / 80%);
 }
 
@@ -90,6 +88,7 @@ h3 {
   font-family: var(--font-game);
   font-size: 1rem;
   font-weight: 700;
+  letter-spacing: 0.02em;
   text-shadow: 0 1px 2px rgb(0 0 0 / 25%);
   transform: translateY(calc(-1 * var(--btn-press-depth)));
   transition: transform 100ms ease;
@@ -147,6 +146,7 @@ h3 {
   font-family: var(--font-game);
   font-size: 1rem;
   font-weight: 700;
+  letter-spacing: 0.02em;
   text-shadow: 0 1px 1px rgb(255 255 255 / 35%);
   transform: translateY(calc(-1 * var(--btn-press-depth)));
   transition: transform 100ms ease, filter 100ms ease;
@@ -198,6 +198,7 @@ h3 {
   font-family: var(--font-game);
   font-size: 1rem;
   font-weight: 700;
+  letter-spacing: 0.02em;
   text-shadow: 0 1px 2px rgb(0 0 0 / 25%);
   transform: translateY(calc(-1 * var(--btn-press-depth)));
   transition: transform 100ms ease;

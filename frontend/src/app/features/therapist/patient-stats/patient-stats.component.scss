@@ -454,6 +454,64 @@
 .save-feedback-error {
   color: #c0392b;
 }
+.saved-notes-history {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 2px solid rgb(15 23 42 / 15%);
+
+  h3 {
+    margin: 0 0 0.85rem;
+    color: #1e293b;
+    font-size: 1rem;
+  }
+}
+
+.saved-notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.saved-note-box {
+  padding: 0.9rem 1.1rem;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #3d9ff2;
+  border-radius: 10px;
+  background: #f8fafc;
+  box-shadow: 0 2px 6px rgb(15 23 42 / 6%);
+}
+
+.saved-note-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+
+.saved-note-date {
+  color: #0f172a;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.saved-note-meta {
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  color: #334155;
+  background: #e2e8f0;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.saved-note-content {
+  margin: 0;
+  color: #1e293b;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
 
 @media (max-width: 600px) {
   .stats-page {
